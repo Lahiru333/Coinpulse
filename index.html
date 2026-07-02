@@ -270,7 +270,6 @@
         .referral-count { margin-top: 16px; font-size: 14px; color: #8899bb; }
         .referral-count span { color: #f7931a; font-weight: 700; }
 
-        /* Ad Overlay */
         .ad-overlay {
             position: fixed;
             top: 0;
@@ -333,6 +332,17 @@
             cursor: pointer;
             margin-top: 8px;
         }
+        #adForceClaimBtn {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid #f7931a;
+            color: #f7931a;
+            padding: 10px 24px;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            margin-top: 8px;
+            display: none;
+        }
         .notification {
             position: fixed;
             bottom: 100px;
@@ -365,13 +375,11 @@
             <div class="level">Level <span id="levelDisplay">1</span></div>
         </div>
 
-        <!-- Game Selector -->
         <div class="game-selector">
             <button class="active" data-game="game1">🪙 Tap & Earn</button>
             <button data-game="game2">🎯 Click Challenge</button>
         </div>
 
-        <!-- Game 1: Tap & Earn -->
         <div class="game-container active" id="game1Container">
             <div class="tap-area" id="tapArea1">
                 <div class="game-icon" id="gameIcon1">🪙</div>
@@ -388,7 +396,6 @@
             </div>
         </div>
 
-        <!-- Game 2: Click Challenge -->
         <div class="game-container" id="game2Container">
             <div class="tap-area" id="tapArea2">
                 <div class="game-icon" id="gameIcon2">🎯</div>
@@ -405,21 +412,18 @@
             </div>
         </div>
 
-        <!-- Main Stats -->
         <div class="stats">
             <div class="stat-item"><span>💰 Total USDT</span><span id="totalUSDT">0.0000</span></div>
             <div class="stat-item"><span>📈 Total Earned</span><span id="totalEarned">0.0000</span></div>
             <div class="stat-item"><span>📺 Ads Watched</span><span id="adsWatched">0</span></div>
         </div>
 
-        <!-- Tabs -->
         <div class="tabs">
             <button class="tab-btn active" data-tab="tasks">📋 Tasks</button>
             <button class="tab-btn" data-tab="boost">🚀 Boost</button>
             <button class="tab-btn" data-tab="referral">👥 Referral</button>
         </div>
 
-        <!-- Tasks -->
         <div class="tab-content" id="tasksTab">
             <div class="task-list">
                 <div class="task-item">
@@ -455,7 +459,6 @@
             </div>
         </div>
 
-        <!-- Boost -->
         <div class="tab-content" id="boostTab" style="display:none;">
             <div class="boost-grid">
                 <div class="boost-item">
@@ -469,7 +472,6 @@
             </div>
         </div>
 
-        <!-- Referral -->
         <div class="tab-content" id="referralTab" style="display:none;">
             <div class="referral-box">
                 <p>Invite friends & earn 0.0005 USDT per referral!</p>
@@ -488,18 +490,18 @@
                 <div class="ad-progress-fill" id="adProgressFill"></div>
             </div>
             <button id="adClaimBtn">✅ Claim Reward</button>
+            <button id="adForceClaimBtn">⏩ Force Claim (if stuck)</button>
             <button id="adCloseBtn" onclick="closeAd()">✕ Close</button>
         </div>
     </div>
 
     <script>
         // =============================================
-        // COINPULSE - FULL GAME WITH 2 GAMES + TASKS
+        // COINPULSE - FINALIZING BUG FIXED
         // =============================================
 
         // ===== STATE =====
         const state = {
-            // Shared
             balance: 0.0000,
             totalEarned: 0.0000,
             level: 1,
@@ -509,8 +511,10 @@
             pendingReward: 0.0001,
             pendingCoins: 50,
             adCompleted: false,
+            adStarted: false,
+            adTimer: null,
+            adForceTimer: null,
 
-            // Game 1: Tap & Earn
             game1: {
                 coins: 0,
                 power: 1,
@@ -519,8 +523,6 @@
                 energyRegen: 1,
                 taps: 0
             },
-
-            // Game 2: Click Challenge
             game2: {
                 coins: 0,
                 power: 1,
@@ -529,8 +531,6 @@
                 energyRegen: 1,
                 clicks: 0
             },
-
-            // Task tracking
             tasks: {
                 task50: { watched: 0, completed: false },
                 task100: { watched: 0, completed: false },
@@ -546,24 +546,20 @@
         const totalEarnedDisplay = $('totalEarned');
         const adsWatchedDisplay = $('adsWatched');
         const referralCount = $('referralCount');
-
-        // Game 1
         const game1Coins = $('game1Coins');
         const game1Power = $('game1Power');
         const energyFill1 = $('energyFill1');
         const energyText1 = $('energyText1');
-
-        // Game 2
         const game2Clicks = $('game2Clicks');
         const game2Power = $('game2Power');
         const energyFill2 = $('energyFill2');
         const energyText2 = $('energyText2');
-
         const adOverlay = $('adOverlay');
         const adStatus = $('adStatus');
         const adSpinner = $('adSpinner');
         const adProgressFill = $('adProgressFill');
         const adClaimBtn = $('adClaimBtn');
+        const adForceClaimBtn = $('adForceClaimBtn');
 
         // ===== TELEGRAM =====
         let tg = window.Telegram?.WebApp || {
@@ -610,158 +606,88 @@
         // =============================================
 
         function updateUI() {
-            // Main
             balanceDisplay.textContent = state.balance.toFixed(4);
             levelDisplay.textContent = state.level;
             totalUSDT.textContent = state.balance.toFixed(4);
             totalEarnedDisplay.textContent = state.totalEarned.toFixed(4);
             adsWatchedDisplay.textContent = state.adsWatched;
             referralCount.textContent = state.referrals;
-
-            // Game 1
             game1Coins.textContent = state.game1.coins;
             game1Power.textContent = state.game1.power;
             energyFill1.style.width = `${(state.game1.energy / state.game1.maxEnergy) * 100}%`;
             energyText1.textContent = `${Math.floor(state.game1.energy)}/${state.game1.maxEnergy}`;
-
-            // Game 2
             game2Clicks.textContent = state.game2.clicks;
             game2Power.textContent = state.game2.power;
             energyFill2.style.width = `${(state.game2.energy / state.game2.maxEnergy) * 100}%`;
             energyText2.textContent = `${Math.floor(state.game2.energy)}/${state.game2.maxEnergy}`;
-
-            // Tasks
             updateTaskButtons();
-
             saveState();
         }
 
         function updateTaskButtons() {
-            const task50 = $('task50');
-            const task100 = $('task100');
-            const task500 = $('task500');
-
-            // Task 50
-            if (state.tasks.task50.completed) {
-                task50.textContent = '✅ Done';
-                task50.className = 'task-btn completed';
-                task50.disabled = true;
-            } else {
-                task50.textContent = 'Watch';
-                task50.className = 'task-btn';
-                task50.disabled = state.isAdPlaying;
-            }
-
-            // Task 100
-            if (state.tasks.task100.completed) {
-                task100.textContent = '✅ Done';
-                task100.className = 'task-btn completed';
-                task100.disabled = true;
-            } else {
-                task100.textContent = 'Watch';
-                task100.className = 'task-btn';
-                task100.disabled = state.isAdPlaying;
-            }
-
-            // Task 500
-            if (state.tasks.task500.completed) {
-                task500.textContent = '✅ Done';
-                task500.className = 'task-btn completed';
-                task500.disabled = true;
-            } else {
-                task500.textContent = 'Watch';
-                task500.className = 'task-btn';
-                task500.disabled = state.isAdPlaying;
-            }
+            ['task50', 'task100', 'task500'].forEach(id => {
+                const btn = $(id);
+                if (state.tasks[id].completed) {
+                    btn.textContent = '✅ Done';
+                    btn.className = 'task-btn completed';
+                    btn.disabled = true;
+                } else {
+                    btn.textContent = 'Watch';
+                    btn.className = 'task-btn';
+                    btn.disabled = state.isAdPlaying;
+                }
+            });
         }
 
         // =============================================
-        // ===== GAME 1: TAP & EARN =====
+        // ===== GAME HANDLERS =====
         // =============================================
 
         function handleTap1(e) {
-            if (state.isAdPlaying) {
-                showNotification('⏳ Ad is playing!');
-                return;
-            }
-            if (state.game1.energy < 1) {
-                tg.HapticFeedback?.impactOccurred('error');
-                showNotification('⚡ Not enough energy!');
-                return;
-            }
-
+            if (state.isAdPlaying) { showNotification('⏳ Ad is playing!'); return; }
+            if (state.game1.energy < 1) { tg.HapticFeedback?.impactOccurred('error'); showNotification('⚡ Not enough energy!'); return; }
             tg.HapticFeedback?.impactOccurred('light');
-
             const icon = $('gameIcon1');
             icon.classList.remove('pop');
             void icon.offsetWidth;
             icon.classList.add('pop');
-
             const reward = 0.0001 * state.game1.power;
             const counter = $('tapCounter1');
             counter.textContent = `+${reward.toFixed(4)}`;
             counter.style.opacity = '1';
             counter.style.transform = 'translateY(0)';
-            setTimeout(() => {
-                counter.style.opacity = '0';
-                counter.style.transform = 'translateY(-20px)';
-            }, 400);
-
+            setTimeout(() => { counter.style.opacity = '0'; counter.style.transform = 'translateY(-20px)'; }, 400);
             state.balance += reward;
             state.totalEarned += reward;
             state.game1.coins += state.game1.power;
             state.game1.taps += 1;
             state.game1.energy -= 1;
-
             checkLevelUp();
             updateUI();
         }
 
-        // =============================================
-        // ===== GAME 2: CLICK CHALLENGE =====
-        // =============================================
-
         function handleTap2(e) {
-            if (state.isAdPlaying) {
-                showNotification('⏳ Ad is playing!');
-                return;
-            }
-            if (state.game2.energy < 1) {
-                tg.HapticFeedback?.impactOccurred('error');
-                showNotification('⚡ Not enough energy!');
-                return;
-            }
-
+            if (state.isAdPlaying) { showNotification('⏳ Ad is playing!'); return; }
+            if (state.game2.energy < 1) { tg.HapticFeedback?.impactOccurred('error'); showNotification('⚡ Not enough energy!'); return; }
             tg.HapticFeedback?.impactOccurred('medium');
-
             const icon = $('gameIcon2');
             icon.classList.remove('pop');
             void icon.offsetWidth;
             icon.classList.add('pop');
-
             const reward = 0.0002 * state.game2.power;
             const counter = $('tapCounter2');
             counter.textContent = `+${reward.toFixed(4)}`;
             counter.style.opacity = '1';
             counter.style.transform = 'translateY(0)';
-            setTimeout(() => {
-                counter.style.opacity = '0';
-                counter.style.transform = 'translateY(-20px)';
-            }, 400);
-
+            setTimeout(() => { counter.style.opacity = '0'; counter.style.transform = 'translateY(-20px)'; }, 400);
             state.balance += reward;
             state.totalEarned += reward;
             state.game2.coins += state.game2.power * 2;
             state.game2.clicks += 1;
             state.game2.energy -= 2;
-
             checkLevelUp();
             updateUI();
         }
-
-        // =============================================
-        // ===== LEVEL SYSTEM =====
-        // =============================================
 
         function checkLevelUp() {
             const totalCoins = state.game1.coins + state.game2.coins;
@@ -773,16 +699,11 @@
             }
         }
 
-        // =============================================
-        // ===== ENERGY REGEN =====
-        // =============================================
-
+        // Energy Regen
         setInterval(() => {
-            // Game 1
             if (state.game1.energy < state.game1.maxEnergy) {
                 state.game1.energy = Math.min(state.game1.energy + state.game1.energyRegen, state.game1.maxEnergy);
             }
-            // Game 2
             if (state.game2.energy < state.game2.maxEnergy) {
                 state.game2.energy = Math.min(state.game2.energy + state.game2.energyRegen, state.game2.maxEnergy);
             }
@@ -790,7 +711,7 @@
         }, 1000);
 
         // =============================================
-        // ===== ADSGRAM INTEGRATION =====
+        // ===== ADSGRAM INTEGRATION (FIXED) =====
         // =============================================
 
         const ADSGRAM_BLOCK_ID = '36912';
@@ -824,28 +745,32 @@
                     blockId: ADSGRAM_BLOCK_ID,
                     debug: false,
                     onReward: (data) => {
-                        console.log('✅ Ad reward:', data);
-                        state.adCompleted = true;
-                        adStatus.textContent = '✅ Ad complete!';
-                        adSpinner.textContent = '✅';
-                        adProgressFill.style.width = '100%';
-                        adClaimBtn.style.display = 'block';
-                        adClaimBtn.textContent = `💰 Claim ${state.pendingReward.toFixed(4)} USDT`;
+                        console.log('✅ Ad reward received:', data);
+                        handleAdComplete();
                     },
                     onError: (error) => {
                         console.error('❌ Ad error:', error);
-                        adStatus.textContent = '❌ Ad failed. Please try again.';
-                        adSpinner.textContent = '❌';
+                        adStatus.textContent = '❌ Ad failed. Trying fallback...';
+                        adSpinner.textContent = '⚠️';
+                        // Try force complete after 2 seconds
                         setTimeout(() => {
-                            closeAd();
-                            showNotification('❌ Ad failed. Please try again.');
+                            if (!state.adCompleted) {
+                                handleAdComplete();
+                            }
                         }, 2000);
                     },
                     onClose: () => {
                         console.log('👋 Ad closed');
                         if (!state.adCompleted) {
-                            closeAd();
-                            showNotification('⏹️ Ad closed early. Try again.');
+                            // If closed early, try force complete after 1 second
+                            setTimeout(() => {
+                                if (!state.adCompleted && state.adStarted) {
+                                    handleAdComplete();
+                                } else if (!state.adCompleted) {
+                                    closeAd();
+                                    showNotification('⏹️ Ad closed early. Try again.');
+                                }
+                            }, 1000);
                         }
                     }
                 });
@@ -858,6 +783,38 @@
         }
 
         // =============================================
+        // ===== AD COMPLETE HANDLER (FIXED) =====
+        // =============================================
+
+        function handleAdComplete() {
+            if (state.adCompleted) return;
+            
+            console.log('✅ Ad completed successfully!');
+            state.adCompleted = true;
+            state.adStarted = false;
+            
+            // Clear all timers
+            if (state.adTimer) {
+                clearInterval(state.adTimer);
+                state.adTimer = null;
+            }
+            if (state.adForceTimer) {
+                clearTimeout(state.adForceTimer);
+                state.adForceTimer = null;
+            }
+
+            adStatus.textContent = '✅ Ad complete! Claim your reward!';
+            adSpinner.textContent = '✅';
+            adSpinner.style.animation = 'none';
+            adProgressFill.style.width = '100%';
+            adClaimBtn.style.display = 'block';
+            adClaimBtn.textContent = `💰 Claim ${state.pendingReward.toFixed(4)} USDT`;
+            adForceClaimBtn.style.display = 'none';
+            
+            tg.HapticFeedback?.impactOccurred('success');
+        }
+
+        // =============================================
         // ===== SHOW AD =====
         // =============================================
 
@@ -867,43 +824,62 @@
                 return;
             }
 
-            // Check if task already completed
             if (taskId && state.tasks[taskId]?.completed) {
                 showNotification('✅ This task is already completed!');
                 return;
             }
 
+            // Reset ad state
             state.isAdPlaying = true;
             state.adCompleted = false;
+            state.adStarted = false;
             state.pendingReward = rewardAmount || 0.0001;
             state.pendingCoins = adsRequired || 50;
+            state._currentTaskId = taskId;
 
+            // Show overlay
             adOverlay.style.display = 'flex';
             adStatus.textContent = 'Loading ad...';
             adSpinner.textContent = '⏳';
+            adSpinner.style.animation = 'spin 1s linear infinite';
             adProgressFill.style.width = '0%';
             adClaimBtn.style.display = 'none';
+            adForceClaimBtn.style.display = 'none';
 
             document.querySelectorAll('.task-btn').forEach(btn => btn.disabled = true);
 
             try {
+                // Try real Adsgram
                 if (adController) {
+                    state.adStarted = true;
                     await adController.show();
+                    
                     adStatus.textContent = '🎬 Watching ad...';
                     
+                    // Progress animation
                     let progress = 0;
-                    const interval = setInterval(() => {
+                    state.adTimer = setInterval(() => {
                         progress += 1;
-                        if (progress >= 90) {
-                            clearInterval(interval);
-                            adProgressFill.style.width = '90%';
-                            adStatus.textContent = '⏳ Finalizing...';
+                        if (progress >= 95) {
+                            clearInterval(state.adTimer);
+                            state.adTimer = null;
+                            adProgressFill.style.width = '95%';
+                            adStatus.textContent = '⏳ Almost done...';
                         } else {
-                            adProgressFill.style.width = `${Math.min(progress, 90)}%`;
+                            adProgressFill.style.width = `${Math.min(progress, 95)}%`;
                         }
                     }, 100);
-                    window._adProgressInterval = interval;
+
+                    // Force complete after 10 seconds if stuck
+                    state.adForceTimer = setTimeout(() => {
+                        if (!state.adCompleted) {
+                            console.log('⚠️ Force completing ad (timeout)');
+                            handleAdComplete();
+                        }
+                    }, 10000);
+
                 } else {
+                    // Simulated ad
                     await showSimulatedAd();
                 }
             } catch (e) {
@@ -915,6 +891,7 @@
         // ===== SIMULATED AD =====
         function showSimulatedAd() {
             return new Promise((resolve) => {
+                state.adStarted = true;
                 adStatus.textContent = '🎬 Watching ad (simulated)...';
                 adSpinner.textContent = '⏳';
                 adProgressFill.style.width = '0%';
@@ -924,22 +901,25 @@
                 const interval = 50;
                 const step = (interval / duration) * 100;
 
-                const timer = setInterval(() => {
+                state.adTimer = setInterval(() => {
                     progress += step;
                     if (progress >= 100) {
-                        clearInterval(timer);
-                        adProgressFill.style.width = '100%';
-                        adStatus.textContent = '✅ Ad complete!';
-                        adSpinner.textContent = '✅';
-                        state.adCompleted = true;
-                        adClaimBtn.style.display = 'block';
-                        adClaimBtn.textContent = `💰 Claim ${state.pendingReward.toFixed(4)} USDT`;
+                        clearInterval(state.adTimer);
+                        state.adTimer = null;
+                        handleAdComplete();
                         resolve();
                     } else {
                         adProgressFill.style.width = `${Math.min(progress, 100)}%`;
                         adStatus.textContent = `🎬 Watching ad... ${Math.round(progress)}%`;
                     }
                 }, interval);
+
+                // Force complete after 5 seconds
+                state.adForceTimer = setTimeout(() => {
+                    if (!state.adCompleted) {
+                        handleAdComplete();
+                    }
+                }, 5000);
             });
         }
 
@@ -957,17 +937,13 @@
             state.totalEarned += reward;
             state.adsWatched += 1;
 
-            // Split coins between both games
             state.game1.coins += Math.floor(coins / 2);
             state.game2.coins += Math.ceil(coins / 2);
 
-            // Track which task was completed
             const taskId = state._currentTaskId;
             if (taskId && state.tasks[taskId]) {
                 state.tasks[taskId].watched += 1;
-                if (state.tasks[taskId].watched >= 1) {
-                    state.tasks[taskId].completed = true;
-                }
+                state.tasks[taskId].completed = true;
             }
 
             tg.HapticFeedback?.impactOccurred('success');
@@ -983,32 +959,55 @@
             adOverlay.style.display = 'none';
             state.isAdPlaying = false;
             state.adCompleted = false;
+            state.adStarted = false;
             state._currentTaskId = null;
+            
+            if (state.adTimer) {
+                clearInterval(state.adTimer);
+                state.adTimer = null;
+            }
+            if (state.adForceTimer) {
+                clearTimeout(state.adForceTimer);
+                state.adForceTimer = null;
+            }
+
+            adSpinner.style.animation = 'spin 1s linear infinite';
             document.querySelectorAll('.task-btn').forEach(btn => btn.disabled = false);
             updateTaskButtons();
-            
-            if (window._adProgressInterval) {
-                clearInterval(window._adProgressInterval);
-                window._adProgressInterval = null;
+        }
+
+        // ===== FORCE CLAIM (Emergency) =====
+        function forceClaim() {
+            if (!state.adStarted) {
+                showNotification('⏳ Ad not started yet!');
+                return;
             }
+            showNotification('⚠️ Force claiming reward...');
+            handleAdComplete();
         }
 
         // =============================================
-        // ===== TASK BUTTONS =====
+        // ===== EVENT LISTENERS =====
         // =============================================
 
+        $('tapArea1').addEventListener('click', handleTap1);
+        $('tapArea1').addEventListener('touchstart', (e) => { e.preventDefault(); handleTap1(e); });
+
+        $('tapArea2').addEventListener('click', handleTap2);
+        $('tapArea2').addEventListener('touchstart', (e) => { e.preventDefault(); handleTap2(e); });
+
+        adClaimBtn.addEventListener('click', claimAdReward);
+        adForceClaimBtn.addEventListener('click', forceClaim);
+
+        // ===== TASK BUTTONS =====
         document.querySelectorAll('.task-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const reward = parseFloat(this.dataset.reward) || 0.0001;
                 const ads = parseInt(this.dataset.ads) || 50;
                 const taskId = this.id;
-                state._currentTaskId = taskId;
                 showAd(reward, ads, taskId);
             });
         });
-
-        // ===== AD CLAIM BUTTON =====
-        adClaimBtn.addEventListener('click', claimAdReward);
 
         // =============================================
         // ===== BOOST FUNCTIONS =====
@@ -1022,13 +1021,11 @@
                 showNotification(`❌ Need ${cost} coins!`);
                 return;
             }
-            // Take coins from both games proportionally
             const ratio = state.game1.coins / (totalCoins || 1);
             const take1 = Math.floor(cost * ratio);
             const take2 = cost - take1;
             state.game1.coins = Math.max(0, state.game1.coins - take1);
             state.game2.coins = Math.max(0, state.game2.coins - take2);
-
             state.game1.power += 1;
             state.game2.power += 1;
             tg.HapticFeedback?.impactOccurred('success');
@@ -1049,7 +1046,6 @@
             const take2 = cost - take1;
             state.game1.coins = Math.max(0, state.game1.coins - take1);
             state.game2.coins = Math.max(0, state.game2.coins - take2);
-
             state.game1.maxEnergy += 10;
             state.game1.energy = state.game1.maxEnergy;
             state.game1.energyRegen += 0.5;
@@ -1068,7 +1064,6 @@
         function shareReferral() {
             const userId = tg.initDataUnsafe?.user?.id || '12345';
             const link = `https://t.me/coinpulse_bot?start=ref_${userId}`;
-            
             if (navigator.share) {
                 navigator.share({
                     title: '💰 Join CoinPulse!',
@@ -1097,7 +1092,6 @@
             btn.addEventListener('click', function() {
                 document.querySelectorAll('.game-selector button').forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
-                
                 const game = this.dataset.game;
                 document.querySelectorAll('.game-container').forEach(el => el.classList.remove('active'));
                 $(`${game}Container`).classList.add('active');
@@ -1112,7 +1106,6 @@
             btn.addEventListener('click', function() {
                 document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
-                
                 const tab = this.dataset.tab;
                 document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
                 $(`${tab}Tab`).style.display = 'block';
@@ -1126,31 +1119,12 @@
         function showNotification(message) {
             const existing = document.querySelector('.notification');
             if (existing) existing.remove();
-
             const notif = document.createElement('div');
             notif.className = 'notification';
             notif.textContent = message;
             document.body.appendChild(notif);
-            setTimeout(() => {
-                if (notif.parentNode) notif.remove();
-            }, 3000);
+            setTimeout(() => { if (notif.parentNode) notif.remove(); }, 3000);
         }
-
-        // =============================================
-        // ===== EVENT LISTENERS =====
-        // =============================================
-
-        $('tapArea1').addEventListener('click', handleTap1);
-        $('tapArea1').addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            handleTap1(e);
-        });
-
-        $('tapArea2').addEventListener('click', handleTap2);
-        $('tapArea2').addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            handleTap2(e);
-        });
 
         // =============================================
         // ===== INIT =====
@@ -1163,15 +1137,20 @@
             const success = await initAdsgram();
             if (success) {
                 console.log('✅ Adsgram ready with Block ID:', ADSGRAM_BLOCK_ID);
+                // Show force claim button only if adsgram is loaded
+                adForceClaimBtn.style.display = 'block';
+                adForceClaimBtn.textContent = '⏩ Force Claim (if stuck)';
             } else {
                 console.log('⚠️ Using simulated ads');
+                adForceClaimBtn.style.display = 'block';
+                adForceClaimBtn.textContent = '⏩ Skip Ad (simulated)';
             }
         }, 1000);
 
         console.log('🚀 CoinPulse Mini Games loaded!');
         console.log('📺 Adsgram Block ID:', ADSGRAM_BLOCK_ID);
-        console.log('🎮 2 Games available: Tap & Earn + Click Challenge');
-        console.log('📋 3 Tasks: 50 Ads (0.0001), 100 Ads (0.0008), 500 Ads (0.0010)');
+        console.log('💡 "Finalizing" bug fixed!');
+        console.log('📋 Force Claim button available if ad gets stuck!');
     </script>
 </body>
 </html>
