@@ -1,27 +1,28 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Coinpulse ULTIMATE</title>
+    <title>Coinpulse - Play & Earn</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://adsgram.ai/adsgram.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #0a0a0a, #1a1a2e, #16213e); color: white; min-height: 100vh; overflow-x: hidden; }
+        
         #game-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, #0f0f0f, #1a1a2e); z-index: 1000; display: none; }
         #game-screen.active { display: block; }
         .game-header { position: absolute; top: 0; left: 0; right: 0; padding: 15px; background: rgba(0,0,0,0.8); display: flex; justify-content: space-between; align-items: center; z-index: 10; }
         .game-score { font-size: 24px; font-weight: bold; color: #ffd700; }
         .game-level { font-size: 16px; color: #00ff88; }
-        .game-timer { font-size: 20px; color: #ff6b6b; font-weight: bold; }
+        .game-timer { font-size: 20px; color: #00ff88; font-weight: bold; }
         #game-canvas { width: 100%; height: 100%; touch-action: none; }
         .game-controls { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 15px; z-index: 10; }
         .game-btn { padding: 12px 25px; border-radius: 25px; border: none; font-size: 14px; font-weight: bold; cursor: pointer; }
         .btn-pause { background: rgba(255,255,255,0.2); color: white; }
         .btn-exit { background: #ff6b6b; color: white; }
+        
         .app-container { padding-bottom: 70px; }
         .header { background: rgba(0,0,0,0.6); padding: 15px; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px); }
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
@@ -29,7 +30,7 @@
         .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #ffd700, #ffaa00); display: flex; align-items: center; justify-content: center; font-weight: bold; border: 2px solid rgba(255,255,255,0.3); }
         .user-details h3 { font-size: 14px; margin-bottom: 2px; }
         .user-details span { font-size: 11px; opacity: 0.8; }
-        .level-badge { background: linear-gradient(135deg, #ff6b6b, #ff8e53); padding: 5px 10px; border-radius: 15px; font-size: 11px; font-weight: bold; }
+        .level-badge { background: linear-gradient(135deg, #00ff88, #00cc6a); padding: 5px 10px; border-radius: 15px; font-size: 11px; font-weight: bold; color: #000; }
         .balance-section { background: rgba(255,215,0,0.15); border-radius: 15px; padding: 15px; text-align: center; border: 1px solid rgba(255,215,0,0.3); }
         .balance-label { font-size: 12px; opacity: 0.9; margin-bottom: 5px; }
         .balance-amount { font-size: 28px; font-weight: bold; color: #ffd700; margin: 8px 0; }
@@ -38,30 +39,33 @@
         .stat-item { text-align: center; }
         .stat-value { font-size: 16px; font-weight: bold; color: #00ff88; }
         .stat-label { font-size: 10px; opacity: 0.8; }
+        
         .nav-tabs { display: flex; background: rgba(0,0,0,0.5); padding: 8px; gap: 5px; overflow-x: auto; position: sticky; top: 115px; z-index: 99; }
         .nav-tab { flex: 1; min-width: 65px; padding: 8px; background: rgba(255,255,255,0.1); border: none; border-radius: 10px; color: white; font-size: 10px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; }
         .nav-tab i { font-size: 16px; }
         .nav-tab.active { background: linear-gradient(135deg, #ffd700, #ffaa00); color: black; }
+        
         .content-section { padding: 15px; display: none; }
         .content-section.active { display: block; }
         .card { background: rgba(255,255,255,0.08); border-radius: 15px; padding: 15px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.1); }
         .card-title { font-size: 16px; font-weight: bold; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-        .play-btn { width: 100%; padding: 18px; background: linear-gradient(135deg, #ffd700, #ffaa00); color: black; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; margin-bottom: 12px; }
+        
+        .play-btn { width: 100%; padding: 18px; background: linear-gradient(135deg, #00ff88, #00cc6a); color: black; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; margin-bottom: 12px; }
         .difficulty-selector { display: flex; gap: 8px; margin-bottom: 12px; }
         .difficulty-btn { flex: 1; padding: 10px; border: 2px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1); color: white; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600; }
-        .difficulty-btn.active { border-color: #ffd700; background: rgba(255,215,0,0.2); }
-        .difficulty-btn.hard.active { border-color: #ff6b6b; background: rgba(255,107,107,0.2); }
-        .difficulty-btn.extreme.active { border-color: #ff0000; background: rgba(255,0,0,0.2); }
-        .warning-box { background: rgba(255,107,107,0.2); border: 2px solid rgba(255,107,107,0.5); border-radius: 10px; padding: 12px; margin-bottom: 12px; text-align: center; font-size: 12px; }
+        .difficulty-btn.active { border-color: #00ff88; background: rgba(0,255,136,0.2); color: #00ff88; }
+        
+        .info-box { background: rgba(0,255,136,0.1); border: 1px solid #00ff88; border-radius: 10px; padding: 12px; margin-bottom: 12px; text-align: center; font-size: 12px; color: #00ff88; }
+        
         .ad-package { background: rgba(255,255,255,0.1); border-radius: 12px; padding: 15px; margin-bottom: 12px; border: 2px solid rgba(255,255,255,0.2); }
         .ad-package-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .ad-package-name { font-size: 16px; font-weight: bold; }
-        .ad-package-count { font-size: 12px; opacity: 0.8; }
         .ad-package-reward { font-size: 20px; font-weight: bold; color: #00ff88; text-align: center; margin-bottom: 10px; }
         .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; }
         .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
-        .btn-success { background: linear-gradient(135deg, #00ff88, #00cc6a); color: white; }
+        .btn-success { background: linear-gradient(135deg, #00ff88, #00cc6a); color: black; }
         .btn-warning { background: linear-gradient(135deg, #ffd700, #ffaa00); color: black; }
+        
         .task-item { background: rgba(255,255,255,0.08); border-radius: 12px; padding: 12px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; border: 1px solid rgba(255,255,255,0.1); }
         .task-info { display: flex; align-items: center; gap: 12px; flex: 1; }
         .task-icon { width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; font-size: 20px; }
@@ -69,17 +73,19 @@
         .task-details p { font-size: 10px; opacity: 0.8; }
         .task-reward { text-align: right; margin-left: 10px; }
         .task-reward span { display: block; font-size: 12px; font-weight: bold; color: #00ff88; }
-        .task-reward small { font-size: 9px; opacity: 0.8; }
+        
         .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .stat-box { background: rgba(255,255,255,0.1); border-radius: 12px; padding: 12px; text-align: center; }
-        .stat-value { font-size: 20px; font-weight: bold; margin-bottom: 3px; }
+        .stat-value { font-size: 20px; font-weight: bold; margin-bottom: 3px; color: #00ff88; }
         .stat-label { font-size: 10px; opacity: 0.8; }
+        
         .achievement-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
         .achievement-item { background: rgba(255,255,255,0.1); border-radius: 10px; padding: 12px 8px; text-align: center; border: 2px solid transparent; }
         .achievement-item.unlocked { border-color: #ffd700; background: rgba(255,215,0,0.15); }
         .achievement-item.locked { opacity: 0.4; }
         .achievement-icon { font-size: 24px; margin-bottom: 5px; }
         .achievement-name { font-size: 9px; font-weight: 600; }
+        
         .shop-item { background: rgba(255,255,255,0.1); border-radius: 12px; padding: 12px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
         .shop-item-info { display: flex; align-items: center; gap: 12px; flex: 1; }
         .shop-item-icon { width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, #ffd700, #ffaa00); display: flex; align-items: center; justify-content: center; font-size: 20px; }
@@ -87,6 +93,7 @@
         .shop-item-details p { font-size: 10px; opacity: 0.8; }
         .shop-item-price { text-align: right; }
         .shop-item-price span { display: block; font-size: 14px; font-weight: bold; color: #ffd700; }
+        
         .transaction-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px; margin-bottom: 6px; }
         .transaction-info { display: flex; align-items: center; gap: 8px; }
         .transaction-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
@@ -95,15 +102,16 @@
         .transaction-amount { font-weight: bold; font-size: 12px; }
         .transaction-amount.positive { color: #00ff88; }
         .transaction-amount.negative { color: #ff6b6b; }
+        
         .notification { position: fixed; top: 15px; left: 50%; transform: translateX(-50%) translateY(-100px); background: white; color: #1e3c72; padding: 12px 25px; border-radius: 25px; box-shadow: 0 8px 25px rgba(0,0,0,0.3); font-weight: 600; opacity: 0; transition: all 0.3s; z-index: 2000; font-size: 13px; }
         .notification.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-        .progress-bar { width: 100%; height: 10px; background: rgba(255,255,255,0.2); border-radius: 8px; overflow: hidden; margin: 12px 0; }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, #00ff88, #00cc6a); transition: width 0.3s; }
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.95); padding: 8px 15px; display: flex; justify-content: space-around; backdrop-filter: blur(10px); border-top: 1px solid rgba(255,255,255,0.1); z-index: 100; }
+        
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.95); padding: 8px 15px; display: flex; justify-content: space-around; border-top: 1px solid rgba(255,255,255,0.1); z-index: 100; }
         .bottom-nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 5px 12px; cursor: pointer; color: rgba(255,255,255,0.6); }
-        .bottom-nav-item.active { color: #ffd700; }
+        .bottom-nav-item.active { color: #00ff88; }
         .bottom-nav-item i { font-size: 18px; }
         .bottom-nav-item span { font-size: 9px; }
+        
         .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
         .modal.show { display: flex; }
         .modal-content { background: linear-gradient(135deg, #1a1a2e, #16213e); border-radius: 20px; padding: 25px; max-width: 350px; width: 100%; text-align: center; border: 2px solid rgba(255,255,255,0.2); }
@@ -112,8 +120,6 @@
         .modal-text { opacity: 0.9; margin-bottom: 20px; line-height: 1.5; font-size: 13px; }
         .wallet-input { width: 100%; padding: 12px; border-radius: 10px; border: 2px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1); color: white; font-size: 14px; margin-bottom: 12px; outline: none; }
         .wallet-input:focus { border-color: #00ff88; }
-        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
-        .pulse { animation: pulse 2s infinite; }
     </style>
 </head>
 <body>
@@ -123,12 +129,12 @@
         <div class="game-header">
             <div class="game-score">🪙 <span id="game-coins">0</span></div>
             <div class="game-level">Lvl <span id="game-level">1</span></div>
-            <div class="game-timer">⏱️ <span id="game-time">30</span>s</div>
+            <div class="game-timer">⏱️ <span id="game-time">60</span>s</div>
         </div>
         <canvas id="game-canvas"></canvas>
         <div class="game-controls">
-            <button class="game-btn btn-pause" onclick="pauseGame()">⏸️</button>
-            <button class="game-btn btn-exit" onclick="exitGame()">✖️</button>
+            <button class="game-btn btn-pause" onclick="pauseGame()">️</button>
+            <button class="game-btn btn-exit" onclick="exitGame()">️</button>
         </div>
     </div>
     
@@ -166,22 +172,22 @@
         
         <div id="play" class="content-section active">
             <div class="card">
-                <div class="card-title"><i class="fas fa-gamepad"></i> ULTRA HARD Game</div>
-                <div class="warning-box">
-                    ⚠️ <strong>WARNING:</strong> Extremely Difficult!<br>
-                    Fast coins + obstacles + time pressure!
+                <div class="card-title"><i class="fas fa-gamepad"></i> Coin Catcher Game</div>
+                <div class="info-box">
+                    ✅ <strong>Medium Difficulty</strong><br>
+                    Easy to play, fun to earn!
                 </div>
                 <div class="difficulty-selector">
-                    <button class="difficulty-btn hard active" onclick="setDifficulty('hard')">Hard</button>
-                    <button class="difficulty-btn extreme" onclick="setDifficulty('extreme')">Extreme</button>
-                    <button class="difficulty-btn extreme" onclick="setDifficulty('impossible')">Impossible</button>
+                    <button class="difficulty-btn active" onclick="setDifficulty('easy')">Easy</button>
+                    <button class="difficulty-btn" onclick="setDifficulty('medium')">Medium</button>
+                    <button class="difficulty-btn" onclick="setDifficulty('hard')">Hard</button>
                 </div>
-                <button class="play-btn pulse" onclick="startGame()">🎮 PLAY NOW</button>
-                <div style="font-size: 11px; opacity: 0.8; text-align: center;">⚠️ Catch golden coins for 3x bonus!</div>
+                <button class="play-btn" onclick="startGame()"> PLAY NOW</button>
+                <div style="font-size: 11px; opacity: 0.8; text-align: center;">💡 Catch golden coins for 3x bonus!</div>
             </div>
             <div class="card">
                 <div class="card-title"><i class="fas fa-trophy"></i> Daily Reward</div>
-                <button class="btn btn-success" onclick="claimDaily()" id="daily-btn">🎁 Claim Daily (+0.0001 USDT)</button>
+                <button class="btn btn-success" onclick="claimDaily()" id="daily-btn">🎁 Claim Daily (+0.001 USDT)</button>
             </div>
         </div>
         
@@ -189,17 +195,17 @@
             <div class="card">
                 <div class="card-title"><i class="fas fa-ad"></i> Watch Ads</div>
                 <div class="ad-package">
-                    <div class="ad-package-header"><div class="ad-package-name">🥉 Bronze</div><div class="ad-package-count">50 Ads</div></div>
+                    <div class="ad-package-header"><div class="ad-package-name"> Bronze</div><div>50 Ads</div></div>
                     <div class="ad-package-reward">+0.005 USDT</div>
                     <button class="btn btn-primary" onclick="watchAds(50, 0.005)">Start</button>
                 </div>
                 <div class="ad-package">
-                    <div class="ad-package-header"><div class="ad-package-name">🥈 Silver</div><div class="ad-package-count">100 Ads</div></div>
+                    <div class="ad-package-header"><div class="ad-package-name">🥈 Silver</div><div>100 Ads</div></div>
                     <div class="ad-package-reward">+0.010 USDT</div>
                     <button class="btn btn-primary" onclick="watchAds(100, 0.010)">Start</button>
                 </div>
-                <div class="ad-package pulse">
-                    <div class="ad-package-header"><div class="ad-package-name">🥇 Gold</div><div class="ad-package-count">500 Ads</div></div>
+                <div class="ad-package">
+                    <div class="ad-package-header"><div class="ad-package-name">🥇 Gold</div><div>500 Ads</div></div>
                     <div class="ad-package-reward">+0.050 USDT</div>
                     <button class="btn btn-warning" onclick="watchAds(500, 0.050)">Start</button>
                 </div>
@@ -208,15 +214,15 @@
                 <div class="card-title"><i class="fas fa-list-check"></i> Social Tasks</div>
                 <div class="task-item" onclick="completeTask('twitter', 0.0001)">
                     <div class="task-info"><div class="task-icon">🐦</div><div class="task-details"><h4>Follow Twitter</h4><p>@CoinpulseApp</p></div></div>
-                    <div class="task-reward"><span>+0.0001</span><small>USDT</small></div>
+                    <div class="task-reward"><span>+0.0001</span></div>
                 </div>
                 <div class="task-item" onclick="completeTask('telegram', 0.0001)">
                     <div class="task-info"><div class="task-icon">✈️</div><div class="task-details"><h4>Join Telegram</h4><p>Official Channel</p></div></div>
-                    <div class="task-reward"><span>+0.0001</span><small>USDT</small></div>
+                    <div class="task-reward"><span>+0.0001</span></div>
                 </div>
                 <div class="task-item" onclick="completeTask('youtube', 0.0001)">
                     <div class="task-info"><div class="task-icon">📺</div><div class="task-details"><h4>Subscribe</h4><p>YouTube Channel</p></div></div>
-                    <div class="task-reward"><span>+0.0001</span><small>USDT</small></div>
+                    <div class="task-reward"><span>+0.0001</span></div>
                 </div>
             </div>
         </div>
@@ -233,12 +239,8 @@
                     <div class="shop-item-price"><span>0.002</span><button class="btn btn-primary" style="padding: 6px 12px; font-size: 11px;" onclick="buyItem('magnet', 0.002)">Buy</button></div>
                 </div>
                 <div class="shop-item">
-                    <div class="shop-item-info"><div class="shop-item-icon">⏰</div><div class="shop-item-details"><h4>Extra Time</h4><p>+5 seconds</p></div></div>
+                    <div class="shop-item-info"><div class="shop-item-icon">⏰</div><div class="shop-item-details"><h4>Extra Time</h4><p>+10 seconds</p></div></div>
                     <div class="shop-item-price"><span>0.001</span><button class="btn btn-primary" style="padding: 6px 12px; font-size: 11px;" onclick="buyItem('time', 0.001)">Buy</button></div>
-                </div>
-                <div class="shop-item">
-                    <div class="shop-item-info"><div class="shop-item-icon">💎</div><div class="shop-item-details"><h4>Double Coins</h4><p>2x next game</p></div></div>
-                    <div class="shop-item-price"><span>0.003</span><button class="btn btn-primary" style="padding: 6px 12px; font-size: 11px;" onclick="buyItem('double', 0.003)">Buy</button></div>
                 </div>
             </div>
         </div>
@@ -263,17 +265,13 @@
                     <div class="stat-box"><div class="stat-value" id="stat-coins">0</div><div class="stat-label">Coins</div></div>
                     <div class="stat-box"><div class="stat-value" id="stat-ads">0</div><div class="stat-label">Ads</div></div>
                 </div>
-                <div style="margin-top: 15px;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 12px;"><span>Level Progress</span><span id="level-progress-text">0/100</span></div>
-                    <div class="progress-bar"><div class="progress-fill" id="level-progress" style="width: 0%"></div></div>
-                </div>
             </div>
         </div>
         
         <div id="wallet" class="content-section">
             <div class="card">
                 <div class="card-title"><i class="fas fa-wallet"></i> Withdraw</div>
-                <p style="margin-bottom: 12px; opacity: 0.9; font-size: 13px;">Minimum: <strong>0.01 USDT</strong></p>
+                <p style="margin-bottom: 12px; opacity: 0.8; font-size: 13px;">Minimum: <strong>0.01 USDT</strong></p>
                 <button class="btn btn-success" onclick="openWithdrawModal()">💸 Withdraw</button>
             </div>
             <div class="card">
@@ -285,7 +283,7 @@
     
     <div class="modal" id="withdraw-modal">
         <div class="modal-content">
-            <div class="modal-icon">💰</div>
+            <div class="modal-icon"></div>
             <div class="modal-title">Withdraw USDT</div>
             <div class="modal-text">Enter your USDT wallet address</div>
             <input type="text" class="wallet-input" id="wallet-address" placeholder="Enter wallet address">
@@ -315,14 +313,19 @@
         const userInitial = username.charAt(0).toUpperCase();
         
         // ✅ ADSGRAM BLOCK ID: 36893
-        const ADSGRAM_BLOCK_ID = '36893';
+        const ADSGRAM_BLOCK_ID = 36893;
         let adsgram = null;
-        try { adsgram = new AdsGram(ADSGRAM_BLOCK_ID); } catch (e) { console.log('AdsGram loading...'); }
+        try { 
+            adsgram = new AdsGram({ blockId: ADSGRAM_BLOCK_ID }); 
+            console.log('AdsGram initialized with block:', ADSGRAM_BLOCK_ID);
+        } catch (e) { 
+            console.log('AdsGram init failed', e); 
+        }
         
         let canvas, ctx, gameLoop, isPlaying = false, isPaused = false;
-        let score = 0, level = 1, timeLeft = 30, difficulty = 'hard';
-        let coins = [], obstacles = [], player = { x: 0, y: 0, width: 45, height: 45 };
-        let gameInterval, timerInterval, obstacleInterval;
+        let score = 0, level = 1, timeLeft = 60, difficulty = 'medium';
+        let coins = [], player = { x: 0, y: 0, width: 35, height: 35 }; // Medium player size
+        let gameInterval, timerInterval;
         
         let data = {
             balance: parseFloat(localStorage.getItem(`balance_${userId}`)) || 0,
@@ -356,9 +359,7 @@
             document.getElementById('stat-coins').textContent = data.totalCoins;
             document.getElementById('stat-ads').textContent = data.adsWatched;
             document.getElementById('withdraw-balance').textContent = data.balance.toFixed(4) + ' USDT';
-            const progress = (data.levelProgress / (data.level * 100)) * 100;
-            document.getElementById('level-progress').style.width = progress + '%';
-            document.getElementById('level-progress-text').textContent = data.levelProgress + '/' + (data.level * 100);
+            
             const today = new Date().toDateString();
             const dailyBtn = document.getElementById('daily-btn');
             if (data.lastClaim === today) {
@@ -367,7 +368,7 @@
                 dailyBtn.style.opacity = '0.5';
             } else {
                 dailyBtn.disabled = false;
-                dailyBtn.textContent = '🎁 Claim Daily (+0.0001 USDT)';
+                dailyBtn.textContent = '🎁 Claim Daily (+0.001 USDT)';
                 dailyBtn.style.opacity = '1';
             }
         }
@@ -394,74 +395,80 @@
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
             player.x = canvas.width / 2 - player.width / 2;
-            player.y = canvas.height - 70;
+            player.y = canvas.height - 80;
             score = 0;
-            timeLeft = difficulty === 'hard' ? 30 : difficulty === 'extreme' ? 20 : 15;
+            // Medium time limits
+            timeLeft = difficulty === 'easy' ? 60 : difficulty === 'medium' ? 45 : 30;
             coins = [];
-            obstacles = [];
             isPlaying = true;
             isPaused = false;
             document.getElementById('game-coins').textContent = '0';
             document.getElementById('game-level').textContent = '1';
             document.getElementById('game-time').textContent = timeLeft;
-            canvas.addEventListener('touchmove', handleTouch);
+            canvas.addEventListener('touchmove', handleTouch, {passive: false});
             canvas.addEventListener('mousemove', handleMouse);
             gameLoop = requestAnimationFrame(update);
             timerInterval = setInterval(updateTimer, 1000);
             gameInterval = setInterval(spawnCoin, getSpawnRate());
-            if (difficulty !== 'hard') obstacleInterval = setInterval(spawnObstacle, getObstacleRate());
         }
         
-        function getSpawnRate() { return difficulty === 'hard' ? 500 : difficulty === 'extreme' ? 350 : 250; }
-        function getObstacleRate() { return difficulty === 'extreme' ? 1500 : 1000; }
-        function handleTouch(e) { e.preventDefault(); player.x = e.touches[0].clientX - player.width / 2; }
+        // Medium spawn rates
+        function getSpawnRate() { return difficulty === 'easy' ? 1200 : difficulty === 'medium' ? 800 : 600; }
+        
+        function handleTouch(e) { 
+            e.preventDefault(); 
+            player.x = e.touches[0].clientX - player.width / 2; 
+        }
         function handleMouse(e) { player.x = e.clientX - player.width / 2; }
         
         function spawnCoin() {
             if (isPaused) return;
-            const isGolden = Math.random() < 0.08;
-            coins.push({ x: Math.random() * (canvas.width - 18), y: -18, size: 18, speed: getCoinSpeed(), value: isGolden ? 3 : 1, isGolden });
+            const isGolden = Math.random() < 0.1;
+            coins.push({ 
+                x: Math.random() * (canvas.width - 25), 
+                y: -25, 
+                size: 25, 
+                speed: getCoinSpeed(), 
+                value: isGolden ? 3 : 1, 
+                isGolden 
+            });
         }
         
-        function spawnObstacle() {
-            if (isPaused) return;
-            obstacles.push({ x: Math.random() * (canvas.width - 35), y: -35, size: 35, speed: getCoinSpeed() * 1.3 });
-        }
-        
+        // Medium coin speeds
         function getCoinSpeed() {
-            const base = difficulty === 'hard' ? 7 : difficulty === 'extreme' ? 10 : 13;
-            return base + (level * 0.25);
+            const base = difficulty === 'easy' ? 5 : difficulty === 'medium' ? 7 : 9;
+            return base + (level * 0.2);
         }
         
         function update() {
             if (!isPlaying) return;
             if (!isPaused) {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = '#ffd700';
+                
+                // Player
+                ctx.fillStyle = '#00ff88';
                 ctx.fillRect(player.x, player.y, player.width, player.height);
+                
+                // Coins
                 for (let i = coins.length - 1; i >= 0; i--) {
                     const coin = coins[i];
                     coin.y += coin.speed;
+                    
                     ctx.beginPath();
                     ctx.arc(coin.x + coin.size/2, coin.y + coin.size/2, coin.size/2, 0, Math.PI * 2);
-                    ctx.fillStyle = coin.isGolden ? '#ffd700' : '#c0c0c0';
+                    ctx.fillStyle = coin.isGolden ? '#ffd700' : '#aaa';
                     ctx.fill();
-                    if (coin.y + coin.size >= player.y && coin.y <= player.y + player.height && coin.x + coin.size >= player.x && coin.x <= player.x + player.width) {
+                    
+                    // Collision
+                    if (coin.y + coin.size >= player.y && coin.y <= player.y + player.height && 
+                        coin.x + coin.size >= player.x && coin.x <= player.x + player.width) {
                         score += coin.value;
                         coins.splice(i, 1);
                         document.getElementById('game-coins').textContent = score;
-                        if (score % 15 === 0) { level++; document.getElementById('game-level').textContent = level; }
-                    } else if (coin.y > canvas.height) { coins.splice(i, 1); }
-                }
-                for (let i = obstacles.length - 1; i >= 0; i--) {
-                    const obs = obstacles[i];
-                    obs.y += obs.speed;
-                    ctx.fillStyle = '#ff0000';
-                    ctx.fillRect(obs.x, obs.y, obs.size, obs.size);
-                    if (obs.y + obs.size >= player.y && obs.y <= player.y + player.height && obs.x + obs.size >= player.x && obs.x <= player.x + player.width) {
-                        endGame();
-                        return;
-                    } else if (obs.y > canvas.height) { obstacles.splice(i, 1); }
+                        if (score % 20 === 0) { level++; document.getElementById('game-level').textContent = level; }
+                    } else if (coin.y > canvas.height) { 
+                        coins.splice(i, 1); 
+                    }
                 }
             }
             gameLoop = requestAnimationFrame(update);
@@ -489,16 +496,18 @@
             isPlaying = false;
             clearInterval(timerInterval);
             clearInterval(gameInterval);
-            if (obstacleInterval) clearInterval(obstacleInterval);
             cancelAnimationFrame(gameLoop);
             document.getElementById('game-screen').classList.remove('active');
-            const reward = score * 0.00001;
+            
+            // Medium reward
+            const reward = score * 0.00005;
             data.balance += reward;
             data.totalCoins += score;
             data.gamesPlayed++;
             data.levelProgress += score;
             if (score > data.highScore) data.highScore = score;
-            if (data.levelProgress >= data.level * 100) { data.level++; data.levelProgress = 0; showNotification('🎉 Level Up! ' + data.level); }
+            if (data.levelProgress >= data.level * 100) { data.level++; data.levelProgress = 0; }
+            
             addTransaction('earning', 'Game: ' + score + ' coins', reward);
             saveData();
             updateUI();
@@ -524,22 +533,17 @@
                             }
                             adsgram.showAd().then(() => {
                                 watched++;
-                                showNotification('Ad ' + watched + '/' + count);
-                                setTimeout(showNextAd, 800);
-                            }).catch(() => { watched++; setTimeout(showNextAd, 800); });
+                                showNotification('Ad ' + watched + '/' + count + ' ✅');
+                                setTimeout(showNextAd, 500);
+                            }).catch((err) => { 
+                                console.log('Ad error:', err);
+                                watched++; 
+                                setTimeout(showNextAd, 500); 
+                            });
                         }
                         showNextAd();
                     } else {
-                        tg.showProgress(true);
-                        setTimeout(() => {
-                            tg.showProgress(false);
-                            data.balance += reward;
-                            data.adsWatched += count;
-                            addTransaction('earning', 'Watched ' + count + ' ads', reward);
-                            saveData();
-                            updateUI();
-                            showNotification('✅ +' + reward.toFixed(4) + ' USDT');
-                        }, 2500);
+                        tg.showAlert('Ads not available yet. Please try again later.');
                     }
                 }
             });
@@ -575,7 +579,7 @@
         function claimDaily() {
             const today = new Date().toDateString();
             if (data.lastClaim === today) { tg.showAlert('Already claimed!'); return; }
-            const reward = 0.0001;
+            const reward = 0.001;
             data.balance += reward;
             data.lastClaim = today;
             addTransaction('earning', 'Daily reward', reward);
