@@ -9,117 +9,112 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #0a0a0a, #1a1a2e, #16213e); color: white; min-height: 100vh; overflow-x: hidden; }
+        body { font-family: Arial, sans-serif; background: #0a0a0a; color: white; min-height: 100vh; overflow-x: hidden; }
         
-        #game-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, #0f0f0f, #1a1a2e); z-index: 1000; display: none; }
+        #game-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #111; z-index: 1000; display: none; }
         #game-screen.active { display: block; }
-        .game-header { position: absolute; top: 0; left: 0; right: 0; padding: 15px; background: rgba(0,0,0,0.8); display: flex; justify-content: space-between; align-items: center; z-index: 10; }
-        .game-score { font-size: 24px; font-weight: bold; color: #ffd700; }
-        .game-level { font-size: 16px; color: #00ff88; }
-        .game-timer { font-size: 20px; color: #00ff88; font-weight: bold; }
-        #game-canvas { width: 100%; height: 100%; touch-action: none; }
+        .game-header { position: absolute; top: 0; left: 0; right: 0; padding: 15px; background: rgba(0,0,0,0.8); display: flex; justify-content: space-between; align-items: center; z-index: 10; border-bottom: 2px solid #333; }
+        .game-score { font-size: 22px; font-weight: bold; color: #ffd700; }
+        .game-timer { font-size: 22px; color: #00ff88; font-weight: bold; }
+        #game-canvas { width: 100%; height: 100%; touch-action: none; background: radial-gradient(circle at center, #1a1a2e 0%, #000 100%); }
         .game-controls { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 15px; z-index: 10; }
         .game-btn { padding: 12px 25px; border-radius: 25px; border: none; font-size: 14px; font-weight: bold; cursor: pointer; }
         .btn-pause { background: rgba(255,255,255,0.2); color: white; }
-        .btn-exit { background: #ff6b6b; color: white; }
+        .btn-exit { background: #ff4444; color: white; }
         
         .app-container { padding-bottom: 70px; }
-        .header { background: rgba(0,0,0,0.6); padding: 15px; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px); }
+        .header { background: rgba(0,0,0,0.8); padding: 15px; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #333; }
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .user-info { display: flex; align-items: center; gap: 10px; }
-        .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #ffd700, #ffaa00); display: flex; align-items: center; justify-content: center; font-weight: bold; border: 2px solid rgba(255,255,255,0.3); }
-        .user-details h3 { font-size: 14px; margin-bottom: 2px; }
-        .user-details span { font-size: 11px; opacity: 0.8; }
-        .level-badge { background: linear-gradient(135deg, #00ff88, #00cc6a); padding: 5px 10px; border-radius: 15px; font-size: 11px; font-weight: bold; color: #000; }
-        .balance-section { background: rgba(255,215,0,0.15); border-radius: 15px; padding: 15px; text-align: center; border: 1px solid rgba(255,215,0,0.3); }
-        .balance-label { font-size: 12px; opacity: 0.9; margin-bottom: 5px; }
+        .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #ffd700, #ff8c00); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; }
+        .level-badge { background: #00ff88; padding: 5px 10px; border-radius: 15px; font-size: 12px; font-weight: bold; color: #000; }
+        .balance-section { background: rgba(0,255,136,0.1); border-radius: 15px; padding: 15px; text-align: center; border: 1px solid rgba(0,255,136,0.3); }
         .balance-amount { font-size: 28px; font-weight: bold; color: #ffd700; margin: 8px 0; }
-        .balance-usd { font-size: 12px; opacity: 0.9; }
         .stats-row { display: flex; justify-content: space-around; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.2); }
         .stat-item { text-align: center; }
         .stat-value { font-size: 16px; font-weight: bold; color: #00ff88; }
-        .stat-label { font-size: 10px; opacity: 0.8; }
+        .stat-label { font-size: 10px; opacity: 0.7; }
         
-        .nav-tabs { display: flex; background: rgba(0,0,0,0.5); padding: 8px; gap: 5px; overflow-x: auto; position: sticky; top: 115px; z-index: 99; }
-        .nav-tab { flex: 1; min-width: 65px; padding: 8px; background: rgba(255,255,255,0.1); border: none; border-radius: 10px; color: white; font-size: 10px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+        .nav-tabs { display: flex; background: #111; padding: 8px; gap: 5px; overflow-x: auto; position: sticky; top: 115px; z-index: 99; border-bottom: 1px solid #333; }
+        .nav-tab { flex: 1; min-width: 65px; padding: 8px; background: #222; border: none; border-radius: 10px; color: #aaa; font-size: 10px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; }
         .nav-tab i { font-size: 16px; }
-        .nav-tab.active { background: linear-gradient(135deg, #ffd700, #ffaa00); color: black; }
+        .nav-tab.active { background: #00ff88; color: #000; }
         
         .content-section { padding: 15px; display: none; }
         .content-section.active { display: block; }
-        .card { background: rgba(255,255,255,0.08); border-radius: 15px; padding: 15px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.1); }
-        .card-title { font-size: 16px; font-weight: bold; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .card { background: #1a1a1a; border-radius: 15px; padding: 15px; margin-bottom: 12px; border: 1px solid #333; }
+        .card-title { font-size: 16px; font-weight: bold; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; color: #00ff88; }
         
-        .play-btn { width: 100%; padding: 18px; background: linear-gradient(135deg, #00ff88, #00cc6a); color: black; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; margin-bottom: 12px; }
+        .play-btn { width: 100%; padding: 18px; background: linear-gradient(135deg, #00ff88, #00cc6a); color: #000; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; margin-bottom: 12px; }
         .difficulty-selector { display: flex; gap: 8px; margin-bottom: 12px; }
-        .difficulty-btn { flex: 1; padding: 10px; border: 2px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1); color: white; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600; }
+        .difficulty-btn { flex: 1; padding: 10px; border: 2px solid #444; background: #222; color: white; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600; }
         .difficulty-btn.active { border-color: #00ff88; background: rgba(0,255,136,0.2); color: #00ff88; }
         
-        .info-box { background: rgba(0,255,136,0.1); border: 1px solid #00ff88; border-radius: 10px; padding: 12px; margin-bottom: 12px; text-align: center; font-size: 12px; color: #00ff88; }
-        
-        .ad-package { background: rgba(255,255,255,0.1); border-radius: 12px; padding: 15px; margin-bottom: 12px; border: 2px solid rgba(255,255,255,0.2); }
+        .ad-package { background: #222; border-radius: 12px; padding: 15px; margin-bottom: 12px; border: 1px solid #444; }
         .ad-package-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .ad-package-name { font-size: 16px; font-weight: bold; }
         .ad-package-reward { font-size: 20px; font-weight: bold; color: #00ff88; text-align: center; margin-bottom: 10px; }
         .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; }
-        .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
-        .btn-success { background: linear-gradient(135deg, #00ff88, #00cc6a); color: black; }
-        .btn-warning { background: linear-gradient(135deg, #ffd700, #ffaa00); color: black; }
+        .btn-primary { background: #667eea; color: white; }
+        .btn-success { background: #00ff88; color: #000; }
+        .btn-warning { background: #ffd700; color: #000; }
         
-        .task-item { background: rgba(255,255,255,0.08); border-radius: 12px; padding: 12px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; border: 1px solid rgba(255,255,255,0.1); }
+        .task-item { background: #222; border-radius: 12px; padding: 12px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #333; }
         .task-info { display: flex; align-items: center; gap: 12px; flex: 1; }
-        .task-icon { width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        .task-icon { width: 40px; height: 40px; border-radius: 10px; background: #667eea; display: flex; align-items: center; justify-content: center; font-size: 20px; }
         .task-details h4 { font-size: 13px; margin-bottom: 2px; }
-        .task-details p { font-size: 10px; opacity: 0.8; }
+        .task-details p { font-size: 10px; opacity: 0.7; }
         .task-reward { text-align: right; margin-left: 10px; }
         .task-reward span { display: block; font-size: 12px; font-weight: bold; color: #00ff88; }
         
         .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .stat-box { background: rgba(255,255,255,0.1); border-radius: 12px; padding: 12px; text-align: center; }
+        .stat-box { background: #222; border-radius: 12px; padding: 12px; text-align: center; border: 1px solid #333; }
         .stat-value { font-size: 20px; font-weight: bold; margin-bottom: 3px; color: #00ff88; }
-        .stat-label { font-size: 10px; opacity: 0.8; }
+        .stat-label { font-size: 10px; opacity: 0.7; }
         
         .achievement-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-        .achievement-item { background: rgba(255,255,255,0.1); border-radius: 10px; padding: 12px 8px; text-align: center; border: 2px solid transparent; }
-        .achievement-item.unlocked { border-color: #ffd700; background: rgba(255,215,0,0.15); }
+        .achievement-item { background: #222; border-radius: 10px; padding: 12px 8px; text-align: center; border: 2px solid #333; }
+        .achievement-item.unlocked { border-color: #ffd700; background: rgba(255,215,0,0.1); }
         .achievement-item.locked { opacity: 0.4; }
         .achievement-icon { font-size: 24px; margin-bottom: 5px; }
         .achievement-name { font-size: 9px; font-weight: 600; }
         
-        .shop-item { background: rgba(255,255,255,0.1); border-radius: 12px; padding: 12px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
+        .shop-item { background: #222; border-radius: 12px; padding: 12px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #333; }
         .shop-item-info { display: flex; align-items: center; gap: 12px; flex: 1; }
-        .shop-item-icon { width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, #ffd700, #ffaa00); display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        .shop-item-icon { width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, #ffd700, #ff8c00); display: flex; align-items: center; justify-content: center; font-size: 20px; }
         .shop-item-details h4 { font-size: 13px; margin-bottom: 2px; }
-        .shop-item-details p { font-size: 10px; opacity: 0.8; }
+        .shop-item-details p { font-size: 10px; opacity: 0.7; }
         .shop-item-price { text-align: right; }
         .shop-item-price span { display: block; font-size: 14px; font-weight: bold; color: #ffd700; }
         
-        .transaction-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px; margin-bottom: 6px; }
+        .transaction-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #1a1a1a; border-radius: 8px; margin-bottom: 6px; border: 1px solid #333; }
         .transaction-info { display: flex; align-items: center; gap: 8px; }
         .transaction-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
         .transaction-icon.earning { background: rgba(0,255,136,0.2); color: #00ff88; }
-        .transaction-icon.withdrawal { background: rgba(255,107,107,0.2); color: #ff6b6b; }
+        .transaction-icon.withdrawal { background: rgba(255,68,68,0.2); color: #ff4444; }
         .transaction-amount { font-weight: bold; font-size: 12px; }
         .transaction-amount.positive { color: #00ff88; }
-        .transaction-amount.negative { color: #ff6b6b; }
+        .transaction-amount.negative { color: #ff4444; }
         
-        .notification { position: fixed; top: 15px; left: 50%; transform: translateX(-50%) translateY(-100px); background: white; color: #1e3c72; padding: 12px 25px; border-radius: 25px; box-shadow: 0 8px 25px rgba(0,0,0,0.3); font-weight: 600; opacity: 0; transition: all 0.3s; z-index: 2000; font-size: 13px; }
+        .notification { position: fixed; top: 15px; left: 50%; transform: translateX(-50%) translateY(-100px); background: #fff; color: #000; padding: 12px 25px; border-radius: 25px; box-shadow: 0 8px 25px rgba(0,0,0,0.5); font-weight: 600; opacity: 0; transition: all 0.3s; z-index: 2000; font-size: 13px; }
         .notification.show { transform: translateX(-50%) translateY(0); opacity: 1; }
         
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.95); padding: 8px 15px; display: flex; justify-content: space-around; border-top: 1px solid rgba(255,255,255,0.1); z-index: 100; }
-        .bottom-nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 5px 12px; cursor: pointer; color: rgba(255,255,255,0.6); }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #000; padding: 8px 15px; display: flex; justify-content: space-around; border-top: 1px solid #333; z-index: 100; }
+        .bottom-nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 5px 12px; cursor: pointer; color: #666; }
         .bottom-nav-item.active { color: #00ff88; }
         .bottom-nav-item i { font-size: 18px; }
         .bottom-nav-item span { font-size: 9px; }
         
-        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
+        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.95); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
         .modal.show { display: flex; }
-        .modal-content { background: linear-gradient(135deg, #1a1a2e, #16213e); border-radius: 20px; padding: 25px; max-width: 350px; width: 100%; text-align: center; border: 2px solid rgba(255,255,255,0.2); }
+        .modal-content { background: #1a1a1a; border-radius: 20px; padding: 25px; max-width: 350px; width: 100%; text-align: center; border: 2px solid #333; }
         .modal-icon { font-size: 60px; margin-bottom: 15px; }
         .modal-title { font-size: 20px; font-weight: bold; margin-bottom: 12px; }
-        .modal-text { opacity: 0.9; margin-bottom: 20px; line-height: 1.5; font-size: 13px; }
-        .wallet-input { width: 100%; padding: 12px; border-radius: 10px; border: 2px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1); color: white; font-size: 14px; margin-bottom: 12px; outline: none; }
+        .modal-text { opacity: 0.8; margin-bottom: 20px; line-height: 1.5; font-size: 13px; }
+        .wallet-input { width: 100%; padding: 12px; border-radius: 10px; border: 2px solid #444; background: #222; color: white; font-size: 14px; margin-bottom: 12px; outline: none; }
         .wallet-input:focus { border-color: #00ff88; }
+        
+        .ad-status { background: rgba(0,255,136,0.1); border: 1px solid #00ff88; border-radius: 10px; padding: 10px; margin: 10px 0; text-align: center; font-size: 12px; color: #00ff88; }
     </style>
 </head>
 <body>
@@ -128,13 +123,12 @@
     <div id="game-screen">
         <div class="game-header">
             <div class="game-score">🪙 <span id="game-coins">0</span></div>
-            <div class="game-level">Lvl <span id="game-level">1</span></div>
             <div class="game-timer">⏱️ <span id="game-time">60</span>s</div>
         </div>
         <canvas id="game-canvas"></canvas>
         <div class="game-controls">
-            <button class="game-btn btn-pause" onclick="pauseGame()">️</button>
-            <button class="game-btn btn-exit" onclick="exitGame()">️</button>
+            <button class="game-btn btn-pause" onclick="pauseGame()">⏸️</button>
+            <button class="game-btn btn-exit" onclick="exitGame()">✖️</button>
         </div>
     </div>
     
@@ -153,7 +147,6 @@
             <div class="balance-section">
                 <div class="balance-label">💰 Total Balance</div>
                 <div class="balance-amount"><span id="balance">0.0000</span> USDT</div>
-                <div class="balance-usd">≈ $<span id="usd-value">0.0000</span> USD</div>
                 <div class="stats-row">
                     <div class="stat-item"><div class="stat-value" id="total-coins">0</div><div class="stat-label">Coins</div></div>
                     <div class="stat-item"><div class="stat-value" id="games-played">0</div><div class="stat-label">Games</div></div>
@@ -173,29 +166,26 @@
         <div id="play" class="content-section active">
             <div class="card">
                 <div class="card-title"><i class="fas fa-gamepad"></i> Coin Catcher Game</div>
-                <div class="info-box">
-                    ✅ <strong>Medium Difficulty</strong><br>
-                    Easy to play, fun to earn!
-                </div>
                 <div class="difficulty-selector">
                     <button class="difficulty-btn active" onclick="setDifficulty('easy')">Easy</button>
                     <button class="difficulty-btn" onclick="setDifficulty('medium')">Medium</button>
                     <button class="difficulty-btn" onclick="setDifficulty('hard')">Hard</button>
                 </div>
-                <button class="play-btn" onclick="startGame()"> PLAY NOW</button>
-                <div style="font-size: 11px; opacity: 0.8; text-align: center;">💡 Catch golden coins for 3x bonus!</div>
+                <button class="play-btn" onclick="startGame()">🎮 PLAY NOW</button>
+                <div style="font-size: 11px; opacity: 0.7; text-align: center;">💡 Catch coins to earn USDT!</div>
             </div>
             <div class="card">
                 <div class="card-title"><i class="fas fa-trophy"></i> Daily Reward</div>
-                <button class="btn btn-success" onclick="claimDaily()" id="daily-btn">🎁 Claim Daily (+0.001 USDT)</button>
+                <button class="btn btn-success" onclick="claimDaily()" id="daily-btn">🎁 Claim Daily (+0.0001 USDT)</button>
             </div>
         </div>
         
         <div id="tasks" class="content-section">
             <div class="card">
                 <div class="card-title"><i class="fas fa-ad"></i> Watch Ads</div>
+                <div class="ad-status" id="ad-status">⏳ Loading AdsGram...</div>
                 <div class="ad-package">
-                    <div class="ad-package-header"><div class="ad-package-name"> Bronze</div><div>50 Ads</div></div>
+                    <div class="ad-package-header"><div class="ad-package-name">🥉 Bronze</div><div>50 Ads</div></div>
                     <div class="ad-package-reward">+0.005 USDT</div>
                     <button class="btn btn-primary" onclick="watchAds(50, 0.005)">Start</button>
                 </div>
@@ -205,7 +195,7 @@
                     <button class="btn btn-primary" onclick="watchAds(100, 0.010)">Start</button>
                 </div>
                 <div class="ad-package">
-                    <div class="ad-package-header"><div class="ad-package-name">🥇 Gold</div><div>500 Ads</div></div>
+                    <div class="ad-package-header"><div class="ad-package-name"> Gold</div><div>500 Ads</div></div>
                     <div class="ad-package-reward">+0.050 USDT</div>
                     <button class="btn btn-warning" onclick="watchAds(500, 0.050)">Start</button>
                 </div>
@@ -217,7 +207,7 @@
                     <div class="task-reward"><span>+0.0001</span></div>
                 </div>
                 <div class="task-item" onclick="completeTask('telegram', 0.0001)">
-                    <div class="task-info"><div class="task-icon">✈️</div><div class="task-details"><h4>Join Telegram</h4><p>Official Channel</p></div></div>
+                    <div class="task-info"><div class="task-icon">️</div><div class="task-details"><h4>Join Telegram</h4><p>Official Channel</p></div></div>
                     <div class="task-reward"><span>+0.0001</span></div>
                 </div>
                 <div class="task-item" onclick="completeTask('youtube', 0.0001)">
@@ -239,7 +229,7 @@
                     <div class="shop-item-price"><span>0.002</span><button class="btn btn-primary" style="padding: 6px 12px; font-size: 11px;" onclick="buyItem('magnet', 0.002)">Buy</button></div>
                 </div>
                 <div class="shop-item">
-                    <div class="shop-item-info"><div class="shop-item-icon">⏰</div><div class="shop-item-details"><h4>Extra Time</h4><p>+10 seconds</p></div></div>
+                    <div class="shop-item-info"><div class="shop-item-icon">⏰</div><div class="shop-item-details"><h4>Extra Time</h4><p>+5 seconds</p></div></div>
                     <div class="shop-item-price"><span>0.001</span><button class="btn btn-primary" style="padding: 6px 12px; font-size: 11px;" onclick="buyItem('time', 0.001)">Buy</button></div>
                 </div>
             </div>
@@ -254,7 +244,7 @@
                     <div class="achievement-item" id="ach-50"><div class="achievement-icon">⭐</div><div class="achievement-name">50 Games</div></div>
                     <div class="achievement-item" id="ach-100"><div class="achievement-icon">💎</div><div class="achievement-name">100 Games</div></div>
                     <div class="achievement-item" id="ach-500"><div class="achievement-icon">👑</div><div class="achievement-name">500 Games</div></div>
-                    <div class="achievement-item" id="ach-1000"><div class="achievement-icon">🏆</div><div class="achievement-name">1K Games</div></div>
+                    <div class="achievement-item" id="ach-1000"><div class="achievement-icon"></div><div class="achievement-name">1K Games</div></div>
                 </div>
             </div>
             <div class="card">
@@ -283,13 +273,13 @@
     
     <div class="modal" id="withdraw-modal">
         <div class="modal-content">
-            <div class="modal-icon"></div>
+            <div class="modal-icon">💰</div>
             <div class="modal-title">Withdraw USDT</div>
             <div class="modal-text">Enter your USDT wallet address</div>
             <input type="text" class="wallet-input" id="wallet-address" placeholder="Enter wallet address">
             <div style="margin-bottom: 12px; font-size: 12px;">Available: <strong id="withdraw-balance">0.0000 USDT</strong></div>
             <button class="btn btn-success" onclick="processWithdraw()" style="margin-bottom: 8px;">Confirm</button>
-            <button class="btn btn-primary" onclick="closeWithdrawModal()" style="background: rgba(255,255,255,0.2);">Cancel</button>
+            <button class="btn btn-primary" onclick="closeWithdrawModal()" style="background: #444; color: white;">Cancel</button>
         </div>
     </div>
     
@@ -312,19 +302,40 @@
         const username = user ? (user.username || user.first_name) : 'Guest';
         const userInitial = username.charAt(0).toUpperCase();
         
-        // ✅ ADSGRAM BLOCK ID: 36893
-        const ADSGRAM_BLOCK_ID = 36893;
+        // ✅ ADSGRAM - නිවැරදි initialization
+        const ADSGRAM_BLOCK_ID = '36893';
         let adsgram = null;
-        try { 
-            adsgram = new AdsGram({ blockId: ADSGRAM_BLOCK_ID }); 
-            console.log('AdsGram initialized with block:', ADSGRAM_BLOCK_ID);
-        } catch (e) { 
-            console.log('AdsGram init failed', e); 
+        let adsgramReady = false;
+        
+        // AdsGram load වෙනකම් බලාගෙන ඉන්න
+        function initAdsGram() {
+            try {
+                if (typeof AdsGram !== 'undefined') {
+                    adsgram = new AdsGram(ADSGRAM_BLOCK_ID);
+                    adsgramReady = true;
+                    document.getElementById('ad-status').textContent = '✅ AdsGram Ready! Block ID: ' + ADSGRAM_BLOCK_ID;
+                    document.getElementById('ad-status').style.background = 'rgba(0,255,136,0.2)';
+                    document.getElementById('ad-status').style.borderColor = '#00ff88';
+                    console.log('AdsGram initialized successfully');
+                } else {
+                    document.getElementById('ad-status').textContent = '❌ AdsGram SDK not loaded';
+                    console.log('AdsGram SDK not loaded');
+                }
+            } catch (e) {
+                document.getElementById('ad-status').textContent = '❌ Error: ' + e.message;
+                console.log('AdsGram error:', e);
+            }
         }
         
+        // SDK එක load වෙලා තියෙනවාද බලන්න
+        window.addEventListener('load', () => {
+            setTimeout(initAdsGram, 1000); // 1 second wait for SDK to load
+        });
+        
+        // Game variables
         let canvas, ctx, gameLoop, isPlaying = false, isPaused = false;
-        let score = 0, level = 1, timeLeft = 60, difficulty = 'medium';
-        let coins = [], player = { x: 0, y: 0, width: 35, height: 35 }; // Medium player size
+        let score = 0, level = 1, timeLeft = 60, difficulty = 'easy';
+        let coins = [], player = { x: 0, y: 0, width: 50, height: 50 };
         let gameInterval, timerInterval;
         
         let data = {
@@ -349,7 +360,6 @@
             document.getElementById('user-id').textContent = 'ID: ' + userId;
             document.getElementById('user-avatar').textContent = userInitial;
             document.getElementById('balance').textContent = data.balance.toFixed(4);
-            document.getElementById('usd-value').textContent = data.balance.toFixed(4);
             document.getElementById('total-coins').textContent = data.totalCoins;
             document.getElementById('games-played').textContent = data.gamesPlayed;
             document.getElementById('high-score').textContent = data.highScore;
@@ -368,7 +378,7 @@
                 dailyBtn.style.opacity = '0.5';
             } else {
                 dailyBtn.disabled = false;
-                dailyBtn.textContent = '🎁 Claim Daily (+0.001 USDT)';
+                dailyBtn.textContent = ' Claim Daily (+0.0001 USDT)';
                 dailyBtn.style.opacity = '1';
             }
         }
@@ -397,13 +407,26 @@
             player.x = canvas.width / 2 - player.width / 2;
             player.y = canvas.height - 80;
             score = 0;
-            // Medium time limits
-            timeLeft = difficulty === 'easy' ? 60 : difficulty === 'medium' ? 45 : 30;
+            
+            // Medium difficulty settings
+            if (difficulty === 'easy') {
+                timeLeft = 60;
+                player.width = 60;
+                player.height = 60;
+            } else if (difficulty === 'medium') {
+                timeLeft = 45;
+                player.width = 45;
+                player.height = 45;
+            } else {
+                timeLeft = 30;
+                player.width = 35;
+                player.height = 35;
+            }
+            
             coins = [];
             isPlaying = true;
             isPaused = false;
             document.getElementById('game-coins').textContent = '0';
-            document.getElementById('game-level').textContent = '1';
             document.getElementById('game-time').textContent = timeLeft;
             canvas.addEventListener('touchmove', handleTouch, {passive: false});
             canvas.addEventListener('mousemove', handleMouse);
@@ -412,32 +435,35 @@
             gameInterval = setInterval(spawnCoin, getSpawnRate());
         }
         
-        // Medium spawn rates
-        function getSpawnRate() { return difficulty === 'easy' ? 1200 : difficulty === 'medium' ? 800 : 600; }
+        function getSpawnRate() {
+            if (difficulty === 'easy') return 800;
+            if (difficulty === 'medium') return 600;
+            return 400;
+        }
         
-        function handleTouch(e) { 
-            e.preventDefault(); 
-            player.x = e.touches[0].clientX - player.width / 2; 
+        function handleTouch(e) {
+            e.preventDefault();
+            player.x = e.touches[0].clientX - player.width / 2;
         }
         function handleMouse(e) { player.x = e.clientX - player.width / 2; }
         
         function spawnCoin() {
             if (isPaused) return;
             const isGolden = Math.random() < 0.1;
-            coins.push({ 
-                x: Math.random() * (canvas.width - 25), 
-                y: -25, 
-                size: 25, 
-                speed: getCoinSpeed(), 
-                value: isGolden ? 3 : 1, 
-                isGolden 
+            coins.push({
+                x: Math.random() * (canvas.width - 25),
+                y: -25,
+                size: 25,
+                speed: getCoinSpeed(),
+                value: isGolden ? 3 : 1,
+                isGolden
             });
         }
         
-        // Medium coin speeds
         function getCoinSpeed() {
-            const base = difficulty === 'easy' ? 5 : difficulty === 'medium' ? 7 : 9;
-            return base + (level * 0.2);
+            if (difficulty === 'easy') return 4 + (level * 0.2);
+            if (difficulty === 'medium') return 6 + (level * 0.3);
+            return 9 + (level * 0.4);
         }
         
         function update() {
@@ -460,14 +486,14 @@
                     ctx.fill();
                     
                     // Collision
-                    if (coin.y + coin.size >= player.y && coin.y <= player.y + player.height && 
+                    if (coin.y + coin.size >= player.y && coin.y <= player.y + player.height &&
                         coin.x + coin.size >= player.x && coin.x <= player.x + player.width) {
                         score += coin.value;
                         coins.splice(i, 1);
                         document.getElementById('game-coins').textContent = score;
-                        if (score % 20 === 0) { level++; document.getElementById('game-level').textContent = level; }
-                    } else if (coin.y > canvas.height) { 
-                        coins.splice(i, 1); 
+                        if (score % 20 === 0) { level++; }
+                    } else if (coin.y > canvas.height) {
+                        coins.splice(i, 1);
                     }
                 }
             }
@@ -499,8 +525,7 @@
             cancelAnimationFrame(gameLoop);
             document.getElementById('game-screen').classList.remove('active');
             
-            // Medium reward
-            const reward = score * 0.00005;
+            const reward = score * 0.00001;
             data.balance += reward;
             data.totalCoins += score;
             data.gamesPlayed++;
@@ -512,39 +537,53 @@
             saveData();
             updateUI();
             updateAchievements();
-            showNotification('🎮 Game Over! +' + reward.toFixed(5) + ' USDT');
+            showNotification(' Over! +' + reward.toFixed(5) + ' USDT');
             tg.HapticFeedback.notificationOccurred('success');
         }
         
+        // ✅ නිවැරදි AdsGram Integration
         function watchAds(count, reward) {
+            if (!adsgramReady || !adsgram) {
+                tg.showAlert('Ads not ready yet. Please wait a moment and try again.');
+                return;
+            }
+            
             tg.showConfirm('Watch ' + count + ' ads for ' + reward.toFixed(4) + ' USDT?', (confirmed) => {
                 if (confirmed) {
-                    if (adsgram) {
-                        let watched = 0;
-                        function showNextAd() {
-                            if (watched >= count) {
-                                data.balance += reward;
-                                data.adsWatched += count;
-                                addTransaction('earning', 'Watched ' + count + ' ads', reward);
-                                saveData();
-                                updateUI();
-                                showNotification('✅ Earned ' + reward.toFixed(4) + ' USDT!');
-                                return;
-                            }
+                    let watched = 0;
+                    showNotification('Starting ads... 0/' + count);
+                    
+                    function showNextAd() {
+                        if (watched >= count) {
+                            data.balance += reward;
+                            data.adsWatched += count;
+                            addTransaction('earning', 'Watched ' + count + ' ads', reward);
+                            saveData();
+                            updateUI();
+                            showNotification('✅ Earned ' + reward.toFixed(4) + ' USDT!');
+                            tg.HapticFeedback.notificationOccurred('success');
+                            return;
+                        }
+                        
+                        try {
                             adsgram.showAd().then(() => {
                                 watched++;
                                 showNotification('Ad ' + watched + '/' + count + ' ✅');
                                 setTimeout(showNextAd, 500);
-                            }).catch((err) => { 
+                            }).catch((err) => {
                                 console.log('Ad error:', err);
-                                watched++; 
-                                setTimeout(showNextAd, 500); 
+                                watched++;
+                                showNotification('Ad ' + watched + '/' + count + ' (skipped)');
+                                setTimeout(showNextAd, 500);
                             });
+                        } catch (e) {
+                            console.log('Ad exception:', e);
+                            watched++;
+                            setTimeout(showNextAd, 500);
                         }
-                        showNextAd();
-                    } else {
-                        tg.showAlert('Ads not available yet. Please try again later.');
                     }
+                    
+                    showNextAd();
                 }
             });
         }
@@ -579,7 +618,7 @@
         function claimDaily() {
             const today = new Date().toDateString();
             if (data.lastClaim === today) { tg.showAlert('Already claimed!'); return; }
-            const reward = 0.001;
+            const reward = 0.0001;
             data.balance += reward;
             data.lastClaim = today;
             addTransaction('earning', 'Daily reward', reward);
