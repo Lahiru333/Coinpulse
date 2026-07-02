@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Coinpulse - Play & Earn</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://adsgram.ai/adsgram.min.js"></script>
+    <script src="https://partner.adsgram.ai/adsgram.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
@@ -58,6 +58,7 @@
         .btn-primary { background: #667eea; color: white; }
         .btn-success { background: #00ff88; color: #000; }
         .btn-warning { background: #ffd700; color: #000; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
         
         .task-item { background: #222; border-radius: 12px; padding: 12px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #333; }
         .task-info { display: flex; align-items: center; gap: 12px; flex: 1; }
@@ -114,7 +115,9 @@
         .wallet-input { width: 100%; padding: 12px; border-radius: 10px; border: 2px solid #444; background: #222; color: white; font-size: 14px; margin-bottom: 12px; outline: none; }
         .wallet-input:focus { border-color: #00ff88; }
         
-        .ad-status { background: rgba(0,255,136,0.1); border: 1px solid #00ff88; border-radius: 10px; padding: 10px; margin: 10px 0; text-align: center; font-size: 12px; color: #00ff88; }
+        .ad-status { background: rgba(255,68,68,0.1); border: 1px solid #ff4444; border-radius: 10px; padding: 10px; margin: 10px 0; text-align: center; font-size: 12px; color: #ff4444; }
+        .ad-status.ready { background: rgba(0,255,136,0.1); border-color: #00ff88; color: #00ff88; }
+        .ad-status.loading { background: rgba(255,215,0,0.1); border-color: #ffd700; color: #ffd700; }
     </style>
 </head>
 <body>
@@ -122,7 +125,7 @@
     
     <div id="game-screen">
         <div class="game-header">
-            <div class="game-score">🪙 <span id="game-coins">0</span></div>
+            <div class="game-score"> <span id="game-coins">0</span></div>
             <div class="game-timer">⏱️ <span id="game-time">60</span>s</div>
         </div>
         <canvas id="game-canvas"></canvas>
@@ -195,7 +198,7 @@
                     <button class="btn btn-primary" onclick="watchAds(100, 0.010)">Start</button>
                 </div>
                 <div class="ad-package">
-                    <div class="ad-package-header"><div class="ad-package-name"> Gold</div><div>500 Ads</div></div>
+                    <div class="ad-package-header"><div class="ad-package-name">🥇 Gold</div><div>500 Ads</div></div>
                     <div class="ad-package-reward">+0.050 USDT</div>
                     <button class="btn btn-warning" onclick="watchAds(500, 0.050)">Start</button>
                 </div>
@@ -207,7 +210,7 @@
                     <div class="task-reward"><span>+0.0001</span></div>
                 </div>
                 <div class="task-item" onclick="completeTask('telegram', 0.0001)">
-                    <div class="task-info"><div class="task-icon">️</div><div class="task-details"><h4>Join Telegram</h4><p>Official Channel</p></div></div>
+                    <div class="task-info"><div class="task-icon">✈️</div><div class="task-details"><h4>Join Telegram</h4><p>Official Channel</p></div></div>
                     <div class="task-reward"><span>+0.0001</span></div>
                 </div>
                 <div class="task-item" onclick="completeTask('youtube', 0.0001)">
@@ -302,34 +305,54 @@
         const username = user ? (user.username || user.first_name) : 'Guest';
         const userInitial = username.charAt(0).toUpperCase();
         
-        // ✅ ADSGRAM - නිවැරදි initialization
+        // ✅ ADSGRAM SDK - නිවැරදි initialization
         const ADSGRAM_BLOCK_ID = '36893';
         let adsgram = null;
         let adsgramReady = false;
         
-        // AdsGram load වෙනකම් බලාගෙන ඉන්න
+        // AdsGram SDK එක load වුනාම initialize කරන්න
         function initAdsGram() {
+            const statusEl = document.getElementById('ad-status');
+            
             try {
+                // AdsGram SDK එක load වුනාද බලන්න
                 if (typeof AdsGram !== 'undefined') {
-                    adsgram = new AdsGram(ADSGRAM_BLOCK_ID);
-                    adsgramReady = true;
-                    document.getElementById('ad-status').textContent = '✅ AdsGram Ready! Block ID: ' + ADSGRAM_BLOCK_ID;
-                    document.getElementById('ad-status').style.background = 'rgba(0,255,136,0.2)';
-                    document.getElementById('ad-status').style.borderColor = '#00ff88';
-                    console.log('AdsGram initialized successfully');
+                    console.log('AdsGram SDK found, initializing...');
+                    
+                    // නිවැරදි initialization
+                    adsgram = new AdsGram({
+                        blockId: ADSGRAM_BLOCK_ID,
+                        onError: (error) => {
+                            console.error('AdsGram error:', error);
+                            statusEl.textContent = '❌ Ads Error: ' + error.message;
+                            statusEl.className = 'ad-status';
+                        },
+                        onReady: () => {
+                            console.log('AdsGram ready!');
+                            adsgramReady = true;
+                            statusEl.textContent = '✅ AdsGram Ready! Block: ' + ADSGRAM_BLOCK_ID;
+                            statusEl.className = 'ad-status ready';
+                        }
+                    });
+                    
+                    statusEl.textContent = '⏳ Connecting to AdsGram...';
+                    statusEl.className = 'ad-status loading';
                 } else {
-                    document.getElementById('ad-status').textContent = '❌ AdsGram SDK not loaded';
-                    console.log('AdsGram SDK not loaded');
+                    console.log('AdsGram SDK not found');
+                    statusEl.textContent = '❌ AdsGram SDK not loaded';
+                    statusEl.className = 'ad-status';
                 }
             } catch (e) {
-                document.getElementById('ad-status').textContent = '❌ Error: ' + e.message;
-                console.log('AdsGram error:', e);
+                console.error('AdsGram init error:', e);
+                statusEl.textContent = '❌ Error: ' + e.message;
+                statusEl.className = 'ad-status';
             }
         }
         
-        // SDK එක load වෙලා තියෙනවාද බලන්න
+        // SDK එක load වෙනකම් බලාගෙන ඉන්න
         window.addEventListener('load', () => {
-            setTimeout(initAdsGram, 1000); // 1 second wait for SDK to load
+            console.log('Page loaded, waiting for AdsGram...');
+            setTimeout(initAdsGram, 1500); // 1.5 seconds wait
         });
         
         // Game variables
@@ -378,7 +401,7 @@
                 dailyBtn.style.opacity = '0.5';
             } else {
                 dailyBtn.disabled = false;
-                dailyBtn.textContent = ' Claim Daily (+0.0001 USDT)';
+                dailyBtn.textContent = '🎁 Claim Daily (+0.0001 USDT)';
                 dailyBtn.style.opacity = '1';
             }
         }
@@ -408,7 +431,6 @@
             player.y = canvas.height - 80;
             score = 0;
             
-            // Medium difficulty settings
             if (difficulty === 'easy') {
                 timeLeft = 60;
                 player.width = 60;
@@ -471,11 +493,9 @@
             if (!isPaused) {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 
-                // Player
                 ctx.fillStyle = '#00ff88';
                 ctx.fillRect(player.x, player.y, player.width, player.height);
                 
-                // Coins
                 for (let i = coins.length - 1; i >= 0; i--) {
                     const coin = coins[i];
                     coin.y += coin.speed;
@@ -485,7 +505,6 @@
                     ctx.fillStyle = coin.isGolden ? '#ffd700' : '#aaa';
                     ctx.fill();
                     
-                    // Collision
                     if (coin.y + coin.size >= player.y && coin.y <= player.y + player.height &&
                         coin.x + coin.size >= player.x && coin.x <= player.x + player.width) {
                         score += coin.value;
@@ -537,14 +556,16 @@
             saveData();
             updateUI();
             updateAchievements();
-            showNotification(' Over! +' + reward.toFixed(5) + ' USDT');
+            showNotification('🎮 Over! +' + reward.toFixed(5) + ' USDT');
             tg.HapticFeedback.notificationOccurred('success');
         }
         
         // ✅ නිවැරදි AdsGram Integration
         function watchAds(count, reward) {
+            const statusEl = document.getElementById('ad-status');
+            
             if (!adsgramReady || !adsgram) {
-                tg.showAlert('Ads not ready yet. Please wait a moment and try again.');
+                tg.showAlert('Ads not ready yet. Please wait a moment and try again.\n\nStatus: ' + statusEl.textContent);
                 return;
             }
             
