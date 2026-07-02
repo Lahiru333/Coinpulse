@@ -4,13 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>CoinPulse Mini Game</title>
-    
-    <!-- Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    
-    <!-- Adsgram SDK - නිවැරදි URL එක -->
-    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
-    
     <style>
         * {
             margin: 0;
@@ -19,22 +13,18 @@
             user-select: none;
             -webkit-tap-highlight-color: transparent;
         }
-
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-family: -apple-system, system-ui, sans-serif;
             background: #0a0e17;
             color: #fff;
             min-height: 100vh;
             overflow-x: hidden;
         }
-
         #app {
             max-width: 420px;
             margin: 0 auto;
             padding: 12px 16px 100px;
-            position: relative;
         }
-
         .header {
             display: flex;
             justify-content: space-between;
@@ -42,11 +32,9 @@
             padding: 12px 16px;
             background: rgba(255,255,255,0.05);
             border-radius: 16px;
-            backdrop-filter: blur(10px);
             margin-bottom: 16px;
             border: 1px solid rgba(255,255,255,0.08);
         }
-
         .balance {
             display: flex;
             align-items: center;
@@ -54,17 +42,8 @@
             font-size: 18px;
             font-weight: 700;
         }
-
-        .coin-icon {
-            font-size: 24px;
-        }
-
-        .usdt-label {
-            font-size: 12px;
-            font-weight: 400;
-            color: #8899bb;
-        }
-
+        .coin-icon { font-size: 24px; }
+        .usdt-label { font-size: 12px; color: #8899bb; font-weight: 400; }
         .level {
             background: linear-gradient(135deg, #f7931a, #f5a623);
             padding: 4px 14px;
@@ -72,7 +51,6 @@
             font-size: 13px;
             font-weight: 700;
         }
-
         .game-container {
             background: linear-gradient(145deg, #111827, #0f1729);
             border-radius: 24px;
@@ -80,7 +58,6 @@
             margin-bottom: 16px;
             border: 1px solid rgba(255,255,255,0.06);
         }
-
         .tap-area {
             position: relative;
             display: flex;
@@ -91,47 +68,30 @@
             cursor: pointer;
             transition: transform 0.1s;
         }
-
-        .tap-area:active {
-            transform: scale(0.95);
-        }
-
+        .tap-area:active { transform: scale(0.95); }
         .coin-image {
             font-size: 80px;
             transition: all 0.15s;
-            filter: drop-shadow(0 0 30px rgba(247, 147, 26, 0.3));
+            filter: drop-shadow(0 0 30px rgba(247,147,26,0.3));
         }
-
-        .coin-image.pop {
-            animation: popAnim 0.2s ease;
-        }
-
+        .coin-image.pop { animation: popAnim 0.2s ease; }
         @keyframes popAnim {
             0% { transform: scale(1); }
             50% { transform: scale(1.3); }
             100% { transform: scale(1); }
         }
-
-        .tap-text {
-            color: #8899bb;
-            font-size: 14px;
-            margin-top: 8px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
+        .tap-text { color: #8899bb; font-size: 14px; margin-top: 8px; letter-spacing: 2px; text-transform: uppercase; }
         .tap-counter {
             position: absolute;
             top: 10px;
             right: 10px;
-            background: rgba(247, 147, 26, 0.2);
+            background: rgba(247,147,26,0.2);
             padding: 4px 12px;
             border-radius: 12px;
             font-size: 12px;
             color: #f7931a;
             transition: all 0.3s ease;
         }
-
         .energy-bar {
             margin-top: 16px;
             background: rgba(255,255,255,0.05);
@@ -140,14 +100,12 @@
             position: relative;
             overflow: hidden;
         }
-
         .energy-fill {
             height: 100%;
             background: linear-gradient(90deg, #f7931a, #f5a623);
             border-radius: 12px;
             transition: width 0.3s ease;
         }
-
         .energy-text {
             position: absolute;
             right: 0;
@@ -155,14 +113,12 @@
             font-size: 11px;
             color: #8899bb;
         }
-
         .stats {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 10px;
             margin-bottom: 16px;
         }
-
         .stat-item {
             background: rgba(255,255,255,0.04);
             padding: 12px 8px;
@@ -170,20 +126,8 @@
             text-align: center;
             border: 1px solid rgba(255,255,255,0.04);
         }
-
-        .stat-item span:first-child {
-            display: block;
-            font-size: 11px;
-            color: #8899bb;
-            margin-bottom: 4px;
-        }
-
-        .stat-item span:last-child {
-            font-size: 16px;
-            font-weight: 700;
-            color: #f7931a;
-        }
-
+        .stat-item span:first-child { display: block; font-size: 11px; color: #8899bb; margin-bottom: 4px; }
+        .stat-item span:last-child { font-size: 16px; font-weight: 700; color: #f7931a; }
         .tabs {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -195,7 +139,6 @@
             padding: 8px 0;
             z-index: 10;
         }
-
         .tab-btn {
             background: rgba(255,255,255,0.05);
             border: none;
@@ -208,28 +151,17 @@
             transition: all 0.3s;
             border: 1px solid transparent;
         }
-
         .tab-btn.active {
             background: linear-gradient(135deg, #f7931a, #f5a623);
             color: #fff;
             border-color: #f7931a;
         }
-
-        .tab-content {
-            animation: fadeIn 0.3s ease;
-        }
-
+        .tab-content { animation: fadeIn 0.3s ease; }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
-        .task-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
+        .task-list { display: flex; flex-direction: column; gap: 10px; }
         .task-item {
             display: flex;
             justify-content: space-between;
@@ -239,28 +171,10 @@
             border-radius: 14px;
             border: 1px solid rgba(255,255,255,0.06);
         }
-
-        .task-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .task-icon {
-            font-size: 28px;
-        }
-
-        .task-title {
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .task-reward {
-            font-size: 11px;
-            color: #8899bb;
-            margin-top: 2px;
-        }
-
+        .task-info { display: flex; align-items: center; gap: 12px; }
+        .task-icon { font-size: 28px; }
+        .task-title { font-size: 14px; font-weight: 600; }
+        .task-reward { font-size: 11px; color: #8899bb; margin-top: 2px; }
         .task-btn {
             background: linear-gradient(135deg, #f7931a, #f5a623);
             border: none;
@@ -272,17 +186,9 @@
             cursor: pointer;
             transition: opacity 0.2s;
         }
-
-        .task-btn:active {
-            opacity: 0.7;
-        }
-
-        .boost-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
+        .task-btn:active { opacity: 0.7; }
+        .task-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .boost-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .boost-item {
             background: rgba(255,255,255,0.04);
             padding: 18px 14px;
@@ -290,13 +196,7 @@
             text-align: center;
             border: 1px solid rgba(255,255,255,0.06);
         }
-
-        .boost-item span {
-            display: block;
-            font-size: 14px;
-            margin-bottom: 10px;
-        }
-
+        .boost-item span { display: block; font-size: 14px; margin-bottom: 10px; }
         .boost-item button {
             background: linear-gradient(135deg, #f7931a, #f5a623);
             border: none;
@@ -308,7 +208,6 @@
             cursor: pointer;
             width: 100%;
         }
-
         .referral-box {
             background: rgba(255,255,255,0.04);
             padding: 24px;
@@ -316,12 +215,7 @@
             text-align: center;
             border: 1px solid rgba(255,255,255,0.06);
         }
-
-        .referral-box p {
-            margin-bottom: 16px;
-            color: #8899bb;
-        }
-
+        .referral-box p { margin-bottom: 16px; color: #8899bb; }
         .referral-box button {
             background: linear-gradient(135deg, #f7931a, #f5a623);
             border: none;
@@ -332,54 +226,35 @@
             font-weight: 700;
             cursor: pointer;
         }
+        .referral-count { margin-top: 16px; font-size: 14px; color: #8899bb; }
+        .referral-count span { color: #f7931a; font-weight: 700; }
 
-        .referral-count {
-            margin-top: 16px;
-            font-size: 14px;
-            color: #8899bb;
-        }
-
-        .referral-count span {
-            color: #f7931a;
-            font-weight: 700;
-        }
-
+        /* Ad Overlay */
         .ad-overlay {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0,0,0,0.85);
+            background: rgba(0,0,0,0.9);
             display: none;
             align-items: center;
             justify-content: center;
             z-index: 1000;
             backdrop-filter: blur(10px);
         }
-
         .ad-container {
             background: #1a2332;
             padding: 40px 32px;
             border-radius: 24px;
             text-align: center;
-            max-width: 320px;
+            max-width: 340px;
             width: 90%;
             border: 1px solid rgba(255,255,255,0.1);
         }
-
-        .ad-spinner {
-            font-size: 48px;
-            animation: spin 1s linear infinite;
-            display: block;
-            margin-bottom: 16px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
+        .ad-spinner { font-size: 48px; animation: spin 1s linear infinite; display: block; margin-bottom: 16px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .ad-status { font-size: 16px; margin-bottom: 12px; color: #ccc; }
         .ad-progress {
             width: 100%;
             height: 6px;
@@ -388,7 +263,6 @@
             margin: 16px 0;
             overflow: hidden;
         }
-
         .ad-progress-fill {
             height: 100%;
             background: linear-gradient(90deg, #f7931a, #f5a623);
@@ -396,8 +270,7 @@
             border-radius: 4px;
             transition: width 0.3s;
         }
-
-        #adSkipBtn {
+        #adClaimBtn {
             background: linear-gradient(135deg, #f7931a, #f5a623);
             border: none;
             color: #fff;
@@ -407,8 +280,18 @@
             font-weight: 700;
             cursor: pointer;
             margin-top: 12px;
+            display: none;
         }
-
+        #adCloseBtn {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: #8899bb;
+            padding: 10px 24px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 8px;
+        }
         .notification {
             position: fixed;
             bottom: 100px;
@@ -422,23 +305,16 @@
             z-index: 999;
             border: 1px solid rgba(247,147,26,0.3);
             animation: fadeIn 0.3s ease;
+            max-width: 90%;
+            text-align: center;
         }
-
-        ::-webkit-scrollbar {
-            width: 3px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0a0e17;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #f7931a;
-            border-radius: 10px;
-        }
+        ::-webkit-scrollbar { width: 3px; }
+        ::-webkit-scrollbar-track { background: #0a0e17; }
+        ::-webkit-scrollbar-thumb { background: #f7931a; border-radius: 10px; }
     </style>
 </head>
 <body>
     <div id="app">
-        <!-- Header -->
         <div class="header">
             <div class="balance">
                 <span class="coin-icon">🪙</span>
@@ -448,7 +324,6 @@
             <div class="level">Level <span id="levelDisplay">1</span></div>
         </div>
 
-        <!-- Main Game Area -->
         <div class="game-container">
             <div class="tap-area" id="tapArea">
                 <div class="coin-image" id="coinImage">🪙</div>
@@ -456,28 +331,17 @@
                 <div class="tap-counter" id="tapCounter">+0.0001</div>
             </div>
             <div class="energy-bar">
-                <div class="energy-fill" id="energyFill" style="width: 100%"></div>
+                <div class="energy-fill" id="energyFill" style="width:100%"></div>
                 <span class="energy-text" id="energyText">100/100</span>
             </div>
         </div>
 
-        <!-- Stats -->
         <div class="stats">
-            <div class="stat-item">
-                <span>💎 Coins</span>
-                <span id="coinCount">0</span>
-            </div>
-            <div class="stat-item">
-                <span>⚡ Tap Power</span>
-                <span id="tapPower">1</span>
-            </div>
-            <div class="stat-item">
-                <span>📈 Total Earned</span>
-                <span id="totalEarned">0.0000</span>
-            </div>
+            <div class="stat-item"><span>💎 Coins</span><span id="coinCount">0</span></div>
+            <div class="stat-item"><span>⚡ Tap Power</span><span id="tapPower">1</span></div>
+            <div class="stat-item"><span>📈 Total Earned</span><span id="totalEarned">0.0000</span></div>
         </div>
 
-        <!-- Tabs -->
         <div class="tabs">
             <button class="tab-btn active" data-tab="game">🎮 Game</button>
             <button class="tab-btn" data-tab="tasks">📋 Tasks</button>
@@ -485,7 +349,6 @@
             <button class="tab-btn" data-tab="referral">👥 Referral</button>
         </div>
 
-        <!-- Task Section -->
         <div class="tab-content" id="tasksTab" style="display:none;">
             <div class="task-list">
                 <div class="task-item">
@@ -521,7 +384,6 @@
             </div>
         </div>
 
-        <!-- Boost Section -->
         <div class="tab-content" id="boostTab" style="display:none;">
             <div class="boost-grid">
                 <div class="boost-item">
@@ -535,7 +397,6 @@
             </div>
         </div>
 
-        <!-- Referral Section -->
         <div class="tab-content" id="referralTab" style="display:none;">
             <div class="referral-box">
                 <p>Invite friends & earn 0.0005 USDT per referral!</p>
@@ -543,25 +404,24 @@
                 <div class="referral-count">Referrals: <span id="referralCount">0</span></div>
             </div>
         </div>
+    </div>
 
-        <!-- Ad Overlay -->
-        <div class="ad-overlay" id="adOverlay">
-            <div class="ad-container">
-                <div class="ad-content">
-                    <div class="ad-spinner">⏳</div>
-                    <p id="adStatus">Loading ad...</p>
-                    <div class="ad-progress" id="adProgress">
-                        <div class="ad-progress-fill" id="adProgressFill"></div>
-                    </div>
-                    <button id="adSkipBtn" style="display:none;" onclick="claimAdReward()">✅ Claim Reward</button>
-                </div>
+    <!-- Ad Overlay -->
+    <div class="ad-overlay" id="adOverlay">
+        <div class="ad-container">
+            <div class="ad-spinner" id="adSpinner">⏳</div>
+            <div class="ad-status" id="adStatus">Loading ad...</div>
+            <div class="ad-progress">
+                <div class="ad-progress-fill" id="adProgressFill"></div>
             </div>
+            <button id="adClaimBtn">✅ Claim Reward</button>
+            <button id="adCloseBtn" onclick="closeAd()">✕ Close</button>
         </div>
     </div>
 
     <script>
         // =============================================
-        // ===== COINPULSE - MAIN APPLICATION =====
+        // COINPULSE - FULL GAME
         // =============================================
 
         // ===== STATE =====
@@ -576,9 +436,10 @@
             totalEarned: 0.0000,
             referrals: 0,
             adsWatched: 0,
-            isAdWatching: false,
+            isAdPlaying: false,
             pendingReward: 0.0001,
-            pendingCoins: 50
+            pendingCoins: 50,
+            adCompleted: false
         };
 
         // ===== DOM REFS =====
@@ -596,11 +457,12 @@
         const referralCount = $('referralCount');
         const adOverlay = $('adOverlay');
         const adStatus = $('adStatus');
+        const adSpinner = $('adSpinner');
         const adProgressFill = $('adProgressFill');
-        const adSkipBtn = $('adSkipBtn');
+        const adClaimBtn = $('adClaimBtn');
 
-        // ===== TELEGRAM INIT =====
-        let tg = window.Telegram?.WebApp || { 
+        // ===== TELEGRAM =====
+        let tg = window.Telegram?.WebApp || {
             initDataUnsafe: { user: { id: 12345 } },
             ready: () => {},
             close: () => {},
@@ -610,173 +472,199 @@
         if (tg.expand) tg.expand();
 
         // =============================================
-        // ===== ADSGRAM INTEGRATION =====
+        // ===== ADSGRAM INTEGRATION (FIXED) =====
         // =============================================
 
         const ADSGRAM_BLOCK_ID = '36912';
         let adController = null;
 
-        function initAdsgram() {
-            try {
+        // Load Adsgram SDK dynamically
+        function loadAdsgramSDK() {
+            return new Promise((resolve, reject) => {
+                // Check if already loaded
                 if (typeof window.Adsgram !== 'undefined') {
-                    adController = window.Adsgram.init({
-                        blockId: ADSGRAM_BLOCK_ID,
-                        debug: false,
-                        onReward: function(result) {
-                            console.log('✅ Ad reward received:', result);
-                            claimAdReward();
-                        },
-                        onError: function(error) {
-                            console.error('❌ Ad error:', error);
-                            adOverlay.style.display = 'none';
-                            state.isAdWatching = false;
-                            showNotification('❌ Ad failed. Please try again.');
-                        },
-                        onClose: function() {
-                            console.log('👋 Ad closed by user');
-                            adOverlay.style.display = 'none';
-                            state.isAdWatching = false;
-                        }
-                    });
-                    console.log('✅ Adsgram initialized successfully!');
-                    return true;
-                } else {
-                    console.warn('⚠️ Adsgram SDK not found!');
-                    return false;
+                    resolve(window.Adsgram);
+                    return;
                 }
+
+                // Load script
+                const script = document.createElement('script');
+                script.src = 'https://sad.adsgram.ai/js/sad.min.js';
+                script.async = true;
+                script.onload = () => {
+                    if (typeof window.Adsgram !== 'undefined') {
+                        resolve(window.Adsgram);
+                    } else {
+                        reject(new Error('Adsgram not found after load'));
+                    }
+                };
+                script.onerror = () => reject(new Error('Failed to load Adsgram SDK'));
+                document.head.appendChild(script);
+            });
+        }
+
+        // Initialize Adsgram
+        async function initAdsgram() {
+            try {
+                const Adsgram = await loadAdsgramSDK();
+                adController = Adsgram.init({
+                    blockId: ADSGRAM_BLOCK_ID,
+                    debug: false,
+                    onReward: (data) => {
+                        console.log('✅ Ad reward:', data);
+                        state.adCompleted = true;
+                        adStatus.textContent = '✅ Ad complete!';
+                        adSpinner.textContent = '✅';
+                        adProgressFill.style.width = '100%';
+                        adClaimBtn.style.display = 'block';
+                        adClaimBtn.textContent = `💰 Claim ${state.pendingReward.toFixed(4)} USDT`;
+                    },
+                    onError: (error) => {
+                        console.error('❌ Ad error:', error);
+                        adStatus.textContent = '❌ Ad failed. Please try again.';
+                        adSpinner.textContent = '❌';
+                        setTimeout(() => {
+                            closeAd();
+                            showNotification('❌ Ad failed. Please try again.');
+                        }, 2000);
+                    },
+                    onClose: () => {
+                        console.log('👋 Ad closed');
+                        if (!state.adCompleted) {
+                            closeAd();
+                            showNotification('⏹️ Ad closed early. Try again.');
+                        }
+                    }
+                });
+                console.log('✅ Adsgram initialized!');
+                return true;
             } catch (e) {
-                console.error('❌ Adsgram init error:', e);
+                console.warn('⚠️ Adsgram init failed:', e);
                 return false;
             }
         }
 
         // ===== SHOW AD =====
-        function showAd(rewardAmount, adsRequired) {
-            if (state.isAdWatching) {
-                showNotification('⏳ Please wait for current ad to finish');
+        async function showAd(rewardAmount, adsRequired) {
+            if (state.isAdPlaying) {
+                showNotification('⏳ Please wait for current ad');
                 return;
             }
 
-            // Store pending reward
+            state.isAdPlaying = true;
+            state.adCompleted = false;
             state.pendingReward = rewardAmount || 0.0001;
             state.pendingCoins = adsRequired || 50;
 
             // Show overlay
             adOverlay.style.display = 'flex';
             adStatus.textContent = 'Loading ad...';
+            adSpinner.textContent = '⏳';
             adProgressFill.style.width = '0%';
-            adSkipBtn.style.display = 'none';
+            adClaimBtn.style.display = 'none';
 
-            // Try to show Adsgram ad
-            if (adController) {
-                try {
-                    adController.show()
-                        .then(() => {
-                            console.log('🎬 Ad is playing');
-                            adStatus.textContent = '🎬 Watching ad...';
-                            
-                            // Show progress animation
-                            let progress = 0;
-                            const interval = setInterval(() => {
-                                progress += 2;
-                                if (progress >= 90) {
-                                    clearInterval(interval);
-                                    adProgressFill.style.width = '90%';
-                                    adStatus.textContent = '⏳ Almost done...';
-                                } else {
-                                    adProgressFill.style.width = `${Math.min(progress, 90)}%`;
-                                }
-                            }, 100);
+            // Disable all task buttons
+            document.querySelectorAll('.task-btn').forEach(btn => btn.disabled = true);
 
-                            // Store interval to clear later
-                            adController._progressInterval = interval;
-                        })
-                        .catch((error) => {
-                            console.error('❌ Ad show error:', error);
-                            adOverlay.style.display = 'none';
-                            state.isAdWatching = false;
-                            showNotification('❌ Failed to load ad');
-                        });
-                } catch (e) {
-                    console.error('❌ Ad show exception:', e);
-                    adOverlay.style.display = 'none';
-                    state.isAdWatching = false;
-                    showNotification('❌ Ad error occurred');
+            try {
+                // Try to use real Adsgram
+                if (adController) {
+                    await adController.show();
+                    // Ad is now playing
+                    adStatus.textContent = '🎬 Watching ad...';
+                    
+                    // Simulate progress while ad plays
+                    let progress = 0;
+                    const interval = setInterval(() => {
+                        progress += 1;
+                        if (progress >= 90) {
+                            clearInterval(interval);
+                            adProgressFill.style.width = '90%';
+                            adStatus.textContent = '⏳ Finalizing...';
+                        } else {
+                            adProgressFill.style.width = `${Math.min(progress, 90)}%`;
+                        }
+                    }, 100);
+
+                    // Store interval reference
+                    window._adProgressInterval = interval;
+
+                } else {
+                    // Fallback: Simulated ad
+                    await showSimulatedAd();
                 }
-            } else {
-                // Fallback: Simulated ad
-                showSimulatedAd();
+            } catch (e) {
+                console.error('Ad show error:', e);
+                // Try simulated ad as fallback
+                await showSimulatedAd();
             }
         }
 
         // ===== SIMULATED AD (Fallback) =====
         function showSimulatedAd() {
-            adStatus.textContent = '⏳ Watching ad (simulated)...';
-            adProgressFill.style.width = '0%';
-            adSkipBtn.style.display = 'none';
+            return new Promise((resolve) => {
+                adStatus.textContent = '🎬 Watching ad (simulated)...';
+                adSpinner.textContent = '⏳';
+                adProgressFill.style.width = '0%';
 
-            let progress = 0;
-            const duration = 3000;
-            const interval = 50;
-            const step = (interval / duration) * 100;
+                let progress = 0;
+                const duration = 4000;
+                const interval = 50;
+                const step = (interval / duration) * 100;
 
-            const timer = setInterval(() => {
-                progress += step;
-                if (progress >= 100) {
-                    clearInterval(timer);
-                    adProgressFill.style.width = '100%';
-                    adStatus.textContent = '✅ Ad complete!';
-                    adSkipBtn.style.display = 'block';
-                    adSkipBtn.textContent = `✅ Claim ${state.pendingReward.toFixed(4)} USDT`;
-                } else {
-                    adProgressFill.style.width = `${Math.min(progress, 100)}%`;
-                }
-            }, interval);
-
-            // Store timer
-            window._simulatedAdTimer = timer;
+                const timer = setInterval(() => {
+                    progress += step;
+                    if (progress >= 100) {
+                        clearInterval(timer);
+                        adProgressFill.style.width = '100%';
+                        adStatus.textContent = '✅ Ad complete!';
+                        adSpinner.textContent = '✅';
+                        state.adCompleted = true;
+                        adClaimBtn.style.display = 'block';
+                        adClaimBtn.textContent = `💰 Claim ${state.pendingReward.toFixed(4)} USDT`;
+                        resolve();
+                    } else {
+                        adProgressFill.style.width = `${Math.min(progress, 100)}%`;
+                        adStatus.textContent = `🎬 Watching ad... ${Math.round(progress)}%`;
+                    }
+                }, interval);
+            });
         }
 
         // ===== CLAIM AD REWARD =====
         function claimAdReward() {
+            if (!state.adCompleted) {
+                showNotification('⏳ Please wait for ad to complete');
+                return;
+            }
+
             const reward = state.pendingReward;
-            const ads = state.pendingCoins;
+            const coins = state.pendingCoins;
 
-            // Clean up any intervals
-            if (adController && adController._progressInterval) {
-                clearInterval(adController._progressInterval);
-                adController._progressInterval = null;
-            }
-            if (window._simulatedAdTimer) {
-                clearInterval(window._simulatedAdTimer);
-                window._simulatedAdTimer = null;
-            }
-
-            // Update state
             state.balance += reward;
             state.totalEarned += reward;
-            state.coins += ads;
+            state.coins += coins;
             state.adsWatched += 1;
 
             tg.HapticFeedback?.impactOccurred('success');
             updateUI();
 
-            // Close overlay
-            adOverlay.style.display = 'none';
-            state.isAdWatching = false;
-
-            showNotification(`✅ +${reward.toFixed(4)} USDT earned! (+${ads} coins)`);
+            closeAd();
+            showNotification(`✅ +${reward.toFixed(4)} USDT earned! (+${coins} coins)`);
         }
 
-        // ===== NOTIFICATION =====
-        function showNotification(message) {
-            const notif = document.createElement('div');
-            notif.className = 'notification';
-            notif.textContent = message;
-            document.body.appendChild(notif);
-            setTimeout(() => {
-                if (notif.parentNode) notif.remove();
-            }, 3000);
+        // ===== CLOSE AD =====
+        function closeAd() {
+            adOverlay.style.display = 'none';
+            state.isAdPlaying = false;
+            state.adCompleted = false;
+            document.querySelectorAll('.task-btn').forEach(btn => btn.disabled = false);
+            
+            // Clear intervals
+            if (window._adProgressInterval) {
+                clearInterval(window._adProgressInterval);
+                window._adProgressInterval = null;
+            }
         }
 
         // =============================================
@@ -824,6 +712,10 @@
         }
 
         function handleTap(e) {
+            if (state.isAdPlaying) {
+                showNotification('⏳ Ad is playing!');
+                return;
+            }
             if (state.energy < 1) {
                 tg.HapticFeedback?.impactOccurred('error');
                 showNotification('⚡ Not enough energy!');
@@ -860,7 +752,7 @@
             updateUI();
         }
 
-        // ===== ENERGY REGEN =====
+        // Energy Regen
         setInterval(() => {
             if (state.energy < state.maxEnergy) {
                 state.energy = Math.min(state.energy + state.energyRegen, state.maxEnergy);
@@ -873,10 +765,12 @@
             btn.addEventListener('click', function() {
                 const reward = parseFloat(this.dataset.reward) || 0.0001;
                 const ads = parseInt(this.dataset.ads) || 50;
-                state.isAdWatching = true;
                 showAd(reward, ads);
             });
         });
+
+        // ===== AD CLAIM BUTTON =====
+        adClaimBtn.addEventListener('click', claimAdReward);
 
         // ===== BOOST FUNCTIONS =====
         function upgradeTap() {
@@ -934,6 +828,20 @@
             }
         }
 
+        // ===== NOTIFICATION =====
+        function showNotification(message) {
+            const existing = document.querySelector('.notification');
+            if (existing) existing.remove();
+
+            const notif = document.createElement('div');
+            notif.className = 'notification';
+            notif.textContent = message;
+            document.body.appendChild(notif);
+            setTimeout(() => {
+                if (notif.parentNode) notif.remove();
+            }, 3000);
+        }
+
         // ===== TABS =====
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', function() {
@@ -973,21 +881,20 @@
         // ===== INIT =====
         // =============================================
 
-        // Load saved state
         loadState();
-
-        // Initialize Adsgram
-        setTimeout(() => {
-            const initialized = initAdsgram();
-            if (initialized) {
-                console.log('✅ Adsgram ready with Block ID:', ADSGRAM_BLOCK_ID);
-            } else {
-                console.log('⚠️ Running in simulated ad mode');
-            }
-        }, 500);
-
-        // Set UI to initial state
         updateUI();
+
+        // Initialize Adsgram after page load
+        setTimeout(async () => {
+            const success = await initAdsgram();
+            if (success) {
+                console.log('✅ Adsgram ready with Block ID:', ADSGRAM_BLOCK_ID);
+                showNotification('🎬 Ads ready! Watch ads to earn USDT.');
+            } else {
+                console.log('⚠️ Using simulated ads (Adsgram not available)');
+                showNotification('⚠️ Using simulated ads');
+            }
+        }, 1000);
 
         console.log('🚀 CoinPulse Mini Game loaded!');
         console.log('📺 Adsgram Block ID:', ADSGRAM_BLOCK_ID);
