@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CoinPulse Mini Game</title>
+    <title>CoinPulse Mini Games</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -51,13 +51,37 @@
             font-size: 13px;
             font-weight: 700;
         }
+        .game-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .game-selector button {
+            padding: 12px;
+            border-radius: 14px;
+            border: 2px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.05);
+            color: #8899bb;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .game-selector button.active {
+            border-color: #f7931a;
+            background: rgba(247,147,26,0.15);
+            color: #f7931a;
+        }
         .game-container {
             background: linear-gradient(145deg, #111827, #0f1729);
             border-radius: 24px;
             padding: 24px;
             margin-bottom: 16px;
             border: 1px solid rgba(255,255,255,0.06);
+            display: none;
         }
+        .game-container.active { display: block; }
         .tap-area {
             position: relative;
             display: flex;
@@ -69,12 +93,12 @@
             transition: transform 0.1s;
         }
         .tap-area:active { transform: scale(0.95); }
-        .coin-image {
+        .game-icon {
             font-size: 80px;
             transition: all 0.15s;
             filter: drop-shadow(0 0 30px rgba(247,147,26,0.3));
         }
-        .coin-image.pop { animation: popAnim 0.2s ease; }
+        .game-icon.pop { animation: popAnim 0.2s ease; }
         @keyframes popAnim {
             0% { transform: scale(1); }
             50% { transform: scale(1.3); }
@@ -113,6 +137,21 @@
             font-size: 11px;
             color: #8899bb;
         }
+        .game-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 12px;
+        }
+        .game-stats .stat-item {
+            background: rgba(255,255,255,0.04);
+            padding: 10px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .game-stats .stat-item span:first-child { display: block; font-size: 10px; color: #8899bb; }
+        .game-stats .stat-item span:last-child { font-size: 14px; font-weight: 700; color: #f7931a; }
+
         .stats {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -171,7 +210,7 @@
             border-radius: 14px;
             border: 1px solid rgba(255,255,255,0.06);
         }
-        .task-info { display: flex; align-items: center; gap: 12px; }
+        .task-info { display: flex; align-items: center; gap: 12px; flex: 1; }
         .task-icon { font-size: 28px; }
         .task-title { font-size: 14px; font-weight: 600; }
         .task-reward { font-size: 11px; color: #8899bb; margin-top: 2px; }
@@ -185,9 +224,11 @@
             font-weight: 700;
             cursor: pointer;
             transition: opacity 0.2s;
+            min-width: 70px;
         }
         .task-btn:active { opacity: 0.7; }
         .task-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .task-btn.completed { background: #2d3748; }
         .boost-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .boost-item {
             background: rgba(255,255,255,0.04);
@@ -236,7 +277,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0,0,0,0.9);
+            background: rgba(0,0,0,0.92);
             display: none;
             align-items: center;
             justify-content: center;
@@ -324,71 +365,102 @@
             <div class="level">Level <span id="levelDisplay">1</span></div>
         </div>
 
-        <div class="game-container">
-            <div class="tap-area" id="tapArea">
-                <div class="coin-image" id="coinImage">🪙</div>
-                <div class="tap-text">TAP TO MINE</div>
-                <div class="tap-counter" id="tapCounter">+0.0001</div>
+        <!-- Game Selector -->
+        <div class="game-selector">
+            <button class="active" data-game="game1">🪙 Tap & Earn</button>
+            <button data-game="game2">🎯 Click Challenge</button>
+        </div>
+
+        <!-- Game 1: Tap & Earn -->
+        <div class="game-container active" id="game1Container">
+            <div class="tap-area" id="tapArea1">
+                <div class="game-icon" id="gameIcon1">🪙</div>
+                <div class="tap-text">TAP TO EARN</div>
+                <div class="tap-counter" id="tapCounter1">+0.0001</div>
             </div>
             <div class="energy-bar">
-                <div class="energy-fill" id="energyFill" style="width:100%"></div>
-                <span class="energy-text" id="energyText">100/100</span>
+                <div class="energy-fill" id="energyFill1" style="width:100%"></div>
+                <span class="energy-text" id="energyText1">100/100</span>
+            </div>
+            <div class="game-stats">
+                <div class="stat-item"><span>💎 Coins</span><span id="game1Coins">0</span></div>
+                <div class="stat-item"><span>⚡ Power</span><span id="game1Power">1</span></div>
             </div>
         </div>
 
-        <div class="stats">
-            <div class="stat-item"><span>💎 Coins</span><span id="coinCount">0</span></div>
-            <div class="stat-item"><span>⚡ Tap Power</span><span id="tapPower">1</span></div>
-            <div class="stat-item"><span>📈 Total Earned</span><span id="totalEarned">0.0000</span></div>
+        <!-- Game 2: Click Challenge -->
+        <div class="game-container" id="game2Container">
+            <div class="tap-area" id="tapArea2">
+                <div class="game-icon" id="gameIcon2">🎯</div>
+                <div class="tap-text">CLICK TO EARN</div>
+                <div class="tap-counter" id="tapCounter2">+0.0002</div>
+            </div>
+            <div class="energy-bar">
+                <div class="energy-fill" id="energyFill2" style="width:100%"></div>
+                <span class="energy-text" id="energyText2">100/100</span>
+            </div>
+            <div class="game-stats">
+                <div class="stat-item"><span>🎯 Clicks</span><span id="game2Clicks">0</span></div>
+                <div class="stat-item"><span>⚡ Power</span><span id="game2Power">1</span></div>
+            </div>
         </div>
 
+        <!-- Main Stats -->
+        <div class="stats">
+            <div class="stat-item"><span>💰 Total USDT</span><span id="totalUSDT">0.0000</span></div>
+            <div class="stat-item"><span>📈 Total Earned</span><span id="totalEarned">0.0000</span></div>
+            <div class="stat-item"><span>📺 Ads Watched</span><span id="adsWatched">0</span></div>
+        </div>
+
+        <!-- Tabs -->
         <div class="tabs">
-            <button class="tab-btn active" data-tab="game">🎮 Game</button>
-            <button class="tab-btn" data-tab="tasks">📋 Tasks</button>
+            <button class="tab-btn active" data-tab="tasks">📋 Tasks</button>
             <button class="tab-btn" data-tab="boost">🚀 Boost</button>
             <button class="tab-btn" data-tab="referral">👥 Referral</button>
         </div>
 
-        <div class="tab-content" id="tasksTab" style="display:none;">
+        <!-- Tasks -->
+        <div class="tab-content" id="tasksTab">
             <div class="task-list">
                 <div class="task-item">
                     <div class="task-info">
                         <span class="task-icon">📺</span>
                         <div>
-                            <div class="task-title">Watch Ad (50 coins)</div>
+                            <div class="task-title">Watch 50 Ads</div>
                             <div class="task-reward">Reward: 0.0001 USDT</div>
                         </div>
                     </div>
-                    <button class="task-btn" data-reward="0.0001" data-ads="50">Watch</button>
+                    <button class="task-btn" data-reward="0.0001" data-ads="50" id="task50">Watch</button>
                 </div>
                 <div class="task-item">
                     <div class="task-info">
                         <span class="task-icon">📺</span>
                         <div>
-                            <div class="task-title">Watch Ad (100 coins)</div>
-                            <div class="task-reward">Reward: 0.0001 USDT</div>
+                            <div class="task-title">Watch 100 Ads</div>
+                            <div class="task-reward">Reward: 0.0008 USDT</div>
                         </div>
                     </div>
-                    <button class="task-btn" data-reward="0.0001" data-ads="100">Watch</button>
+                    <button class="task-btn" data-reward="0.0008" data-ads="100" id="task100">Watch</button>
                 </div>
                 <div class="task-item">
                     <div class="task-info">
                         <span class="task-icon">📺</span>
                         <div>
-                            <div class="task-title">Watch Ad (500 coins)</div>
-                            <div class="task-reward">Reward: 0.0001 USDT</div>
+                            <div class="task-title">Watch 500 Ads</div>
+                            <div class="task-reward">Reward: 0.0010 USDT</div>
                         </div>
                     </div>
-                    <button class="task-btn" data-reward="0.0001" data-ads="500">Watch</button>
+                    <button class="task-btn" data-reward="0.0010" data-ads="500" id="task500">Watch</button>
                 </div>
             </div>
         </div>
 
+        <!-- Boost -->
         <div class="tab-content" id="boostTab" style="display:none;">
             <div class="boost-grid">
                 <div class="boost-item">
                     <span>⚡ Tap Power</span>
-                    <button onclick="upgradeTap()">Upgrade (50 coins)</button>
+                    <button onclick="upgradePower()">Upgrade (50 coins)</button>
                 </div>
                 <div class="boost-item">
                     <span>🔋 Energy Regen</span>
@@ -397,6 +469,7 @@
             </div>
         </div>
 
+        <!-- Referral -->
         <div class="tab-content" id="referralTab" style="display:none;">
             <div class="referral-box">
                 <p>Invite friends & earn 0.0005 USDT per referral!</p>
@@ -421,40 +494,71 @@
 
     <script>
         // =============================================
-        // COINPULSE - FULL GAME
+        // COINPULSE - FULL GAME WITH 2 GAMES + TASKS
         // =============================================
 
         // ===== STATE =====
         const state = {
+            // Shared
             balance: 0.0000,
-            coins: 0,
-            tapPower: 1,
-            energy: 100,
-            maxEnergy: 100,
-            energyRegen: 1,
-            level: 1,
             totalEarned: 0.0000,
+            level: 1,
             referrals: 0,
             adsWatched: 0,
             isAdPlaying: false,
             pendingReward: 0.0001,
             pendingCoins: 50,
-            adCompleted: false
+            adCompleted: false,
+
+            // Game 1: Tap & Earn
+            game1: {
+                coins: 0,
+                power: 1,
+                energy: 100,
+                maxEnergy: 100,
+                energyRegen: 1,
+                taps: 0
+            },
+
+            // Game 2: Click Challenge
+            game2: {
+                coins: 0,
+                power: 1,
+                energy: 100,
+                maxEnergy: 100,
+                energyRegen: 1,
+                clicks: 0
+            },
+
+            // Task tracking
+            tasks: {
+                task50: { watched: 0, completed: false },
+                task100: { watched: 0, completed: false },
+                task500: { watched: 0, completed: false }
+            }
         };
 
         // ===== DOM REFS =====
         const $ = id => document.getElementById(id);
         const balanceDisplay = $('balanceDisplay');
         const levelDisplay = $('levelDisplay');
-        const coinCount = $('coinCount');
-        const tapPower = $('tapPower');
-        const totalEarned = $('totalEarned');
-        const energyFill = $('energyFill');
-        const energyText = $('energyText');
-        const tapArea = $('tapArea');
-        const coinImage = $('coinImage');
-        const tapCounter = $('tapCounter');
+        const totalUSDT = $('totalUSDT');
+        const totalEarnedDisplay = $('totalEarned');
+        const adsWatchedDisplay = $('adsWatched');
         const referralCount = $('referralCount');
+
+        // Game 1
+        const game1Coins = $('game1Coins');
+        const game1Power = $('game1Power');
+        const energyFill1 = $('energyFill1');
+        const energyText1 = $('energyText1');
+
+        // Game 2
+        const game2Clicks = $('game2Clicks');
+        const game2Power = $('game2Power');
+        const energyFill2 = $('energyFill2');
+        const energyText2 = $('energyText2');
+
         const adOverlay = $('adOverlay');
         const adStatus = $('adStatus');
         const adSpinner = $('adSpinner');
@@ -472,22 +576,232 @@
         if (tg.expand) tg.expand();
 
         // =============================================
-        // ===== ADSGRAM INTEGRATION (FIXED) =====
+        // ===== SAVE/LOAD =====
+        // =============================================
+
+        function saveState() {
+            try {
+                const data = {
+                    balance: state.balance,
+                    totalEarned: state.totalEarned,
+                    level: state.level,
+                    referrals: state.referrals,
+                    adsWatched: state.adsWatched,
+                    game1: state.game1,
+                    game2: state.game2,
+                    tasks: state.tasks
+                };
+                localStorage.setItem('coinpulse_data', JSON.stringify(data));
+            } catch(e) {}
+        }
+
+        function loadState() {
+            try {
+                const raw = localStorage.getItem('coinpulse_data');
+                if (!raw) return;
+                const data = JSON.parse(raw);
+                Object.assign(state, data);
+                updateUI();
+            } catch(e) {}
+        }
+
+        // =============================================
+        // ===== UPDATE UI =====
+        // =============================================
+
+        function updateUI() {
+            // Main
+            balanceDisplay.textContent = state.balance.toFixed(4);
+            levelDisplay.textContent = state.level;
+            totalUSDT.textContent = state.balance.toFixed(4);
+            totalEarnedDisplay.textContent = state.totalEarned.toFixed(4);
+            adsWatchedDisplay.textContent = state.adsWatched;
+            referralCount.textContent = state.referrals;
+
+            // Game 1
+            game1Coins.textContent = state.game1.coins;
+            game1Power.textContent = state.game1.power;
+            energyFill1.style.width = `${(state.game1.energy / state.game1.maxEnergy) * 100}%`;
+            energyText1.textContent = `${Math.floor(state.game1.energy)}/${state.game1.maxEnergy}`;
+
+            // Game 2
+            game2Clicks.textContent = state.game2.clicks;
+            game2Power.textContent = state.game2.power;
+            energyFill2.style.width = `${(state.game2.energy / state.game2.maxEnergy) * 100}%`;
+            energyText2.textContent = `${Math.floor(state.game2.energy)}/${state.game2.maxEnergy}`;
+
+            // Tasks
+            updateTaskButtons();
+
+            saveState();
+        }
+
+        function updateTaskButtons() {
+            const task50 = $('task50');
+            const task100 = $('task100');
+            const task500 = $('task500');
+
+            // Task 50
+            if (state.tasks.task50.completed) {
+                task50.textContent = '✅ Done';
+                task50.className = 'task-btn completed';
+                task50.disabled = true;
+            } else {
+                task50.textContent = 'Watch';
+                task50.className = 'task-btn';
+                task50.disabled = state.isAdPlaying;
+            }
+
+            // Task 100
+            if (state.tasks.task100.completed) {
+                task100.textContent = '✅ Done';
+                task100.className = 'task-btn completed';
+                task100.disabled = true;
+            } else {
+                task100.textContent = 'Watch';
+                task100.className = 'task-btn';
+                task100.disabled = state.isAdPlaying;
+            }
+
+            // Task 500
+            if (state.tasks.task500.completed) {
+                task500.textContent = '✅ Done';
+                task500.className = 'task-btn completed';
+                task500.disabled = true;
+            } else {
+                task500.textContent = 'Watch';
+                task500.className = 'task-btn';
+                task500.disabled = state.isAdPlaying;
+            }
+        }
+
+        // =============================================
+        // ===== GAME 1: TAP & EARN =====
+        // =============================================
+
+        function handleTap1(e) {
+            if (state.isAdPlaying) {
+                showNotification('⏳ Ad is playing!');
+                return;
+            }
+            if (state.game1.energy < 1) {
+                tg.HapticFeedback?.impactOccurred('error');
+                showNotification('⚡ Not enough energy!');
+                return;
+            }
+
+            tg.HapticFeedback?.impactOccurred('light');
+
+            const icon = $('gameIcon1');
+            icon.classList.remove('pop');
+            void icon.offsetWidth;
+            icon.classList.add('pop');
+
+            const reward = 0.0001 * state.game1.power;
+            const counter = $('tapCounter1');
+            counter.textContent = `+${reward.toFixed(4)}`;
+            counter.style.opacity = '1';
+            counter.style.transform = 'translateY(0)';
+            setTimeout(() => {
+                counter.style.opacity = '0';
+                counter.style.transform = 'translateY(-20px)';
+            }, 400);
+
+            state.balance += reward;
+            state.totalEarned += reward;
+            state.game1.coins += state.game1.power;
+            state.game1.taps += 1;
+            state.game1.energy -= 1;
+
+            checkLevelUp();
+            updateUI();
+        }
+
+        // =============================================
+        // ===== GAME 2: CLICK CHALLENGE =====
+        // =============================================
+
+        function handleTap2(e) {
+            if (state.isAdPlaying) {
+                showNotification('⏳ Ad is playing!');
+                return;
+            }
+            if (state.game2.energy < 1) {
+                tg.HapticFeedback?.impactOccurred('error');
+                showNotification('⚡ Not enough energy!');
+                return;
+            }
+
+            tg.HapticFeedback?.impactOccurred('medium');
+
+            const icon = $('gameIcon2');
+            icon.classList.remove('pop');
+            void icon.offsetWidth;
+            icon.classList.add('pop');
+
+            const reward = 0.0002 * state.game2.power;
+            const counter = $('tapCounter2');
+            counter.textContent = `+${reward.toFixed(4)}`;
+            counter.style.opacity = '1';
+            counter.style.transform = 'translateY(0)';
+            setTimeout(() => {
+                counter.style.opacity = '0';
+                counter.style.transform = 'translateY(-20px)';
+            }, 400);
+
+            state.balance += reward;
+            state.totalEarned += reward;
+            state.game2.coins += state.game2.power * 2;
+            state.game2.clicks += 1;
+            state.game2.energy -= 2;
+
+            checkLevelUp();
+            updateUI();
+        }
+
+        // =============================================
+        // ===== LEVEL SYSTEM =====
+        // =============================================
+
+        function checkLevelUp() {
+            const totalCoins = state.game1.coins + state.game2.coins;
+            const newLevel = Math.floor(totalCoins / 1000) + 1;
+            if (newLevel > state.level) {
+                state.level = newLevel;
+                tg.HapticFeedback?.impactOccurred('heavy');
+                showNotification(`🎉 Level ${state.level} unlocked!`);
+            }
+        }
+
+        // =============================================
+        // ===== ENERGY REGEN =====
+        // =============================================
+
+        setInterval(() => {
+            // Game 1
+            if (state.game1.energy < state.game1.maxEnergy) {
+                state.game1.energy = Math.min(state.game1.energy + state.game1.energyRegen, state.game1.maxEnergy);
+            }
+            // Game 2
+            if (state.game2.energy < state.game2.maxEnergy) {
+                state.game2.energy = Math.min(state.game2.energy + state.game2.energyRegen, state.game2.maxEnergy);
+            }
+            updateUI();
+        }, 1000);
+
+        // =============================================
+        // ===== ADSGRAM INTEGRATION =====
         // =============================================
 
         const ADSGRAM_BLOCK_ID = '36912';
         let adController = null;
 
-        // Load Adsgram SDK dynamically
         function loadAdsgramSDK() {
             return new Promise((resolve, reject) => {
-                // Check if already loaded
                 if (typeof window.Adsgram !== 'undefined') {
                     resolve(window.Adsgram);
                     return;
                 }
-
-                // Load script
                 const script = document.createElement('script');
                 script.src = 'https://sad.adsgram.ai/js/sad.min.js';
                 script.async = true;
@@ -495,7 +809,7 @@
                     if (typeof window.Adsgram !== 'undefined') {
                         resolve(window.Adsgram);
                     } else {
-                        reject(new Error('Adsgram not found after load'));
+                        reject(new Error('Adsgram not found'));
                     }
                 };
                 script.onerror = () => reject(new Error('Failed to load Adsgram SDK'));
@@ -503,7 +817,6 @@
             });
         }
 
-        // Initialize Adsgram
         async function initAdsgram() {
             try {
                 const Adsgram = await loadAdsgramSDK();
@@ -544,10 +857,19 @@
             }
         }
 
+        // =============================================
         // ===== SHOW AD =====
-        async function showAd(rewardAmount, adsRequired) {
+        // =============================================
+
+        async function showAd(rewardAmount, adsRequired, taskId) {
             if (state.isAdPlaying) {
                 showNotification('⏳ Please wait for current ad');
+                return;
+            }
+
+            // Check if task already completed
+            if (taskId && state.tasks[taskId]?.completed) {
+                showNotification('✅ This task is already completed!');
                 return;
             }
 
@@ -556,24 +878,19 @@
             state.pendingReward = rewardAmount || 0.0001;
             state.pendingCoins = adsRequired || 50;
 
-            // Show overlay
             adOverlay.style.display = 'flex';
             adStatus.textContent = 'Loading ad...';
             adSpinner.textContent = '⏳';
             adProgressFill.style.width = '0%';
             adClaimBtn.style.display = 'none';
 
-            // Disable all task buttons
             document.querySelectorAll('.task-btn').forEach(btn => btn.disabled = true);
 
             try {
-                // Try to use real Adsgram
                 if (adController) {
                     await adController.show();
-                    // Ad is now playing
                     adStatus.textContent = '🎬 Watching ad...';
                     
-                    // Simulate progress while ad plays
                     let progress = 0;
                     const interval = setInterval(() => {
                         progress += 1;
@@ -585,22 +902,17 @@
                             adProgressFill.style.width = `${Math.min(progress, 90)}%`;
                         }
                     }, 100);
-
-                    // Store interval reference
                     window._adProgressInterval = interval;
-
                 } else {
-                    // Fallback: Simulated ad
                     await showSimulatedAd();
                 }
             } catch (e) {
                 console.error('Ad show error:', e);
-                // Try simulated ad as fallback
                 await showSimulatedAd();
             }
         }
 
-        // ===== SIMULATED AD (Fallback) =====
+        // ===== SIMULATED AD =====
         function showSimulatedAd() {
             return new Promise((resolve) => {
                 adStatus.textContent = '🎬 Watching ad (simulated)...';
@@ -643,10 +955,23 @@
 
             state.balance += reward;
             state.totalEarned += reward;
-            state.coins += coins;
             state.adsWatched += 1;
 
+            // Split coins between both games
+            state.game1.coins += Math.floor(coins / 2);
+            state.game2.coins += Math.ceil(coins / 2);
+
+            // Track which task was completed
+            const taskId = state._currentTaskId;
+            if (taskId && state.tasks[taskId]) {
+                state.tasks[taskId].watched += 1;
+                if (state.tasks[taskId].watched >= 1) {
+                    state.tasks[taskId].completed = true;
+                }
+            }
+
             tg.HapticFeedback?.impactOccurred('success');
+            checkLevelUp();
             updateUI();
 
             closeAd();
@@ -658,9 +983,10 @@
             adOverlay.style.display = 'none';
             state.isAdPlaying = false;
             state.adCompleted = false;
+            state._currentTaskId = null;
             document.querySelectorAll('.task-btn').forEach(btn => btn.disabled = false);
+            updateTaskButtons();
             
-            // Clear intervals
             if (window._adProgressInterval) {
                 clearInterval(window._adProgressInterval);
                 window._adProgressInterval = null;
@@ -668,142 +994,77 @@
         }
 
         // =============================================
-        // ===== GAME MECHANICS =====
+        // ===== TASK BUTTONS =====
         // =============================================
 
-        function saveState() {
-            try {
-                const data = {
-                    balance: state.balance,
-                    coins: state.coins,
-                    tapPower: state.tapPower,
-                    energy: state.energy,
-                    maxEnergy: state.maxEnergy,
-                    energyRegen: state.energyRegen,
-                    level: state.level,
-                    totalEarned: state.totalEarned,
-                    referrals: state.referrals,
-                    adsWatched: state.adsWatched
-                };
-                localStorage.setItem('coinpulse_data', JSON.stringify(data));
-            } catch(e) {}
-        }
-
-        function loadState() {
-            try {
-                const raw = localStorage.getItem('coinpulse_data');
-                if (!raw) return;
-                const data = JSON.parse(raw);
-                Object.assign(state, data);
-                updateUI();
-            } catch(e) {}
-        }
-
-        function updateUI() {
-            balanceDisplay.textContent = state.balance.toFixed(4);
-            levelDisplay.textContent = state.level;
-            coinCount.textContent = state.coins;
-            tapPower.textContent = state.tapPower;
-            totalEarned.textContent = state.totalEarned.toFixed(4);
-            energyFill.style.width = `${(state.energy / state.maxEnergy) * 100}%`;
-            energyText.textContent = `${Math.floor(state.energy)}/${state.maxEnergy}`;
-            referralCount.textContent = state.referrals;
-            saveState();
-        }
-
-        function handleTap(e) {
-            if (state.isAdPlaying) {
-                showNotification('⏳ Ad is playing!');
-                return;
-            }
-            if (state.energy < 1) {
-                tg.HapticFeedback?.impactOccurred('error');
-                showNotification('⚡ Not enough energy!');
-                return;
-            }
-
-            tg.HapticFeedback?.impactOccurred('light');
-
-            coinImage.classList.remove('pop');
-            void coinImage.offsetWidth;
-            coinImage.classList.add('pop');
-
-            const reward = 0.0001 * state.tapPower;
-            tapCounter.textContent = `+${reward.toFixed(4)}`;
-            tapCounter.style.opacity = '1';
-            tapCounter.style.transform = 'translateY(0)';
-            setTimeout(() => {
-                tapCounter.style.opacity = '0';
-                tapCounter.style.transform = 'translateY(-20px)';
-            }, 400);
-
-            state.balance += reward;
-            state.totalEarned += reward;
-            state.coins += state.tapPower;
-            state.energy -= 1;
-
-            const newLevel = Math.floor(state.coins / 1000) + 1;
-            if (newLevel > state.level) {
-                state.level = newLevel;
-                tg.HapticFeedback?.impactOccurred('heavy');
-                showNotification(`🎉 Level ${state.level} unlocked!`);
-            }
-
-            updateUI();
-        }
-
-        // Energy Regen
-        setInterval(() => {
-            if (state.energy < state.maxEnergy) {
-                state.energy = Math.min(state.energy + state.energyRegen, state.maxEnergy);
-                updateUI();
-            }
-        }, 1000);
-
-        // ===== TASK BUTTONS =====
         document.querySelectorAll('.task-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const reward = parseFloat(this.dataset.reward) || 0.0001;
                 const ads = parseInt(this.dataset.ads) || 50;
-                showAd(reward, ads);
+                const taskId = this.id;
+                state._currentTaskId = taskId;
+                showAd(reward, ads, taskId);
             });
         });
 
         // ===== AD CLAIM BUTTON =====
         adClaimBtn.addEventListener('click', claimAdReward);
 
+        // =============================================
         // ===== BOOST FUNCTIONS =====
-        function upgradeTap() {
+        // =============================================
+
+        function upgradePower() {
             const cost = 50 * state.level;
-            if (state.coins < cost) {
+            const totalCoins = state.game1.coins + state.game2.coins;
+            if (totalCoins < cost) {
                 tg.HapticFeedback?.impactOccurred('error');
                 showNotification(`❌ Need ${cost} coins!`);
                 return;
             }
-            state.coins -= cost;
-            state.tapPower += 1;
+            // Take coins from both games proportionally
+            const ratio = state.game1.coins / (totalCoins || 1);
+            const take1 = Math.floor(cost * ratio);
+            const take2 = cost - take1;
+            state.game1.coins = Math.max(0, state.game1.coins - take1);
+            state.game2.coins = Math.max(0, state.game2.coins - take2);
+
+            state.game1.power += 1;
+            state.game2.power += 1;
             tg.HapticFeedback?.impactOccurred('success');
             updateUI();
-            showNotification(`⚡ Tap Power: ${state.tapPower}`);
+            showNotification(`⚡ Power increased to ${state.game1.power}!`);
         }
 
         function upgradeEnergy() {
             const cost = 100 * state.level;
-            if (state.coins < cost) {
+            const totalCoins = state.game1.coins + state.game2.coins;
+            if (totalCoins < cost) {
                 tg.HapticFeedback?.impactOccurred('error');
                 showNotification(`❌ Need ${cost} coins!`);
                 return;
             }
-            state.coins -= cost;
-            state.maxEnergy += 10;
-            state.energy = state.maxEnergy;
-            state.energyRegen += 0.5;
+            const ratio = state.game1.coins / (totalCoins || 1);
+            const take1 = Math.floor(cost * ratio);
+            const take2 = cost - take1;
+            state.game1.coins = Math.max(0, state.game1.coins - take1);
+            state.game2.coins = Math.max(0, state.game2.coins - take2);
+
+            state.game1.maxEnergy += 10;
+            state.game1.energy = state.game1.maxEnergy;
+            state.game1.energyRegen += 0.5;
+            state.game2.maxEnergy += 10;
+            state.game2.energy = state.game2.maxEnergy;
+            state.game2.energyRegen += 0.5;
             tg.HapticFeedback?.impactOccurred('success');
             updateUI();
-            showNotification(`🔋 Energy: ${state.maxEnergy}`);
+            showNotification(`🔋 Energy increased to ${state.game1.maxEnergy}!`);
         }
 
+        // =============================================
         // ===== REFERRAL =====
+        // =============================================
+
         function shareReferral() {
             const userId = tg.initDataUnsafe?.user?.id || '12345';
             const link = `https://t.me/coinpulse_bot?start=ref_${userId}`;
@@ -828,7 +1089,40 @@
             }
         }
 
+        // =============================================
+        // ===== GAME SELECTOR =====
+        // =============================================
+
+        document.querySelectorAll('.game-selector button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.game-selector button').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                const game = this.dataset.game;
+                document.querySelectorAll('.game-container').forEach(el => el.classList.remove('active'));
+                $(`${game}Container`).classList.add('active');
+            });
+        });
+
+        // =============================================
+        // ===== TABS =====
+        // =============================================
+
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                const tab = this.dataset.tab;
+                document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+                $(`${tab}Tab`).style.display = 'block';
+            });
+        });
+
+        // =============================================
         // ===== NOTIFICATION =====
+        // =============================================
+
         function showNotification(message) {
             const existing = document.querySelector('.notification');
             if (existing) existing.remove();
@@ -842,39 +1136,20 @@
             }, 3000);
         }
 
-        // ===== TABS =====
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                
-                const tab = this.dataset.tab;
-                document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
-                
-                const targetMap = {
-                    'game': null,
-                    'tasks': 'tasksTab',
-                    'boost': 'boostTab',
-                    'referral': 'referralTab'
-                };
-                const targetId = targetMap[tab];
-                if (targetId) {
-                    $(targetId).style.display = 'block';
-                } else {
-                    document.querySelector('.game-container').style.display = 'block';
-                    document.querySelector('.stats').style.display = 'grid';
-                }
-            });
+        // =============================================
+        // ===== EVENT LISTENERS =====
+        // =============================================
+
+        $('tapArea1').addEventListener('click', handleTap1);
+        $('tapArea1').addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            handleTap1(e);
         });
 
-        document.querySelector('.game-container').style.display = 'block';
-        document.querySelector('.stats').style.display = 'grid';
-
-        // ===== EVENT LISTENERS =====
-        tapArea.addEventListener('click', handleTap);
-        tapArea.addEventListener('touchstart', (e) => {
+        $('tapArea2').addEventListener('click', handleTap2);
+        $('tapArea2').addEventListener('touchstart', (e) => {
             e.preventDefault();
-            handleTap(e);
+            handleTap2(e);
         });
 
         // =============================================
@@ -884,22 +1159,19 @@
         loadState();
         updateUI();
 
-        // Initialize Adsgram after page load
         setTimeout(async () => {
             const success = await initAdsgram();
             if (success) {
                 console.log('✅ Adsgram ready with Block ID:', ADSGRAM_BLOCK_ID);
-                showNotification('🎬 Ads ready! Watch ads to earn USDT.');
             } else {
-                console.log('⚠️ Using simulated ads (Adsgram not available)');
-                showNotification('⚠️ Using simulated ads');
+                console.log('⚠️ Using simulated ads');
             }
         }, 1000);
 
-        console.log('🚀 CoinPulse Mini Game loaded!');
+        console.log('🚀 CoinPulse Mini Games loaded!');
         console.log('📺 Adsgram Block ID:', ADSGRAM_BLOCK_ID);
-        console.log('💡 Tap the coin to earn USDT!');
-        console.log('📋 Watch ads for extra rewards!');
+        console.log('🎮 2 Games available: Tap & Earn + Click Challenge');
+        console.log('📋 3 Tasks: 50 Ads (0.0001), 100 Ads (0.0008), 500 Ads (0.0010)');
     </script>
 </body>
 </html>
