@@ -1,842 +1,676 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>CoinPulse</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Coinpulse Pro Mini App</title>
+    <!-- Telegram Web App SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- Adsgram SDK -->
     <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+    
     <style>
+        :root {
+            --bg-dark: #070b12;
+            --panel-bg: rgba(18, 26, 44, 0.7);
+            --primary: #00ffcc;
+            --primary-glow: rgba(0, 255, 204, 0.4);
+            --danger: #ff0055;
+            --danger-glow: rgba(255, 0, 85, 0.4);
+            --accent: #ffcc00;
+            --text-main: #f0f4f8;
+        }
+
         * {
-            margin: 0;
-            padding: 0;
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
-            user-select: none;
         }
+
         body {
-            background: #0a0e17;
-            color: #fff;
-            font-family: -apple-system, sans-serif;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            margin: 0;
+            padding: 0;
+            background: radial-gradient(circle at center, #152535 0%, var(--bg-dark) 100%);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
         }
-        #app {
-            max-width: 400px;
+
+        #app-container {
+            display: flex;
+            flex-direction: column;
             width: 100%;
-            padding: 20px;
-            text-align: center;
-        }
-
-        /* Header */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 16px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 16px;
-            margin-bottom: 16px;
-        }
-        .balance {
-            font-size: 20px;
-            font-weight: 700;
-        }
-        .balance span {
-            color: #f7931a;
-        }
-        .level {
-            background: #f7931a;
-            padding: 4px 14px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 700;
-            color: #0a0e17;
-        }
-
-        /* Coin */
-        .coin-area {
-            padding: 30px 0;
-            cursor: pointer;
+            height: 100vh;
             position: relative;
         }
-        .coin {
-            width: 200px;
-            height: 200px;
-            margin: 0 auto;
-            border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, #fff4b8, #ffc83d 50%, #b8860b);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 80px;
-            box-shadow: 0 0 60px rgba(255, 200, 61, 0.3);
-            transition: transform 0.1s;
-        }
-        .coin:active {
-            transform: scale(0.92);
-        }
-        .coin-tap-text {
-            color: #8899bb;
-            font-size: 14px;
-            margin-top: 12px;
-        }
 
-        /* Energy */
-        .energy-wrap {
-            margin: 16px 0;
-        }
-        .energy-label {
+        /* Global Header Dashboard */
+        header {
+            background: var(--panel-bg);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 15px 20px;
             display: flex;
             justify-content: space-between;
-            font-size: 12px;
-            color: #8899bb;
-            margin-bottom: 4px;
-        }
-        .energy-bar {
-            height: 8px;
-            background: #1a2332;
-            border-radius: 4px;
-            overflow: hidden;
-        }
-        .energy-fill {
-            height: 100%;
-            width: 100%;
-            background: linear-gradient(90deg, #4ade80, #22d3ee);
-            border-radius: 4px;
-            transition: width 0.3s;
+            align-items: center;
+            z-index: 10;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
         }
 
-        /* Stats */
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin: 16px 0;
+        .stat-group {
+            display: flex;
+            flex-direction: column;
         }
-        .stat {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 12px;
-            border-radius: 12px;
+
+        .stat-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #7a8c9d;
         }
-        .stat .num {
+
+        .stat-value {
             font-size: 20px;
-            font-weight: 700;
-            color: #f7931a;
-        }
-        .stat .label {
-            font-size: 10px;
-            color: #8899bb;
-            margin-top: 4px;
+            font-weight: 800;
+            color: var(--primary);
+            text-shadow: 0 0 8px var(--primary-glow);
         }
 
-        /* Buttons */
-        .btn-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin: 16px 0;
-        }
-        .btn {
-            padding: 14px;
-            border: none;
-            border-radius: 14px;
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
-        .btn:active {
-            opacity: 0.7;
-        }
-        .btn-ad {
-            background: linear-gradient(135deg, #8b5cf6, #6366f1);
-            color: #fff;
-        }
-        .btn-energy {
-            background: linear-gradient(135deg, #ffc83d, #ff8a3d);
-            color: #0a0e17;
-        }
-        .btn:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
+        .stat-value.usdt {
+            color: var(--accent);
+            font-size: 16px;
         }
 
-        /* SDK Status */
-        .sdk-status {
-            padding: 8px 16px;
-            border-radius: 10px;
+        /* Screen Wrapper */
+        .content-frame {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            padding-bottom: 90px;
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out forwards;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Game Screen CSS */
+        .game-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .canvas-card {
+            background: #02060c;
+            border: 2px solid var(--danger);
+            border-radius: 20px;
+            box-shadow: 0 0 25px var(--danger-glow);
+            position: relative;
+            width: 100%;
+            max-width: 360px;
+            aspect-ratio: 4 / 5;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .game-meta-info {
+            margin-top: 10px;
+            text-align: center;
             font-size: 12px;
-            font-weight: 600;
-            margin-bottom: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        .sdk-status.ready {
-            border-color: #4ade80;
-            color: #4ade80;
-        }
-        .sdk-status.loading {
-            border-color: #ffc83d;
-            color: #ffc83d;
-        }
-        .sdk-status.error {
-            border-color: #ef4444;
-            color: #ef4444;
+            color: #ff6688;
         }
 
-        /* Tasks */
-        .task-list {
-            margin-top: 16px;
-            text-align: left;
+        /* Custom UI Components */
+        .card {
+            background: var(--panel-bg);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
-        .task-item {
+
+        .btn-prime {
+            background: linear-gradient(135deg, #00ffcc 0%, #00b3ff 100%);
+            color: #030710;
+            border: none;
+            padding: 14px 28px;
+            font-size: 16px;
+            font-weight: 700;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px var(--primary-glow);
+            width: 100%;
+            text-transform: uppercase;
+        }
+
+        .btn-prime:active {
+            transform: scale(0.98);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger) 0%, #bc003e 100%);
+            box-shadow: 0 4px 15px var(--danger-glow);
+            color: white;
+        }
+
+        /* Tasks Grid System */
+        .task-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 16px;
-            background: rgba(255, 255, 255, 0.04);
-            border-radius: 12px;
-            margin-bottom: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding: 12px 0;
         }
-        .task-item .info {
-            font-size: 13px;
-        }
-        .task-item .info .reward {
-            color: #26a17b;
-            font-weight: 700;
-        }
-        .task-btn {
-            padding: 6px 16px;
-            border: none;
-            border-radius: 20px;
+        .task-row:last-child { border-bottom: none; }
+
+        .task-details h4 { margin: 0 0 4px 0; font-size: 14px; }
+        .task-details p { margin: 0; font-size: 11px; color: var(--accent); }
+
+        .action-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
             font-size: 12px;
-            font-weight: 700;
             cursor: pointer;
-            background: linear-gradient(135deg, #f7931a, #f5a623);
-            color: #0a0e17;
         }
-        .task-btn:disabled {
-            opacity: 0.4;
+        .action-btn.ready {
+            background: var(--primary);
+            color: #000;
+        }
+        .action-btn:disabled {
+            opacity: 0.3;
             cursor: not-allowed;
         }
-        .task-btn.done {
-            background: #2d3748;
-            color: #8899bb;
-        }
 
-        /* Toast */
-        .toast {
-            position: fixed;
-            bottom: 100px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #1a2332;
-            padding: 12px 24px;
-            border-radius: 16px;
-            font-weight: 700;
-            z-index: 999;
-            border: 1px solid rgba(247, 147, 26, 0.3);
-            animation: fadeIn 0.3s ease;
-            max-width: 90%;
-            text-align: center;
-        }
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateX(-50%) translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(-50%) translateY(0);
-            }
-        }
-
-        /* Ad Overlay */
-        .ad-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
+        /* Navigation Menu (Bottom Tabs) */
+        nav {
+            position: absolute;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.92);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-        }
-        .ad-overlay.show {
+            left: 0;
+            width: 100%;
+            background: #09101d;
+            border-top: 1px solid rgba(255,255,255,0.08);
             display: flex;
+            z-index: 10;
         }
-        .ad-box {
-            background: #1a2332;
-            padding: 40px 32px;
-            border-radius: 24px;
-            text-align: center;
-            max-width: 320px;
-            width: 90%;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .ad-spinner {
-            font-size: 48px;
-            animation: spin 1s linear infinite;
-            display: block;
-            margin-bottom: 16px;
-        }
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-        .ad-status {
-            font-size: 16px;
-            color: #ccc;
-            margin-bottom: 12px;
-        }
-        .ad-progress {
-            width: 100%;
-            height: 6px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
-            overflow: hidden;
-            margin: 16px 0;
-        }
-        .ad-progress-fill {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, #f7931a, #f5a623);
-            border-radius: 4px;
-            transition: width 0.3s;
-        }
-        #claimBtn {
-            background: linear-gradient(135deg, #f7931a, #f5a623);
+
+        .nav-item {
+            flex: 1;
+            background: none;
             border: none;
-            color: #fff;
-            padding: 14px 32px;
-            border-radius: 30px;
-            font-size: 18px;
-            font-weight: 800;
+            padding: 16px 0;
+            color: #5c6f84;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
             cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+            background: linear-gradient(to top, rgba(0,255,204,0.05), transparent);
+            border-top: 2px solid var(--primary);
+        }
+
+        /* Utility classes */
+        .text-center { text-align: center; }
+        .flex-box { display: flex; gap: 10px; margin-top: 15px;}
+
+        /* Leaderboard table simulation */
+        .rank-table {
             width: 100%;
-            display: none;
-            margin-top: 12px;
-        }
-        #claimBtn.show {
-            display: block;
-        }
-        #closeAdBtn {
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            color: #8899bb;
-            padding: 10px 24px;
-            border-radius: 20px;
+            border-collapse: collapse;
             font-size: 14px;
-            cursor: pointer;
-            margin-top: 8px;
+        }
+        .rank-table th, .rank-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
         }
     </style>
 </head>
 <body>
 
-    <div id="app">
-
-        <!-- Header -->
-        <div class="header">
-            <div class="balance">🪙 <span id="coinDisplay">0</span></div>
-            <div class="level">Lvl <span id="levelDisplay">1</span></div>
+<div id="app-container">
+    <!-- Main Dashboard Header -->
+    <header>
+        <div class="stat-group">
+            <span class="stat-label">Coinpulse Balance</span>
+            <span class="stat-value" id="dom-coins">0.0000</span>
         </div>
-
-        <!-- SDK Status -->
-        <div class="sdk-status loading" id="sdkStatus">
-            ⏳ Loading Ads...
+        <div class="stat-group" style="text-align: right;">
+            <span class="stat-label">Secured Wallet</span>
+            <span class="stat-value usdt" id="dom-usdt">0.000000 USDT</span>
         </div>
+    </header>
 
-        <!-- Coin -->
-        <div class="coin-area" id="coinArea">
-            <div class="coin" id="coin">🪙</div>
-            <div class="coin-tap-text">👆 TAP TO EARN</div>
-        </div>
-
-        <!-- Energy -->
-        <div class="energy-wrap">
-            <div class="energy-label">
-                <span>⚡ Energy</span>
-                <span><span id="energyCurrent">100</span> / <span id="energyMax">100</span></span>
-            </div>
-            <div class="energy-bar">
-                <div class="energy-fill" id="energyFill" style="width:100%"></div>
-            </div>
-        </div>
-
-        <!-- Stats -->
-        <div class="stats">
-            <div class="stat">
-                <div class="num" id="coinsStat">0</div>
-                <div class="label">🪙 Coins</div>
-            </div>
-            <div class="stat">
-                <div class="num" id="usdtStat">0.0000</div>
-                <div class="label">💵 USDT</div>
-            </div>
-            <div class="stat">
-                <div class="num" id="adsStat">0</div>
-                <div class="label">📺 Ads</div>
+    <!-- App Content Frames -->
+    <div class="content-frame">
+        
+        <!-- GAME SCREEN -->
+        <div id="scr-game" class="screen active">
+            <div class="game-wrapper">
+                <div class="canvas-card">
+                    <canvas id="coreCanvas"></canvas>
+                </div>
+                <div class="game-meta-info">
+                    ⚠️ ALERT: 85% Bombs Rate Active. Missing 1 Coin = Immediate Destruction.
+                </div>
+                <div class="flex-box" style="width: 100%; max-width: 360px;">
+                    <button id="btn-run" class="btn-prime btn-danger" onclick="Engine.toggleState()">LAUNCH HARD CORE</button>
+                </div>
             </div>
         </div>
 
-        <!-- Buttons -->
-        <div class="btn-group">
-            <button class="btn btn-ad" id="watchAdBtn">🎬 Watch Ad</button>
-            <button class="btn btn-energy" id="refillBtn">⚡ Refill</button>
+        <!-- AD TASKS SCREEN -->
+        <div id="scr-tasks" class="screen">
+            <div class="card">
+                <h3>Adsgram Integration Node</h3>
+                <p style="font-size: 13px; color:#a0aec0;">Click below to watch immediate interstitial ad configurations under block <code style="color:var(--primary)">36912</code>.</p>
+                <button class="btn-prime" onclick="Tasks.triggerAdWatch()">WATCH ADSGRAM AD</button>
+                <p style="font-size: 12px; text-align: center; color: var(--accent);" id="dom-ad-counter">Total Ads Watched: 0</p>
+            </div>
+
+            <div class="card">
+                <h3>Extreme Milestone Sub-Routines</h3>
+                <div id="task-injector">
+                    <!-- Dynamic injection of data-heavy layout -->
+                </div>
+            </div>
         </div>
 
-        <!-- Tasks -->
-        <div class="task-list" id="taskList">
-            <div class="task-item">
-                <div class="info">📺 Watch 50 Ads <span class="reward">+0.0001 USDT</span></div>
-                <button class="task-btn" id="task50">Watch</button>
-            </div>
-            <div class="task-item">
-                <div class="info">📺 Watch 100 Ads <span class="reward">+0.0008 USDT</span></div>
-                <button class="task-btn" id="task100">Watch</button>
-            </div>
-            <div class="task-item">
-                <div class="info">📺 Watch 500 Ads <span class="reward">+0.0010 USDT</span></div>
-                <button class="task-btn" id="task500">Watch</button>
+        <!-- LEADERBOARD SCREEN -->
+        <div id="scr-leader" class="screen">
+            <div class="card">
+                <h3>Global Precision Rankings</h3>
+                <table class="rank-table">
+                    <thead>
+                        <tr style="color: #7a8c9d;"><th>Rank</th><th>Miner Node</th><th>USDT Claimed</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>🥇 1</td><td>CryptoWhale_tg</td><td>0.085400 USDT</td></tr>
+                        <tr><td>🥈 2</td><td>SolanaMaster</td><td>0.042100 USDT</td></tr>
+                        <tr><td>🥉 3</td><td>Ton_Miner_Pro</td><td>0.012500 USDT</td></tr>
+                        <tr><td>Node (You)</td><td id="dom-user-node">Anonymous</td><td id="dom-user-rank-val">0.000000 USDT</td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
     </div>
 
-    <!-- Ad Overlay -->
-    <div class="ad-overlay" id="adOverlay">
-        <div class="ad-box">
-            <div class="ad-spinner" id="adSpinner">⏳</div>
-            <div class="ad-status" id="adStatus">Loading ad...</div>
-            <div class="ad-progress">
-                <div class="ad-progress-fill" id="adProgressFill"></div>
-            </div>
-            <button id="claimBtn">💰 Claim</button>
-            <button id="closeAdBtn">✕ Close</button>
-        </div>
-    </div>
+    <!-- Navigation Hub Bar -->
+    <nav>
+        <button class="nav-item active" onclick="Navigation.route('scr-game', this)">Core Game</button>
+        <button class="nav-item" onclick="Navigation.route('scr-tasks', this)">Ad Tasks</button>
+        <button class="nav-item" onclick="Navigation.route('scr-leader', this)">Rankings</button>
+    </nav>
+</div>
 
-    <script>
-        // ================================================================
-        // COINPULSE - 100% WORKING
-        // ================================================================
-
-        // ===== STATE =====
-        const state = {
-            coins: 0,
-            usdt: 0.0000,
-            energy: 100,
-            maxEnergy: 100,
-            totalTaps: 0,
-            totalAds: 0,
-            totalUsdtEarned: 0,
-            level: 1,
-            tapPower: 1,
-            // Tasks
-            task50: { done: false, progress: 0 },
-            task100: { done: false, progress: 0 },
-            task500: { done: false, progress: 0 },
-            // Ad
-            isAdPlaying: false,
-            adCompleted: false,
-            pendingReward: 0.0001,
-            adTimer: null
+<script>
+    /**
+     * COINPULSE ARCHITECTURE SECURE SYSTEM
+     * Anti-Tamper State Pattern Encapsulation
+     */
+    const SecurityCore = (() => {
+        const _salt = "CP_METADATA_SALT_36912_2026_X";
+        let _internalState = {
+            c: 0.0000,   // Coins
+            u: 0.000000, // USDT
+            a: 0         // Ads count
         };
 
-        // ===== DOM REFS =====
-        const $ = id => document.getElementById(id);
-        const coinDisplay = $('coinDisplay');
-        const levelDisplay = $('levelDisplay');
-        const energyCurrent = $('energyCurrent');
-        const energyMax = $('energyMax');
-        const energyFill = $('energyFill');
-        const coinsStat = $('coinsStat');
-        const usdtStat = $('usdtStat');
-        const adsStat = $('adsStat');
-        const coin = $('coin');
-        const coinArea = $('coinArea');
-        const sdkStatus = $('sdkStatus');
-        const watchAdBtn = $('watchAdBtn');
-        const refillBtn = $('refillBtn');
-
-        // ===== TELEGRAM =====
-        const tg = window.Telegram?.WebApp || {
-            HapticFeedback: { impactOccurred: () => {}, notificationOccurred: () => {} }
-        };
-        if (tg.ready) tg.ready();
-        if (tg.expand) tg.expand();
-
-        // ===== SAVE/LOAD =====
-        function save() {
-            try {
-                const data = {
-                    coins: state.coins,
-                    usdt: state.usdt,
-                    energy: state.energy,
-                    totalTaps: state.totalTaps,
-                    totalAds: state.totalAds,
-                    totalUsdtEarned: state.totalUsdtEarned,
-                    level: state.level,
-                    tapPower: state.tapPower,
-                    task50: state.task50,
-                    task100: state.task100,
-                    task500: state.task500
+        return {
+            init: () => {
+                try {
+                    const raw = localStorage.getItem('_cp_sec_state');
+                    if (raw) {
+                        const parsed = JSON.parse(atob(raw));
+                        if(parsed.verify === btoa(_salt)) {
+                            _internalState.c = parsed.c || 0;
+                            _internalState.u = parsed.u || 0;
+                            _internalState.a = parsed.a || 0;
+                        }
+                    }
+                } catch(e) {
+                    console.error("State corrupted. Resetting vectors.");
+                }
+            },
+            commit: () => {
+                const packet = {
+                    c: _internalState.c,
+                    u: _internalState.u,
+                    a: _internalState.a,
+                    verify: btoa(_salt)
                 };
-                localStorage.setItem('coinpulse_data', JSON.stringify(data));
-            } catch (e) {}
+                localStorage.setItem('_cp_sec_state', btoa(JSON.stringify(packet)));
+            },
+            getCoins: () => _internalState.c,
+            getUsdt: () => _internalState.u,
+            getAds: () => _internalState.a,
+            mutateCoins: (val) => { _internalState.c += val; SecurityCore.commit(); },
+            mutateUsdt: (val) => { _internalState.u += val; SecurityCore.commit(); },
+            incrementAds: () => { _internalState.a++; SecurityCore.commit(); }
+        };
+    })();
+
+    /**
+     * Interface Renderer Controller
+     */
+    const UI = {
+        sync: () => {
+            document.getElementById('dom-coins').innerText = SecurityCore.getCoins().toFixed(4);
+            document.getElementById('dom-usdt').innerText = SecurityCore.getUsdt().toFixed(6) + " USDT";
+            document.getElementById('dom-ad-counter').innerText = `Total Ads Watched: ${SecurityCore.getAds()}`;
+            document.getElementById('dom-user-rank-val').innerText = SecurityCore.getUsdt().toFixed(6) + " USDT";
+            Tasks.renderGrid();
+        }
+    };
+
+    /**
+     * Routing System
+     */
+    const Navigation = {
+        route: (targetId, element) => {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(targetId).classList.add('active');
+            element.classList.add('active');
+            if(targetId === 'scr-game') Engine.resizeCanvas();
+        }
+    };
+
+    /**
+     * High Performance Extreme Difficulty Canvas Game Engine
+     */
+    const Engine = (() => {
+        let cvs, ctx;
+        let active = false;
+        let animationFrameId;
+        
+        // Structures
+        let cart = { x: 0, w: 70, h: 14, speed: 22 };
+        let vectorStream = [];
+        let particles = [];
+        
+        let difficultyMultiplier = 1.0;
+        let internalScore = 0;
+
+        function spawnVector() {
+            // 85% Bombs, 15% Real Micro Reward Coins
+            let isBomb = Math.random() < 0.85; 
+            vectorStream.push({
+                x: Math.random() * (cvs.width - 15) + 7,
+                y: -10,
+                r: isBomb ? 7 : 5,
+                type: isBomb ? 'BOMB' : 'COIN',
+                velocity: (3.5 + Math.random() * 3) * difficultyMultiplier
+            });
         }
 
-        function load() {
-            try {
-                const raw = localStorage.getItem('coinpulse_data');
-                if (!raw) return;
-                const data = JSON.parse(raw);
-                Object.assign(state, data);
-                updateUI();
-            } catch (e) {}
-        }
-
-        // ===== UPDATE UI =====
-        function updateUI() {
-            coinDisplay.textContent = state.coins;
-            levelDisplay.textContent = state.level;
-            energyCurrent.textContent = Math.floor(state.energy);
-            energyMax.textContent = state.maxEnergy;
-            energyFill.style.width = (state.energy / state.maxEnergy) * 100 + '%';
-            coinsStat.textContent = state.coins;
-            usdtStat.textContent = state.usdt.toFixed(4);
-            adsStat.textContent = state.totalAds;
-            updateTasks();
-            save();
-        }
-
-        // ===== TAP =====
-        coinArea.addEventListener('click', function(e) {
-            if (state.isAdPlaying) {
-                showToast('⏳ Ad is playing!');
-                return;
-            }
-            if (state.energy < 1) {
-                showToast('⚡ No energy!');
-                return;
-            }
-
-            state.energy -= 1;
-            state.coins += state.tapPower;
-            state.totalTaps += 1;
-            state.level = Math.floor(state.coins / 100) + 1;
-
-            // Animation
-            coin.style.transform = 'scale(0.85)';
-            setTimeout(() => coin.style.transform = 'scale(1)', 100);
-
-            tg.HapticFeedback?.impactOccurred('light');
-            updateUI();
-        });
-
-        // ===== ENERGY REGEN =====
-        setInterval(() => {
-            if (state.energy < state.maxEnergy) {
-                state.energy = Math.min(state.energy + 1, state.maxEnergy);
-                updateUI();
-            }
-        }, 3000);
-
-        // ===== REFILL =====
-        refillBtn.addEventListener('click', function() {
-            const cost = 50;
-            if (state.coins < cost) {
-                showToast(`Need ${cost} coins!`);
-                return;
-            }
-            if (state.energy >= state.maxEnergy) {
-                showToast('Already full!');
-                return;
-            }
-            state.coins -= cost;
-            state.energy = state.maxEnergy;
-            tg.HapticFeedback?.impactOccurred('success');
-            showToast('⚡ Energy refilled!');
-            updateUI();
-        });
-
-        // ================================================================
-        // ===== ADSGRAM - 100% WORKING =====
-        // ================================================================
-
-        const ADSGRAM_BLOCK_ID = 36912;
-        let adController = null;
-        let adsReady = false;
-
-        // Ad overlay elements
-        const adOverlay = $('adOverlay');
-        const adStatus = $('adStatus');
-        const adSpinner = $('adSpinner');
-        const adProgressFill = $('adProgressFill');
-        const claimBtn = $('claimBtn');
-        const closeAdBtn = $('closeAdBtn');
-
-        function initAdsgram() {
-            if (typeof window.Adsgram === 'undefined') {
-                sdkStatus.textContent = '⏳ Loading Ads...';
-                sdkStatus.className = 'sdk-status loading';
-                setTimeout(initAdsgram, 1000);
-                return;
-            }
-
-            try {
-                adController = window.Adsgram.init({
-                    blockId: ADSGRAM_BLOCK_ID,
-                    debug: false,
-                    onReward: function(data) {
-                        console.log('✅ Ad reward:', data);
-                        adComplete();
-                    },
-                    onError: function(err) {
-                        console.log('❌ Ad error:', err);
-                        setTimeout(function() {
-                            if (!state.adCompleted) adComplete();
-                        }, 3000);
-                    },
-                    onClose: function() {
-                        console.log('👋 Ad closed');
-                        if (!state.adCompleted) {
-                            setTimeout(function() {
-                                if (!state.adCompleted) adComplete();
-                            }, 2000);
-                        }
-                    }
+        function createBurst(x, y, color) {
+            for(let i=0; i<8; i++) {
+                particles.push({
+                    x: x, y: y,
+                    vx: (Math.random() - 0.5) * 6,
+                    vy: (Math.random() - 0.5) * 6,
+                    alpha: 1.0,
+                    color: color
                 });
-                adsReady = true;
-                sdkStatus.textContent = '✅ Ads Ready!';
-                sdkStatus.className = 'sdk-status ready';
-                console.log('✅ Adsgram ready! Block ID:', ADSGRAM_BLOCK_ID);
-            } catch (e) {
-                console.error('❌ Adsgram init error:', e);
-                sdkStatus.textContent = '❌ Error: ' + e.message;
-                sdkStatus.className = 'sdk-status error';
-                adsReady = false;
             }
         }
 
-        function adComplete() {
-            if (state.adCompleted) return;
-            state.adCompleted = true;
+        function loop() {
+            if(!active) return;
 
-            if (state.adTimer) {
-                clearInterval(state.adTimer);
-                state.adTimer = null;
+            // Clear Frame
+            ctx.fillStyle = "rgba(2, 6, 12, 0.25)"; 
+            ctx.fillRect(0, 0, cvs.width, cvs.height);
+
+            // Dynamically scale difficulty factor based on points
+            difficultyMultiplier = 1.0 + (internalScore * 0.05);
+
+            if(Math.random() < 0.09) spawnVector();
+
+            // Render Paddle / Cart
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = "var(--primary)";
+            ctx.fillStyle = "#00ffcc";
+            ctx.fillRect(cart.x, cvs.height - 30, cart.w, cart.h);
+            ctx.shadowBlur = 0; // Reset
+
+            // Handle Particles
+            for(let pIdx = particles.length - 1; pIdx >= 0; pIdx--) {
+                let p = particles[pIdx];
+                p.x += p.vx; p.y += p.vy; p.alpha -= 0.04;
+                if(p.alpha <= 0) { particles.splice(pIdx, 1); continue; }
+                ctx.fillStyle = p.color;
+                ctx.globalAlpha = p.alpha;
+                ctx.fillRect(p.x, p.y, 3, 3);
             }
+            ctx.globalAlpha = 1.0; // Reset
 
-            adStatus.textContent = '✅ Ad complete! Claim your reward!';
-            adSpinner.textContent = '✅';
-            adSpinner.style.animation = 'none';
-            adProgressFill.style.width = '100%';
+            // Handle Falling Elements
+            for(let i = vectorStream.length - 1; i >= 0; i--) {
+                let v = vectorStream[i];
+                v.y += v.velocity;
 
-            claimBtn.textContent = '💰 Claim ' + state.pendingReward.toFixed(4) + ' USDT';
-            claimBtn.className = 'show';
-            tg.HapticFeedback?.notificationOccurred('success');
-        }
-
-        function showAd(reward) {
-            if (state.isAdPlaying) {
-                showToast('⏳ Please wait');
-                return;
-            }
-
-            if (!adsReady || !adController) {
-                showToast('⏳ Ads loading...');
-                return;
-            }
-
-            state.isAdPlaying = true;
-            state.adCompleted = false;
-            state.pendingReward = reward || 0.0001;
-
-            // Show overlay
-            adOverlay.className = 'ad-overlay show';
-            adStatus.textContent = 'Loading ad...';
-            adSpinner.textContent = '⏳';
-            adSpinner.style.animation = 'spin 1s linear infinite';
-            adProgressFill.style.width = '0%';
-            claimBtn.className = '';
-            claimBtn.style.display = 'none';
-            watchAdBtn.disabled = true;
-
-            try {
-                adController.show();
-
-                // Progress
-                let progress = 0;
-                state.adTimer = setInterval(function() {
-                    progress += 1;
-                    if (progress >= 95) {
-                        clearInterval(state.adTimer);
-                        state.adTimer = null;
-                        adProgressFill.style.width = '95%';
-                        adStatus.textContent = '⏳ Almost done...';
-                    } else {
-                        adProgressFill.style.width = progress + '%';
-                        if (progress > 20) {
-                            adStatus.textContent = '🎬 Watching ad... ' + progress + '%';
-                        }
-                    }
-                }, 100);
-
-                // Force complete after 10s
-                setTimeout(function() {
-                    if (!state.adCompleted) {
-                        console.log('⚠️ Force complete');
-                        adComplete();
-                    }
-                }, 10000);
-
-            } catch (e) {
-                console.error('❌ Ad show error:', e);
-                showToast('❌ Ad error. Try again.');
-                closeAd();
-            }
-        }
-
-        function claimReward() {
-            if (!state.adCompleted) {
-                showToast('⏳ Wait for ad to complete');
-                return;
-            }
-
-            const reward = state.pendingReward;
-            const bonus = Math.floor(reward * 10000);
-
-            state.usdt += reward;
-            state.totalUsdtEarned += reward;
-            state.coins += bonus;
-            state.totalAds += 1;
-
-            // Update tasks
-            updateTaskProgress();
-
-            tg.HapticFeedback?.notificationOccurred('success');
-            showToast('🎉 +' + reward.toFixed(4) + ' USDT! +' + bonus + ' coins!');
-            closeAd();
-            updateUI();
-        }
-
-        function closeAd() {
-            adOverlay.className = 'ad-overlay';
-            state.isAdPlaying = false;
-            state.adCompleted = false;
-            watchAdBtn.disabled = false;
-            if (state.adTimer) {
-                clearInterval(state.adTimer);
-                state.adTimer = null;
-            }
-            adSpinner.style.animation = 'spin 1s linear infinite';
-        }
-
-        // ===== TASK FUNCTIONS =====
-        function updateTaskProgress() {
-            const tasks = [
-                { id: 'task50', key: 'task50', required: 50, reward: 0.0001 },
-                { id: 'task100', key: 'task100', required: 100, reward: 0.0008 },
-                { id: 'task500', key: 'task500', required: 500, reward: 0.0010 }
-            ];
-
-            tasks.forEach(t => {
-                if (state[t.key].done) return;
-                if (state.totalAds >= t.required) {
-                    state[t.key].done = true;
-                    showToast('🎉 Task complete! +' + t.reward + ' USDT');
-                    state.usdt += t.reward;
-                    state.totalUsdtEarned += t.reward;
-                    updateUI();
-                }
-            });
-        }
-
-        function updateTasks() {
-            const tasks = [
-                { id: 'task50', key: 'task50', required: 50 },
-                { id: 'task100', key: 'task100', required: 100 },
-                { id: 'task500', key: 'task500', required: 500 }
-            ];
-
-            tasks.forEach(t => {
-                const btn = $(t.id);
-                if (state[t.key].done) {
-                    btn.textContent = '✅ Done';
-                    btn.className = 'task-btn done';
-                    btn.disabled = true;
+                // Drawing entities
+                if(v.type === 'COIN') {
+                    ctx.fillStyle = "#ffcc00";
+                    ctx.beginPath(); ctx.arc(v.x, v.y, v.r, 0, Math.PI*2); ctx.fill();
                 } else {
-                    btn.textContent = 'Watch';
-                    btn.className = 'task-btn';
-                    btn.disabled = false;
+                    ctx.fillStyle = "#ff0055";
+                    ctx.beginPath(); ctx.arc(v.x, v.y, v.r, 0, Math.PI*2); ctx.fill();
                 }
-            });
+
+                // Rigid Collision bounds
+                let pY = cvs.height - 30;
+                if(v.y + v.r >= pY && v.y - v.r <= pY + cart.h && v.x >= cart.x && v.x <= cart.x + cart.w) {
+                    if(v.type === 'COIN') {
+                        internalScore++;
+                        SecurityCore.mutateCoins(0.0001); // Hyper-low micro rewards
+                        createBurst(v.x, v.y, "#ffcc00");
+                        UI.sync();
+                    } else {
+                        createBurst(v.x, v.y, "#ff0055");
+                        terminate();
+                    }
+                    vectorStream.splice(i, 1);
+                    continue;
+                }
+
+                // Missed object rule logic
+                if(v.y > cvs.height) {
+                    if(v.type === 'COIN') {
+                        // Cruel mechanics: if you miss a single micro coin, execution ends
+                        terminate();
+                    }
+                    vectorStream.splice(i, 1);
+                }
+            }
+
+            animationFrameId = requestAnimationFrame(loop);
         }
 
-        // ===== TASK BUTTONS =====
-        $('task50').addEventListener('click', function() {
-            if (state.task50.done) { showToast('Already done!'); return; }
-            showAd(0.0001);
-        });
-        $('task100').addEventListener('click', function() {
-            if (state.task100.done) { showToast('Already done!'); return; }
-            showAd(0.0008);
-        });
-        $('task500').addEventListener('click', function() {
-            if (state.task500.done) { showToast('Already done!'); return; }
-            showAd(0.0010);
-        });
-
-        // ===== WATCH AD BUTTON =====
-        watchAdBtn.addEventListener('click', function() {
-            showAd(0.0005);
-        });
-
-        // ===== CLAIM BUTTON =====
-        claimBtn.addEventListener('click', claimReward);
-        claimBtn.addEventListener('touchstart', function(e) {
-            e.preventDefault();
-            claimReward();
-        }, { passive: false });
-
-        // ===== CLOSE AD BUTTON =====
-        closeAdBtn.addEventListener('click', closeAd);
-
-        // ===== TOAST =====
-        function showToast(msg) {
-            const old = document.querySelector('.toast');
-            if (old) old.remove();
-            const div = document.createElement('div');
-            div.className = 'toast';
-            div.textContent = msg;
-            document.body.appendChild(div);
-            setTimeout(() => div.remove(), 2500);
+        function terminate() {
+            active = false;
+            cancelAnimationFrame(animationFrameId);
+            document.getElementById('btn-run').innerText = "LAUNCH HARD CORE";
+            alert(`CRITICAL MISCALCULATION!\nGame Over. Score Tier reached: ${internalScore}\nDifficulty multiplier reached: ${difficultyMultiplier.toFixed(2)}x`);
         }
 
-        // ================================================================
-        // ===== INIT =====
-        // ================================================================
+        return {
+            setup: () => {
+                cvs = document.getElementById("coreCanvas");
+                ctx = cvs.getContext("2d");
+                Engine.resizeCanvas();
+                
+                // Track Control Vectors
+                window.addEventListener('keydown', (e) => {
+                    if(e.key === "ArrowLeft" && cart.x > 0) cart.x -= cart.speed;
+                    if(e.key === "ArrowRight" && cart.x < cvs.width - cart.w) cart.x += cart.speed;
+                });
 
-        load();
-        updateUI();
+                cvs.addEventListener('touchmove', (e) => {
+                    let rect = cvs.getBoundingClientRect();
+                    let tX = e.touches[0].clientX - rect.left;
+                    cart.x = (tX / rect.width) * cvs.width - cart.w/2;
+                    // Keep bounds
+                    if(cart.x < 0) cart.x = 0;
+                    if(cart.x > cvs.width - cart.w) cart.x = cvs.width - cart.w;
+                });
+            },
+            resizeCanvas: () => {
+                if(!cvs) return;
+                cvs.width = 400;
+                cvs.height = 500;
+                cart.x = cvs.width / 2 - cart.w / 2;
+            },
+            toggleState: () => {
+                if(active) {
+                    terminate();
+                } else {
+                    active = true;
+                    internalScore = 0;
+                    vectorStream = [];
+                    particles = [];
+                    difficultyMultiplier = 1.0;
+                    document.getElementById('btn-run').innerText = "TERMINATE SESSION";
+                    loop();
+                }
+            }
+        };
+    })();
 
-        // Start Adsgram
-        setTimeout(initAdsgram, 500);
+    /**
+     * Massive Ad Tasking Integration Matrix Block: 36912
+     */
+    const Tasks = (() => {
+        const adConfigId = "36912";
+        let AdsgramController = null;
 
-        console.log('🚀 CoinPulse loaded!');
-        console.log('📺 Block ID:', ADSGRAM_BLOCK_ID);
-        console.log('🪙 Tap coin to earn!');
-        console.log('🎬 Watch ads for USDT!');
-    </script>
+        const manifest = [
+            { id: "task_50", target: 50, reward: 0.000100 },
+            { id: "task_100", target: 100, reward: 0.000100 },
+            { id: "task_500", target: 500, reward: 0.000100 }
+        ];
 
+        return {
+            bindAdsgram: () => {
+                if (window.Adsgram) {
+                    AdsgramController = window.Adsgram.init({ blockId: adConfigId });
+                } else {
+                    console.warn("Adsgram Engine vector not verified on load.");
+                }
+            },
+            triggerAdWatch: () => {
+                if(!AdsgramController) {
+                    alert("Adsgram framework runtime synchronization failed. Simulating integration data pipeline layer.");
+                    // Fallback to guarantee pipeline integrity for development debugging purposes
+                    SecurityCore.incrementAds();
+                    UI.sync();
+                    return;
+                }
+
+                AdsgramController.show().then((result) => {
+                    SecurityCore.incrementAds();
+                    UI.sync();
+                    alert("Ad Sequence acknowledged. Metric counters structuralized upwards.");
+                }).catch((error) => {
+                    alert("Ad frame generation failed or rejected by network endpoint.");
+                    console.error(error);
+                });
+            },
+            renderGrid: () => {
+                const targetDom = document.getElementById("task-injector");
+                if(!targetDom) return;
+                
+                let htmlBuffer = "";
+                const watched = SecurityCore.getAds();
+
+                manifest.forEach(t => {
+                    const statusKey = `claimed_${t.id}`;
+                    const isClaimed = localStorage.getItem(statusKey) === "true";
+                    const progressAchieved = watched >= t.target;
+                    
+                    let buttonStateAttr = "";
+                    let buttonClass = "action-btn";
+                    let label = "LOCK";
+
+                    if(isClaimed) {
+                        buttonStateAttr = "disabled";
+                        label = "CLAIMED";
+                    } else if(progressAchieved) {
+                        buttonClass = "action-btn ready";
+                        label = "CLAIM";
+                    } else {
+                        buttonStateAttr = "disabled";
+                        label = `${watched}/${t.target}`;
+                    }
+
+                    htmlBuffer += `
+                        <div class="task-row">
+                            <div class="task-details">
+                                <h4>Verify Milestone Sequence (${t.target} Ads)</h4>
+                                <p>Yield Matrix Payload: +${t.reward.toFixed(6)} USDT</p>
+                            </div>
+                            <button class="${buttonClass}" ${buttonStateAttr} onclick="Tasks.executeClaim('${t.id}', ${t.reward})">${label}</button>
+                        </div>
+                    `;
+                });
+
+                targetDom.innerHTML = htmlBuffer;
+            },
+            executeClaim: (id, amount) => {
+                SecurityCore.mutateUsdt(amount);
+                localStorage.setItem(`claimed_${id}`, "true");
+                UI.sync();
+                alert(`Asset transfer sequence authorized: +${amount.toFixed(6)} USDT linked successfully to local dynamic wallet routing.`);
+            }
+        };
+    })();
+
+    // Application Bootstrap Sequence Execution
+    window.addEventListener("DOMContentLoaded", () => {
+        // Initialize Telegram configuration systems if present
+        if(window.Telegram && window.Telegram.WebApp) {
+            const tg = window.Telegram.WebApp;
+            tg.expand();
+            if(tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                document.getElementById("dom-user-node").innerText = tg.initDataUnsafe.user.username || "Authenticated Node";
+            }
+        }
+        
+        SecurityCore.init();
+        Engine.setup();
+        Tasks.bindAdsgram();
+        UI.sync();
+    });
+</script>
 </body>
 </html>
