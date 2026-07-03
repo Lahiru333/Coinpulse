@@ -3,540 +3,514 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CoinPulse Pro - Ultra Advanced Web3 Mini App</title>
+    <title>CoinPulse Pro</title>
     
-    <!-- CSS Utilities & Frameworks -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- Adsgram SDK -->
     <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
+    
     <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
+            background: #0a0d14;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 12px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .app {
+            max-width: 400px;
+            width: 100%;
+            background: linear-gradient(145deg, #141b2b, #0e1320);
+            border-radius: 40px;
+            padding: 24px 20px 30px;
+            border: 1px solid rgba(255,255,255,0.06);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.8);
+            position: relative;
             overflow: hidden;
         }
-        .tab-content {
-            display: none;
-            height: calc(100vh - 170px);
-            overflow-y: auto;
-        }
-        .tab-content.active {
-            display: block;
-        }
-        @keyframes floatUp {
-            0% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
-            100% { opacity: 0; transform: translateY(-120px) scale(1.4) rotate(10deg); }
-        }
-        .coin-particle {
+        
+        .app::before {
+            content: '';
             position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 20%, rgba(247,147,26,0.03), transparent 70%);
             pointer-events: none;
-            animation: floatUp 0.7s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
         }
-        /* Custom Scrollbar for Tasks/Upgrades */
-        ::-webkit-scrollbar {
-            width: 4px;
+        
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            position: relative;
+            z-index: 1;
         }
-        ::-webkit-scrollbar-track {
-            background: rgba(15, 23, 42, 0.5);
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-        ::-webkit-scrollbar-thumb {
-            background: rgba(6, 182, 212, 0.3);
-            border-radius: 10px;
+        
+        .logo-icon {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #f7931a, #f5b24c);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 800;
+            color: #0a0d14;
+            box-shadow: 0 4px 15px rgba(247,147,26,0.3);
+        }
+        
+        .logo h1 {
+            font-size: 22px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #fff, #94a9d1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .status {
+            background: rgba(0,200,150,0.12);
+            border: 1px solid rgba(0,200,150,0.15);
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 10px;
+            color: #4ade80;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Game Area */
+        .game {
+            background: rgba(0,0,0,0.35);
+            border-radius: 28px;
+            padding: 20px 16px 22px;
+            border: 1px solid rgba(255,255,255,0.04);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            gap: 8px;
+        }
+        
+        .stat {
+            flex: 1;
+            background: rgba(0,0,0,0.3);
+            padding: 10px 12px;
+            border-radius: 16px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.04);
+        }
+        
+        .stat-label {
+            font-size: 9px;
+            color: #6b7fa0;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+        
+        .stat-value {
+            font-size: 22px;
+            font-weight: 700;
+            color: #fff;
+            margin-top: 2px;
+        }
+        
+        .stat-value.gold {
+            color: #f5b24c;
+        }
+        
+        .stat-value.green {
+            color: #4ade80;
+        }
+        
+        /* Click Button */
+        .tap-btn {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #f8c45a, #d97a0e);
+            border: none;
+            box-shadow: 0 12px 30px rgba(215,120,10,0.4), inset 0 -4px 0 #8f4f00, inset 0 4px 20px #ffe28b;
+            color: #1f1a0f;
+            font-size: 56px;
+            cursor: pointer;
+            transition: all 0.08s linear;
+            display: block;
+            margin: 4px auto 8px;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            position: relative;
+        }
+        
+        .tap-btn:active {
+            transform: scale(0.90);
+            box-shadow: 0 6px 15px rgba(215,120,10,0.5), inset 0 -2px 0 #7a4200;
+        }
+        
+        .tap-btn .pulse {
+            position: absolute;
+            inset: -8px;
+            border-radius: 50%;
+            border: 2px solid rgba(247,147,26,0.2);
+            animation: pulse-ring 2s ease-out infinite;
+        }
+        
+        @keyframes pulse-ring {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.3); opacity: 0; }
+        }
+        
+        .tap-hint {
+            text-align: center;
+            font-size: 12px;
+            color: #5a6f91;
+            margin-top: 6px;
+        }
+        
+        /* Ads Section */
+        .ads-section {
+            margin-top: 18px;
+            background: rgba(0,0,0,0.25);
+            border-radius: 24px;
+            padding: 14px 12px 12px;
+            border: 1px solid rgba(255,255,255,0.04);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .ads-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 0 4px;
+        }
+        
+        .ads-header span {
+            font-size: 10px;
+            color: #4e6180;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            font-weight: 600;
+        }
+        
+        .ads-header .badge {
+            background: rgba(247,147,26,0.12);
+            color: #f5b24c;
+            padding: 2px 12px;
+            border-radius: 30px;
+            font-size: 9px;
+        }
+        
+        adsgram-task {
+            display: block;
+            width: 100%;
+            min-height: 70px;
+            background: rgba(18,26,42,0.4);
+            border-radius: 18px;
+            padding: 2px;
+            --adsgram-task-bg: transparent;
+            --adsgram-task-radius: 18px;
+        }
+        
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(0,0,0,0.92);
+            backdrop-filter: blur(16px);
+            color: #fff;
+            padding: 14px 28px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            border: 1px solid rgba(255,255,255,0.06);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            max-width: 90%;
+            text-align: center;
+        }
+        
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        
+        .toast .icon { margin-right: 8px; }
+        
+        /* Footer */
+        .footer {
+            margin-top: 18px;
+            text-align: center;
+            font-size: 9px;
+            color: #2a3a52;
+            letter-spacing: 0.5px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .footer a {
+            color: #4e6a8f;
+            text-decoration: none;
+        }
+        
+        /* Loading */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px;
+            color: #4e6180;
+            font-size: 11px;
+        }
+        
+        .loading .dot {
+            width: 6px;
+            height: 6px;
+            background: #f5b24c;
+            border-radius: 50%;
+            animation: bounce 1.2s ease-in-out infinite;
+        }
+        
+        .loading .dot:nth-child(2) { animation-delay: 0.2s; }
+        .loading .dot:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0.6); opacity: 0.3; }
+            40% { transform: scale(1); opacity: 1; }
         }
     </style>
 </head>
-<body class="bg-slate-950 text-white min-h-screen flex flex-col justify-between p-4">
+<body>
 
-    <!-- ==================== TOP PROFILE & METRICS ==================== -->
-    <div class="space-y-3">
-        <div class="flex items-center justify-between bg-slate-900/60 p-3 rounded-2xl border border-slate-800/80 backdrop-blur-xl shadow-2xl">
-            <div class="flex items-center gap-3">
-                <div id="u-avatar" class="w-10 h-10 rounded-full bg-gradient-to-tr from-cyan-500 via-blue-500 to-purple-600 flex items-center justify-center font-black shadow-lg shadow-cyan-500/20 text-white text-base border border-cyan-400/30">
-                    CP
-                </div>
-                <div>
-                    <div class="flex items-center gap-1.5">
-                        <h4 id="u-name" class="text-xs font-bold text-slate-200">Pulse Explorer</h4>
-                        <span class="text-[9px] bg-cyan-500/20 text-cyan-400 px-1.5 py-0.5 rounded-md border border-cyan-500/30 font-extrabold">PRO</span>
-                    </div>
-                    <p id="user-rank" class="text-[10px] text-slate-400 mt-0.5">Rank: Bronze Warrior</p>
-                </div>
+<div class="app">
+    <!-- Header -->
+    <div class="header">
+        <div class="logo">
+            <div class="logo-icon">₿</div>
+            <h1>CoinPulse</h1>
+        </div>
+        <div class="status">● LIVE</div>
+    </div>
+    
+    <!-- Game -->
+    <div class="game">
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-label">Score</div>
+                <div class="stat-value" id="score">0</div>
             </div>
-            <div class="flex items-center gap-2">
-                <div class="bg-slate-950/80 border border-slate-800 px-2.5 py-1 rounded-xl text-center">
-                    <p class="text-[8px] text-slate-400 font-bold uppercase tracking-wider">Profit / Hr</p>
-                    <p id="pph-display" class="text-xs font-extrabold text-emerald-400">+0</p>
-                </div>
+            <div class="stat">
+                <div class="stat-label">Earned</div>
+                <div class="stat-value gold" id="earned">0</div>
             </div>
+            <div class="stat">
+                <div class="stat-label">Bonus</div>
+                <div class="stat-value green" id="bonus">0</div>
+            </div>
+        </div>
+        
+        <button class="tap-btn" id="tapBtn">
+            <span class="pulse"></span>
+            ⛏️
+        </button>
+        <div class="tap-hint">tap to mine · watch ads for rewards</div>
+    </div>
+    
+    <!-- Ads Section -->
+    <div class="ads-section">
+        <div class="ads-header">
+            <span>📺 Sponsor Task</span>
+            <span class="badge">+2 bonus</span>
+        </div>
+        
+        <!-- ✅ Adsgram Task - blockId 36912 -->
+        <adsgram-task
+            id="adsTask"
+            data-block-id="task-36912"
+            data-debug="true"
+            data-debug-console="true"
+        ></adsgram-task>
+        
+        <div id="adsStatus" class="loading" style="display:none;">
+            <span>Loading ad</span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
         </div>
     </div>
+    
+    <div class="footer">
+        powered by <a href="#" onclick="return false;">Adsgram</a> · v3.0
+    </div>
+</div>
 
-    <!-- ==================== MAIN CONTENT CONTAINERS ==================== -->
-    <main class="flex-grow my-4 relative">
+<!-- Toast -->
+<div class="toast" id="toast"></div>
 
-        <!-- 1. HOME / CLICKER TAB -->
-        <div id="tab-home" class="tab-content active flex flex-col justify-between h-full">
-            <!-- Balance View -->
-            <div class="text-center py-2">
-                <p class="text-[11px] tracking-widest text-slate-400 font-bold uppercase flex items-center justify-center gap-1">
-                    <span>⚡ COINPULSE ECOSYSTEM <span>
-                </p>
-                <div class="flex items-center justify-center gap-2 mt-1">
-                    <span id="home-balance" class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-teal-300 to-indigo-400 drop-shadow-[0_0_35px_rgba(6,182,212,0.4)]">
-                        0
-                    </span>
-                </div>
-            </div>
-
-            <!-- Central Core Clicker Button -->
-            <div class="flex justify-center items-center my-auto relative">
-                <div id="click-area" class="w-64 h-64 rounded-full bg-gradient-to-b from-slate-900 via-slate-950 to-black border-[6px] border-cyan-500/20 flex items-center justify-center relative active:scale-95 transition-transform duration-75 shadow-[0_0_80px_rgba(6,182,212,0.15)] active:shadow-[0_0_90px_rgba(6,182,212,0.35)] group overflow-hidden cursor-pointer">
-                    <div class="absolute inset-4 rounded-full bg-gradient-to-tr from-cyan-500/20 via-transparent to-purple-500/10 blur-md"></div>
-                    <div class="w-48 h-48 rounded-full bg-slate-900/40 border border-slate-800 flex items-center justify-center backdrop-blur-sm shadow-inner">
-                        <span class="text-8xl select-none filter drop-shadow-[0_0_25px_rgba(6,182,212,0.5)] transform group-active:scale-110 transition-transform">🪙</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Energy Component -->
-            <div class="bg-slate-900/50 p-4 rounded-2xl border border-slate-800/60 backdrop-blur-md">
-                <div class="flex justify-between text-xs text-slate-400 mb-2 font-semibold">
-                    <span class="flex items-center gap-1 text-cyan-400">⚡ Energy Battery</span>
-                    <span id="energy-text" class="font-bold text-slate-200">1000 / 1000</span>
-                </div>
-                <div class="w-full bg-slate-950 h-3 rounded-full p-0.5 border border-slate-800 overflow-hidden">
-                    <div id="energy-bar" class="bg-gradient-to-r from-cyan-500 via-teal-400 to-indigo-500 h-full rounded-full transition-all duration-100 shadow-[0_0_15px_rgba(6,182,212,0.6)]" style="width: 100%"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 2. MINE / PASSIVE UPGRADES TAB -->
-        <div id="tab-mine" class="tab-content space-y-4">
-            <div class="bg-slate-900/40 p-4 rounded-2xl border border-slate-800/60 text-center">
-                <h3 class="text-sm font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300">Passive Mining Node</h3>
-                <p class="text-xs text-slate-400 mt-1">Upgrade cards to generate passive income even when you are offline!</p>
-            </div>
-            
-            <div class="grid grid-cols-2 gap-3" id="mine-cards-container">
-                <!-- Cards will be rendered via JS -->
-            </div>
-        </div>
-
-        <!-- 3. TASKS & EARN TAB -->
-        <div id="tab-tasks" class="tab-content space-y-4">
-            <!-- Daily Reward Section -->
-            <div class="bg-gradient-to-br from-slate-900 to-indigo-950/40 p-4 rounded-2xl border border-indigo-500/20">
-                <h3 class="text-sm font-bold text-indigo-300 flex items-center gap-1.5">📅 Daily Streak Rewards</h3>
-                <p class="text-xs text-slate-400 mt-1">Claim your sequential streak bonus every 24 hours.</p>
-                <div class="grid grid-cols-4 gap-1.5 mt-3" id="daily-streaks-grid">
-                    <!-- Dynamic Day Badges -->
-                </div>
-                <button id="claim-daily-btn" class="w-full mt-3 bg-gradient-to-r from-indigo-500 to-cyan-500 p-2.5 rounded-xl text-xs font-black uppercase tracking-wider active:scale-98 transition-transform shadow-md shadow-indigo-500/20">Claim Today's Reward</button>
-            </div>
-
-            <!-- Social and Web3 Tasks -->
-            <div class="space-y-2">
-                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Social Missions</h3>
-                <div class="space-y-2.5" id="tasks-list-container">
-                    <!-- Tasks inside JS -->
-                </div>
-            </div>
-        </div>
-
-        <!-- 4. AIRDROP TAB -->
-        <div id="tab-airdrop" class="tab-content flex flex-col justify-center items-center text-center space-y-6 px-4">
-            <div class="w-24 h-24 rounded-full bg-gradient-to-tr from-purple-600 via-indigo-600 to-cyan-500 flex items-center justify-center text-5xl shadow-[0_0_50px_rgba(147,51,234,0.4)] border border-purple-400/30 animate-bounce">
-                💎
-            </div>
-            <div>
-                <h2 class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400">CoinPulse TGE Airdrop</h2>
-                <p class="text-xs text-slate-400 mt-2 max-w-xs mx-auto leading-relaxed">The Token Generation Event (TGE) is scheduled soon. Your snapshot allocation will heavily scale based on your **PPH (Profit per hour)** and completed missions.</p>
-            </div>
-            
-            <div class="w-full bg-slate-900/50 border border-slate-800 p-4 rounded-2xl space-y-3">
-                <div class="flex justify-between items-center text-xs">
-                    <span class="text-slate-400">Wallet Status</span>
-                    <span class="text-amber-400 font-bold flex items-center gap-1">⚠️ Not Connected</span>
-                </div>
-                <button onclick="alert('Web3 Smart Contracts integration will be deployed in the next block update.')" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 p-3 rounded-xl font-bold text-xs uppercase tracking-wider shadow-lg shadow-purple-600/20 active:scale-95 transition-transform">Connect TON Wallet</button>
-            </div>
-
-            <!-- Premium Adsgram Trigger Placed Contextually inside Airdrop Phase -->
-            <div class="w-full bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20 p-4 rounded-2xl">
-                <p class="text-xs text-amber-400 font-semibold">⚡ Emergency Airdrop Power Booster</p>
-                <p class="text-[10px] text-slate-400 mt-1">Watch a premium network sponsor video to instantly claim a massive balance injection.</p>
-                <button id="adsgram-premium-btn" class="w-full mt-3 bg-gradient-to-r from-amber-500 to-orange-600 p-3 rounded-xl font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1 shadow-lg shadow-orange-500/20 active:scale-95 transition-transform">
-                    <span>📺 Launch Adsgram Video</span>
-                    <span class="bg-black/30 px-1.5 py-0.5 rounded text-[9px] text-amber-200">+5,000 Coins</span>
-                </button>
-            </div>
-        </div>
-
-    </main>
-
-    <!-- ==================== PREMIUM PERSISTENT DYNAMIC NAVIGATION ==================== -->
-    <nav class="bg-slate-900/90 border border-slate-800/80 p-2 rounded-2xl backdrop-blur-2xl grid grid-cols-4 gap-1 shadow-2xl">
-        <button onclick="switchTab('home')" id="nav-home" class="nav-btn flex flex-col items-center justify-center py-2.5 rounded-xl font-bold text-[11px] text-cyan-400 bg-slate-950/80 border border-cyan-500/20 shadow-md">
-            <span class="text-base mb-0.5">🪙</span> Home
-        </button>
-        <button onclick="switchTab('mine')" id="nav-mine" class="nav-btn flex flex-col items-center justify-center py-2.5 rounded-xl font-bold text-[11px] text-slate-400 hover:text-slate-200">
-            <span class="text-base mb-0.5">⛏️</span> Mine
-        </button>
-        <button onclick="switchTab('tasks')" id="nav-tasks" class="nav-btn flex flex-col items-center justify-center py-2.5 rounded-xl font-bold text-[11px] text-slate-400 hover:text-slate-200">
-            <span class="text-base mb-0.5">📋</span> Tasks
-        </button>
-        <button onclick="switchTab('airdrop')" id="nav-airdrop" class="nav-btn flex flex-col items-center justify-center py-2.5 rounded-xl font-bold text-[11px] text-slate-400 hover:text-slate-200">
-            <span class="text-base mb-0.5">💎</span> Airdrop
-        </button>
-    </nav>
-
-    <!-- ==================== LOGIC PLATFORM CONTROLLER ==================== -->
-    <script>
-        // --- SECURE STATE ARCHITECTURE ---
-        let state = {
-            balance: Number(localStorage.getItem('cpro_balance')) || 0,
-            energy: Number(localStorage.getItem('cpro_energy')) || 1000,
-            tapMulti: Number(localStorage.getItem('cpro_multi')) || 1,
-            pph: Number(localStorage.getItem('cpro_pph')) || 0,
-            lastUnix: Number(localStorage.getItem('cpro_last_unix')) || Date.now(),
-            streak: Number(localStorage.getItem('cpro_streak')) || 0,
-            lastDailyClaim: Number(localStorage.getItem('cpro_last_claim')) || 0,
-            completedTasks: JSON.parse(localStorage.getItem('cpro_tasks')) || []
-        };
-
-        const maxEnergy = 1000;
-        const ADSGRAM_BLOCK_ID = "36912";
-
-        // --- UPGRADE CARDS DEFINITION DATA (MINE PAGE) ---
-        const upgradeCards = [
-            { id: 'node_1', name: 'Quantum Processor', baseCost: 150, pphReward: 15, currentLvl: 0 },
-            { id: 'node_2', name: 'Liquidity Pools', baseCost: 500, pphReward: 60, currentLvl: 0 },
-            { id: 'node_3', name: 'P2P Trading Desk', baseCost: 2000, pphReward: 280, currentLvl: 0 },
-            { id: 'node_4', name: 'AI Trading Bot', baseCost: 8000, pphReward: 1100, currentLvl: 0 }
-        ];
-
-        // Load card levels from local storage
-        upgradeCards.forEach(card => {
-            card.currentLvl = Number(localStorage.getItem(`cpro_card_${card.id}`)) || 0;
-        });
-
-        // --- MISSIONS & TASKS DATA ---
-        const missionTasks = [
-            { id: 't_tg', label: 'Join CoinPulse Channel', reward: 2000, link: 'https://t.me/crypto' },
-            { id: 't_x', label: 'Follow on Twitter (X)', reward: 1500, link: 'https://x.com' },
-            { id: 't_yt', label: 'Subscribe YouTube Channel', reward: 3000, link: 'https://youtube.com' }
-        ];
-
-        // --- INITIALIZATION ENGINE ---
-        document.addEventListener("DOMContentLoaded", () => {
-            initTelegram();
-            processOfflineEarnings();
-            renderMineCards();
-            renderMissions();
-            renderDailyStreaks();
-            executeUIRefresh();
-            
-            // Core loops
-            setInterval(energySyncLoop, 1000);
-            setInterval(passiveIncomeLoop, 1000);
-        });
-
-        function initTelegram() {
-            if (window.Telegram && window.Telegram.WebApp) {
-                const tg = window.Telegram.WebApp;
-                tg.ready();
-                tg.expand();
-                if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-                    const user = tg.initDataUnsafe.user;
-                    document.getElementById('u-name').innerText = user.first_name;
-                    document.getElementById('u-avatar').innerText = user.first_name[0].toUpperCase();
-                }
-            }
+<script>
+(function() {
+    'use strict';
+    
+    // ---------- DOM Refs ----------
+    const scoreEl = document.getElementById('score');
+    const earnedEl = document.getElementById('earned');
+    const bonusEl = document.getElementById('bonus');
+    const tapBtn = document.getElementById('tapBtn');
+    const toast = document.getElementById('toast');
+    const adsStatus = document.getElementById('adsStatus');
+    const adsTask = document.getElementById('adsTask');
+    
+    // ---------- State ----------
+    let score = 0;
+    let earned = 0;
+    let bonus = 0;
+    let toastTimeout = null;
+    
+    // ---------- UI Updates ----------
+    function updateUI() {
+        scoreEl.textContent = score;
+        earnedEl.textContent = earned;
+        bonusEl.textContent = bonus;
+    }
+    
+    // ---------- Toast ----------
+    function showToast(message, isSuccess = true) {
+        if (toastTimeout) {
+            clearTimeout(toastTimeout);
+            toast.classList.remove('show');
         }
-
-        // --- OFFLINE EARNINGS PROCESSOR ---
-        function processOfflineEarnings() {
-            const currentUnix = Date.now();
-            const timeDiffSeconds = Math.floor((currentUnix - state.lastUnix) / 1000);
-            
-            if (timeDiffSeconds > 10 && state.pph > 0) {
-                // Max limit of 3 hours offline earnings to prevent abuse
-                const cappedSeconds = Math.min(timeDiffSeconds, 3 * 60 * 60); 
-                const earned = Math.floor(cappedSeconds * (state.pph / 3600));
-                
-                if (earned > 0) {
-                    state.balance += earned;
-                    setTimeout(() => {
-                        alert(`💰 Welcome Back!\nYou structuralized passive earnings of +${earned.toLocaleString()} Coins while away!`);
-                        saveToStorage();
-                        executeUIRefresh();
-                    }, 1000);
-                }
-            }
-            state.lastUnix = currentUnix;
-            saveToStorage();
+        
+        toast.innerHTML = `<span class="icon">${isSuccess ? '✅' : '⚠️'}</span> ${message}`;
+        toast.style.borderColor = isSuccess ? 'rgba(74,222,128,0.2)' : 'rgba(251,146,60,0.2)';
+        
+        // Force reflow
+        void toast.offsetWidth;
+        toast.classList.add('show');
+        
+        toastTimeout = setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3000);
+    }
+    
+    // ---------- Tap Handler ----------
+    function handleTap() {
+        score += 1;
+        if (Math.random() < 0.25) {
+            earned += 1;
         }
-
-        // --- TAB SWITCHER ARCHITECTURE ---
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(el => {
-                el.classList.remove('text-cyan-400', 'bg-slate-950/80', 'border', 'border-cyan-500/20', 'shadow-md');
-                el.classList.add('text-slate-400');
-            });
-
-            document.getElementById(`tab-${tabId}`).classList.add('active');
-            const activeNav = document.getElementById(`nav-${tabId}`);
-            activeNav.classList.remove('text-slate-400');
-            activeNav.classList.add('text-cyan-400', 'bg-slate-950/80', 'border', 'border-cyan-500/20', 'shadow-md');
-
+        updateUI();
+        
+        // Haptic
+        try {
             if (window.Telegram?.WebApp?.HapticFeedback) {
                 window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
             }
-        }
-
-        // --- UI REFRESH SYNC ---
-        function executeUIRefresh() {
-            document.getElementById('home-balance').innerText = Math.floor(state.balance).toLocaleString();
-            document.getElementById('pph-display').innerText = `+${state.pph.toLocaleString()}/hr`;
-            document.getElementById('energy-text').innerText = `${state.energy} / ${maxEnergy}`;
-            document.getElementById('energy-bar').style.width = `${(state.energy / maxEnergy) * 100}%`;
+        } catch (_) {}
+    }
+    
+    tapBtn.addEventListener('click', handleTap);
+    tapBtn.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        handleTap();
+    }, { passive: false });
+    
+    // ---------- Adsgram Integration ----------
+    if (adsTask) {
+        // Show loading indicator
+        adsStatus.style.display = 'flex';
+        
+        // Task loaded
+        adsTask.addEventListener('taskLoaded', function(e) {
+            adsStatus.style.display = 'none';
+            console.log('[CoinPulse] Ads task loaded');
+        });
+        
+        // Task completed - GIVE BONUS!
+        adsTask.addEventListener('taskComplete', function(e) {
+            bonus += 2;
+            updateUI();
+            showToast('🎉 Ad completed! +2 bonus earned');
+            console.log('[CoinPulse] Task complete:', e.detail);
+        });
+        
+        // Task error - fallback bonus
+        adsTask.addEventListener('taskError', function(e) {
+            adsStatus.style.display = 'none';
+            console.warn('[CoinPulse] Task error:', e.detail);
             
-            // Adjust ranks dynamically based on milestones
-            let rank = "Bronze Warrior";
-            if(state.balance > 100000) rank = "Diamond Whale 🐋";
-            else if(state.balance > 25000) rank = "Gold Master 👑";
-            else if(state.balance > 5000) rank = "Silver Elite 🛡️";
-            document.getElementById('user-rank').innerText = `Rank: ${rank}`;
-        }
-
-        function saveToStorage() {
-            localStorage.setItem('cpro_balance', state.balance);
-            localStorage.setItem('cpro_energy', state.energy);
-            localStorage.setItem('cpro_multi', state.tapMulti);
-            localStorage.setItem('cpro_pph', state.pph);
-            localStorage.setItem('cpro_last_unix', Date.now());
-            localStorage.setItem('cpro_streak', state.streak);
-            localStorage.setItem('cpro_last_claim', state.lastDailyClaim);
-            localStorage.setItem('cpro_tasks', JSON.stringify(state.completedTasks));
-        }
-
-        // --- TICKER & LOOPS ---
-        function energySyncLoop() {
-            if (state.energy < maxEnergy) {
-                state.energy = Math.min(state.energy + 3, maxEnergy);
-                executeUIRefresh();
-            }
-        }
-
-        function passiveIncomeLoop() {
-            if (state.pph > 0) {
-                const perSecondProfit = state.pph / 3600;
-                state.balance += perSecondProfit;
-                executeUIRefresh();
-            }
-            localStorage.setItem('cpro_last_unix', Date.now());
-        }
-
-        // --- CORE CLICKER MECHANIC ---
-        document.getElementById('click-area').addEventListener('click', (e) => {
-            if (state.energy >= state.tapMulti) {
-                state.balance += state.tapMulti;
-                state.energy -= state.tapMulti;
-
-                if (window.Telegram?.WebApp?.HapticFeedback) {
-                    window.Telegram.WebApp.HapticFeedback.impactOccurred('medium');
-                }
-
-                // Complex Spline Particle Coordinates Generator
-                const rect = e.currentTarget.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-
-                const indicator = document.createElement('span');
-                indicator.innerText = `+${state.tapMulti}`;
-                indicator.style.left = `${x}px`;
-                indicator.style.top = `${y}px`;
-                indicator.className = "coin-particle text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-teal-300 pointer-events-none drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]";
-                
-                e.currentTarget.appendChild(indicator);
-                setTimeout(() => indicator.remove(), 700);
-
-                executeUIRefresh();
-                saveToStorage();
-            }
+            // Fallback: give bonus anyway if error
+            bonus += 1;
+            updateUI();
+            showToast('⚡ Bonus credited! (ad unavailable)', false);
         });
-
-        // --- MINE PAGE RENDER ENGINE ---
-        function renderMineCards() {
-            const container = document.getElementById('mine-cards-container');
-            container.innerHTML = '';
-
-            upgradeCards.forEach(card => {
-                const calculatedCost = Math.floor(card.baseCost * Math.pow(1.5, card.currentLvl));
-                const currentPPHGen = card.currentLvl * card.pphReward;
-
-                const cardEl = document.createElement('div');
-                cardEl.className = "bg-slate-900/80 border border-slate-800 p-3.5 rounded-2xl flex flex-col justify-between space-y-3";
-                cardEl.innerHTML = `
-                    <div>
-                        <div class="flex justify-between items-start">
-                            <span class="text-xl">⚙️</span>
-                            <span class="text-[9px] bg-slate-800 px-2 py-0.5 rounded-full font-bold text-slate-400">Lvl ${card.currentLvl}</span>
-                        </div>
-                        <h4 class="text-xs font-bold text-slate-200 mt-2">${card.name}</h4>
-                        <p class="text-[10px] text-emerald-400 mt-1 font-semibold">+${card.pphReward}/hr</p>
-                    </div>
-                    <button onclick="buyCardUpgrade('${card.id}')" class="w-full bg-slate-950 hover:bg-slate-800 border border-slate-700/60 p-2 rounded-xl text-[11px] font-bold flex justify-between items-center px-3 transition-colors">
-                        <span class="text-slate-400">Upgrade</span>
-                        <span class="text-cyan-400 font-extrabold">${calculatedCost.toLocaleString()}</span>
-                    </button>
-                `;
-                container.appendChild(cardEl);
-            });
-        }
-
-        window.buyCardUpgrade = function(cardId) {
-            const card = upgradeCards.find(c => c.id === cardId);
-            const cost = Math.floor(card.baseCost * Math.pow(1.5, card.currentLvl));
-
-            if (state.balance >= cost) {
-                state.balance -= cost;
-                card.currentLvl += 1;
-                state.pph += card.pphReward;
-
-                localStorage.setItem(`cpro_card_${card.id}`, card.currentLvl);
-                
-                if (window.Telegram?.WebApp?.HapticFeedback) {
-                    window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
-                }
-
-                saveToStorage();
-                renderMineCards();
-                executeUIRefresh();
-            } else {
-                alert("Insufficient CoinPulse balance for mining upgrade!");
+        
+        // Timeout fallback (10 seconds)
+        const timeoutId = setTimeout(() => {
+            if (adsStatus.style.display !== 'none') {
+                adsStatus.style.display = 'none';
+                bonus += 1;
+                updateUI();
+                showToast('⏰ Bonus credited! (timeout)', false);
             }
-        };
-
-        // --- TASKS ENGINE & REWARDS ---
-        function renderMissions() {
-            const container = document.getElementById('tasks-list-container');
-            container.innerHTML = '';
-
-            missionTasks.forEach(task => {
-                const isDone = state.completedTasks.includes(task.id);
-                const taskEl = document.createElement('div');
-                taskEl.className = "bg-slate-900/60 border border-slate-800/80 p-3.5 rounded-2xl flex justify-between items-center backdrop-blur-sm";
-                taskEl.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <span class="text-lg">${task.id === 't_tg' ? '📢' : task.id === 't_x' ? '🐦' : '📺'}</span>
-                        <div>
-                            <p class="text-xs font-bold text-slate-200">${task.label}</p>
-                            <p class="text-[10px] text-cyan-400 font-semibold">+${task.reward.toLocaleString()} Coins</p>
-                        </div>
-                    </div>
-                    ${isDone ? 
-                        `<span class="text-xs text-emerald-400 font-extrabold bg-emerald-500/10 px-2.5 py-1 rounded-xl border border-emerald-500/20">✓ Completed</span>` :
-                        `<button onclick="executeMission('${task.id}', '${task.link}', ${task.reward})" class="bg-cyan-600 hover:bg-cyan-700 text-white font-bold text-xs px-3.5 py-1.5 rounded-xl transition-colors shadow-md shadow-cyan-600/10 active:scale-95">Start</button>`
-                    }
-                `;
-                container.appendChild(taskEl);
-            });
-        }
-
-        window.executeMission = function(id, link, reward) {
-            window.open(link, '_blank');
-            // Mock dynamic validation wait structure
-            setTimeout(() => {
-                if(!state.completedTasks.includes(id)) {
-                    state.completedTasks.push(id);
-                    state.balance += reward;
-                    saveToStorage();
-                    renderMissions();
-                    executeUIRefresh();
-                    if (window.Telegram?.WebApp?.HapticFeedback) {
-                        window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
-                    }
-                }
-            }, 3000);
-        };
-
-        // --- STREAK MANAGEMENT ---
-        function renderDailyStreaks() {
-            const grid = document.getElementById('daily-streaks-grid');
-            grid.innerHTML = '';
-            
-            for(let i=1; i<=4; i++) {
-                const bonus = i * 1000;
-                const isClaimed = state.streak >= i;
-                const badge = document.createElement('div');
-                badge.className = `p-2 rounded-xl border text-center text-[10px] font-bold ${isClaimed ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-slate-950 border-slate-800 text-slate-400'}`;
-                badge.innerHTML = `
-                    <p class="opacity-80">Day ${i}</p>
-                    <p class="mt-0.5">${bonus >= 1000 ? (bonus/1000)+'K' : bonus}</p>
-                `;
-                grid.appendChild(badge);
-            }
-        }
-
-        document.getElementById('claim-daily-btn').addEventListener('click', () => {
-            const now = Date.now();
-            const oneDayMs = 24 * 60 * 60 * 1000;
-
-            if (now - state.lastDailyClaim >= oneDayMs) {
-                if(now - state.lastDailyClaim > (2 * oneDayMs)) {
-                    state.streak = 0; // Reset streak if missed more than 48hrs
-                }
-                
-                state.streak = (state.streak % 7) + 1;
-                const dailyReward = state.streak * 1000;
-                
-                state.balance += dailyReward;
-                state.lastDailyClaim = now;
-                
-                saveToStorage();
-                renderDailyStreaks();
-                executeUIRefresh();
-                
-                if (window.Telegram?.WebApp?.HapticFeedback) {
-                    window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
-                }
-                alert(`🎁 Daily Reward Claimed!\n+${dailyReward.toLocaleString()} Coins added to your secure wallet.`);
-            } else {
-                const nextAvailable = new Date(state.lastDailyClaim + oneDayMs);
-                alert(`🔒 Vault Locked!\nYour next check-in reward becomes available at: ${nextAvailable.toLocaleTimeString()}`);
-            }
+        }, 10000);
+        
+        // Clear timeout on load
+        adsTask.addEventListener('taskLoaded', function() {
+            clearTimeout(timeoutId);
         });
-
-        // ==================== ADSGRAM VIDEO ENGINE ====================
-        document.getElementById('adsgram-premium-btn').addEventListener('click', () => {
-            if (window.Adsgram) {
-                const AdController = window.Adsgram.init({ blockId: ADSGRAM_BLOCK_ID });
-                
-                AdController.show()
-                    .then((result) => {
-                        // User parsed the commercial loop safely
-                        state.balance += 5000; 
-                        executeUIRefresh();
-                        saveToStorage();
-                        
-                        if (window.Telegram?.WebApp?.HapticFeedback) {
-                            window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
-                        }
-                        alert("🎉 Strategic Success! Sponsored Bonus of +5,000 CoinPulse credited!");
-                    })
-                    .catch((error) => {
-                        console.error("Adsgram dynamic interruption: ", error);
-                        alert("⚠️ Video transmission interrupted. Ensure you view the entire advertisement to claim your allocation.");
-                    });
-            } else {
-                alert("Adsgram Network engine currently offline or initialization delayed. Re-attempt shorty.");
-            }
+        
+        // Debug: show when task is ready
+        adsTask.addEventListener('taskReady', function(e) {
+            console.log('[CoinPulse] Task ready:', e.detail);
         });
-    </script>
+    } else {
+        console.warn('[CoinPulse] adsgram-task element not found');
+    }
+    
+    // ---------- Telegram WebApp ----------
+    try {
+        if (window.Telegram?.WebApp) {
+            const webApp = window.Telegram.WebApp;
+            webApp.ready();
+            webApp.expand();
+            console.log('[CoinPulse] Telegram WebApp ready');
+        }
+    } catch (_) {}
+    
+    // ---------- Init ----------
+    updateUI();
+    console.log('[CoinPulse] 🚀 App initialized | blockId: task-36912');
+    
+    // Expose for debugging
+    window.__coinpulse = { score, earned, bonus, updateUI, showToast };
+})();
+</script>
+
 </body>
 </html>
