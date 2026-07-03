@@ -1,1246 +1,361 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Coinpulse - Earn USDT</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <title>AdsGram Test</title>
     <script src="https://partner.adsgram.ai/adsgram.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); 
-            color: white; 
-            min-height: 100vh;
-            overflow-x: hidden;
-            padding-bottom: 70px;
-        }
-        
-        .app-header { 
-            background: rgba(0,0,0,0.5); 
-            padding: 15px 20px; 
-            position: sticky; 
-            top: 0; 
-            z-index: 100;
-            backdrop-filter: blur(10px);
-        }
-        
-        .user-welcome { 
-            display: flex; 
-            align-items: center; 
-            gap: 12px; 
-            margin-bottom: 20px;
-        }
-        
-        .user-avatar { 
-            width: 50px; 
-            height: 50px; 
-            border-radius: 15px; 
-            background: linear-gradient(135deg, #00ff88, #00cc6a); 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            font-weight: bold;
-            font-size: 24px;
-            color: #000;
-        }
-        
-        .user-info h3 { font-size: 16px; margin-bottom: 3px; }
-        .user-info span { font-size: 12px; opacity: 0.7; }
-        
-        .balance-card {
-            background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,170,0,0.1));
-            border-radius: 20px;
-            padding: 25px;
-            text-align: center;
-            border: 2px solid rgba(255,215,0,0.3);
-            margin-bottom: 20px;
-        }
-        
-        .balance-label { font-size: 14px; opacity: 0.8; margin-bottom: 10px; letter-spacing: 1px; }
-        .balance-amount { font-size: 48px; font-weight: bold; color: #ffd700; margin: 10px 0; }
-        .balance-usd { font-size: 16px; opacity: 0.9; margin-top: 10px; }
-        .balance-details { 
-            display: flex; 
-            justify-content: space-around; 
-            margin-top: 20px; 
-            padding-top: 20px; 
-            border-top: 1px solid rgba(255,255,255,0.2);
-        }
-        .detail-item { text-align: center; }
-        .detail-value { font-size: 18px; font-weight: bold; color: #00ff88; }
-        .detail-label { font-size: 11px; opacity: 0.7; margin-top: 3px; }
-        
-        .quick-actions { 
-            display: grid; 
-            grid-template-columns: repeat(4, 1fr); 
-            gap: 10px; 
-            margin-bottom: 20px;
-        }
-        
-        .action-btn {
-            background: rgba(255,255,255,0.1);
-            border-radius: 15px;
-            padding: 15px 10px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        
-        .action-btn:active { transform: scale(0.95); }
-        .action-btn i { font-size: 24px; margin-bottom: 8px; display: block; }
-        .action-btn span { font-size: 11px; }
-        .action-btn:nth-child(1) { background: rgba(0,255,136,0.2); }
-        .action-btn:nth-child(2) { background: rgba(138,43,226,0.2); }
-        .action-btn:nth-child(3) { background: rgba(30,144,255,0.2); }
-        .action-btn:nth-child(4) { background: rgba(255,215,0,0.2); }
-        
-        .earn-section { margin-bottom: 20px; padding: 0 20px; }
-        .section-title { font-size: 16px; font-weight: bold; margin-bottom: 15px; opacity: 0.9; }
-        
-        .earn-cards { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
-            gap: 12px;
-        }
-        
-        .earn-card {
-            background: rgba(255,255,255,0.08);
-            border-radius: 15px;
-            padding: 20px;
-            text-align: center;
-            border: 1px solid rgba(255,255,255,0.1);
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .earn-card:active { transform: scale(0.98); }
-        .earn-card i { font-size: 32px; margin-bottom: 10px; }
-        .earn-card h3 { font-size: 14px; margin-bottom: 5px; }
-        .earn-card p { font-size: 11px; opacity: 0.7; }
-        .earn-card.watch { background: linear-gradient(135deg, rgba(0,123,255,0.3), rgba(0,123,255,0.1)); }
-        .earn-card.tasks { background: linear-gradient(135deg, rgba(40,167,69,0.3), rgba(40,167,69,0.1)); }
-        .earn-card.refer { background: linear-gradient(135deg, rgba(111,66,193,0.3), rgba(111,66,193,0.1)); }
-        
-        .referral-section {
-            background: rgba(255,255,255,0.05);
-            border-radius: 15px;
-            padding: 20px;
-            margin: 0 20px 20px;
-        }
-        
-        .referral-title { 
-            display: flex; 
-            align-items: center; 
-            gap: 10px; 
-            margin-bottom: 15px;
-            font-size: 14px;
-            font-weight: bold;
-        }
-        
-        .referral-link {
-            background: rgba(0,0,0,0.3);
-            border-radius: 10px;
-            padding: 12px;
-            font-size: 12px;
-            word-break: break-all;
-            margin-bottom: 10px;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        
-        .copy-btn {
-            background: linear-gradient(135deg, #ffd700, #ffaa00);
-            color: #000;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 10px;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-        }
-        
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(0,0,0,0.95);
-            padding: 10px 15px;
-            display: flex;
-            justify-content: space-around;
-            backdrop-filter: blur(10px);
-            border-top: 1px solid rgba(255,255,255,0.1);
-            z-index: 100;
-        }
-        
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-            padding: 5px 15px;
-            cursor: pointer;
-            color: rgba(255,255,255,0.6);
-            transition: all 0.3s;
-        }
-        
-        .nav-item.active { color: #ffd700; }
-        .nav-item i { font-size: 22px; }
-        .nav-item span { font-size: 11px; }
-        
-        .content-section { display: none; padding: 20px; }
-        .content-section.active { display: block; }
-        
-        .ad-card {
-            background: rgba(255,255,255,0.08);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 15px;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        
-        .ad-header { 
-            display: flex; 
-            align-items: center; 
-            gap: 15px; 
-            margin-bottom: 15px;
-        }
-        
-        .ad-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
-            background: linear-gradient(135deg, #ffd700, #ffaa00);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-        }
-        
-        .ad-info h3 { font-size: 16px; margin-bottom: 3px; }
-        .ad-info p { font-size: 12px; opacity: 0.7; }
-        
-        .ad-progress {
-            background: rgba(255,255,255,0.1);
-            border-radius: 10px;
-            padding: 15px;
-            margin: 15px 0;
-        }
-        
-        .progress-text { 
-            display: flex; 
-            justify-content: space-between; 
-            margin-bottom: 10px;
-            font-size: 13px;
-        }
-        
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #00ff88, #00cc6a);
-            transition: width 0.3s;
-        }
-        
-        .watch-btn {
-            background: linear-gradient(135deg, #ffd700, #ffaa00);
-            color: #000;
-            border: none;
-            padding: 15px;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 10px;
-            transition: all 0.3s;
-        }
-        
-        .watch-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        
-        .watch-btn.watching {
-            background: linear-gradient(135deg, #ff4444, #cc0000);
-            animation: pulse 1s infinite;
-        }
-        
-        .watch-btn.ready {
-            background: linear-gradient(135deg, #00ff88, #00cc6a);
-        }
-        
-        @keyframes pulse {
-            0% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.7; transform: scale(0.98); }
-            100% { opacity: 1; transform: scale(1); }
-        }
-        
-        .task-card {
-            background: rgba(255,255,255,0.08);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 15px;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        
-        .task-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 15px;
-        }
-        
-        .task-title { 
-            display: flex; 
-            align-items: center; 
-            gap: 12px;
-        }
-        
-        .task-icon {
-            width: 45px;
-            height: 45px;
-            border-radius: 12px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-        }
-        
-        .task-info h3 { font-size: 15px; margin-bottom: 3px; }
-        .task-info p { font-size: 12px; opacity: 0.7; }
-        
-        .task-reward {
-            background: rgba(0,255,136,0.2);
-            padding: 8px 15px;
-            border-radius: 10px;
-            font-weight: bold;
-            color: #00ff88;
-            font-size: 14px;
-        }
-        
-        .task-btn {
-            background: linear-gradient(135deg, #00ff88, #00cc6a);
-            color: #000;
-            border: none;
-            padding: 12px;
-            border-radius: 10px;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-            font-size: 14px;
-        }
-        
-        .task-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        
-        .notification {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%) translateY(-100px);
-            background: #fff;
-            color: #000;
-            padding: 15px 30px;
-            border-radius: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            font-weight: 600;
-            opacity: 0;
-            transition: all 0.3s;
-            z-index: 2000;
-        }
-        
-        .notification.show {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
-        }
-        
-        .notification.success { background: #00ff88; color: #000; }
-        .notification.error { background: #ff4444; color: #fff; }
-        .notification.info { background: #ffd700; color: #000; }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.9);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        
-        .modal.show { display: flex; }
-        
-        .modal-content {
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            border-radius: 25px;
-            padding: 30px;
-            max-width: 400px;
-            width: 100%;
-            text-align: center;
-            border: 2px solid rgba(255,255,255,0.2);
-        }
-        
-        .modal-icon { font-size: 80px; margin-bottom: 20px; }
-        .modal-title { font-size: 24px; font-weight: bold; margin-bottom: 15px; }
-        .modal-text { opacity: 0.9; margin-bottom: 25px; line-height: 1.6; }
-        
-        .wallet-input {
-            width: 100%;
-            padding: 15px;
-            border-radius: 12px;
-            border: 2px solid rgba(255,255,255,0.2);
-            background: rgba(255,255,255,0.1);
-            color: white;
-            font-size: 16px;
-            margin-bottom: 15px;
-            outline: none;
-        }
-        
-        .wallet-input:focus { border-color: #00ff88; }
-        
-        .ad-status {
-            background: rgba(0,255,136,0.1);
-            border: 1px solid #00ff88;
-            border-radius: 10px;
-            padding: 12px;
-            margin: 10px 0 20px;
-            text-align: center;
-            font-size: 13px;
-            color: #00ff88;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-        
-        .ad-status.loading {
-            background: rgba(255,215,0,0.1);
-            border-color: #ffd700;
-            color: #ffd700;
-        }
-        
-        .ad-status.error {
-            background: rgba(255,68,68,0.1);
-            border-color: #ff4444;
-            color: #ff4444;
-        }
-
-        .ad-counter {
-            font-size: 14px;
-            color: #ffd700;
-            margin-top: 5px;
-        }
-        
-        .block-id-display {
-            background: rgba(255,255,255,0.05);
-            padding: 10px;
-            border-radius: 8px;
-            margin: 10px 0;
-            font-size: 12px;
-            color: #888;
-            text-align: center;
-        }
-        
-        .block-id-display strong {
-            color: #ffd700;
-            font-size: 16px;
-        }
-        
-        .status-dot {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            margin-right: 8px;
-        }
-        
-        .status-dot.green { background: #00ff88; }
-        .status-dot.yellow { background: #ffd700; }
-        .status-dot.red { background: #ff4444; }
-        .status-dot.gray { background: #666; }
+        body { font-family: Arial; max-width: 400px; margin: 50px auto; padding: 20px; background: #0f0c29; color: white; }
+        .box { background: rgba(255,255,255,0.1); padding: 30px; border-radius: 15px; text-align: center; }
+        button { background: #ffd700; color: #000; border: none; padding: 15px 30px; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; width: 100%; margin: 10px 0; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .status { padding: 15px; border-radius: 10px; margin: 10px 0; }
+        .ready { background: rgba(0,255,136,0.2); color: #00ff88; border: 1px solid #00ff88; }
+        .loading { background: rgba(255,215,0,0.2); color: #ffd700; border: 1px solid #ffd700; }
+        .error { background: rgba(255,68,68,0.2); color: #ff4444; border: 1px solid #ff4444; }
+        .log { background: rgba(0,0,0,0.5); padding: 15px; border-radius: 10px; margin-top: 20px; max-height: 300px; overflow-y: auto; font-size: 12px; text-align: left; font-family: monospace; }
+        .success { color: #00ff88; }
+        .error-text { color: #ff4444; }
+        .info { color: #ffd700; }
+        input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1); color: white; font-size: 16px; margin: 10px 0; }
+        .block-id-input { display: flex; gap: 10px; align-items: center; }
+        .block-id-input input { flex: 1; }
+        .block-id-input button { width: auto; padding: 12px 20px; margin: 0; }
     </style>
 </head>
 <body>
-    <div class="notification" id="notification"></div>
-    
-    <!-- Home Section -->
-    <div id="home" class="content-section active">
-        <div class="app-header">
-            <div class="user-welcome">
-                <div class="user-avatar" id="user-avatar">U</div>
-                <div class="user-info">
-                    <h3 id="username">User</h3>
-                    <span id="user-id">ID: 12345</span>
-                </div>
-            </div>
-            
-            <div class="balance-card">
-                <div class="balance-label">YOUR BALANCE</div>
-                <div class="balance-amount"><span id="balance">0.00</span></div>
-                <div class="balance-usd">≈ $<span id="usd-value">0.00</span> USDT</div>
-                <div class="balance-details">
-                    <div class="detail-item">
-                        <div class="detail-value" id="total-coins">0</div>
-                        <div class="detail-label">Coins</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-value" id="games-played">0</div>
-                        <div class="detail-label">Games</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="quick-actions">
-                <div class="action-btn" onclick="openDailyBonus()">
-                    <i style="color: #00ff88;">🎁</i>
-                    <span>Daily Bonus</span>
-                </div>
-                <div class="action-btn" onclick="openRewardCode()">
-                    <i style="color: #8a2be2;">🎟️</i>
-                    <span>Reward Code</span>
-                </div>
-                <div class="action-btn" onclick="openWithdraw()">
-                    <i style="color: #1e90ff;">💳</i>
-                    <span>Withdraw</span>
-                </div>
-                <div class="action-btn" onclick="openLeaderboard()">
-                    <i style="color: #ffd700;">🏆</i>
-                    <span>Leaderboard</span>
-                </div>
-            </div>
+    <div class="box">
+        <h1>🎬 AdsGram Test</h1>
+        
+        <div class="block-id-input">
+            <input type="text" id="blockIdInput" value="36912" placeholder="Enter Block ID">
+            <button onclick="setBlockId()" style="width: auto; padding: 12px 20px; background: #667eea;">Set</button>
         </div>
         
-        <div class="earn-section">
-            <div class="section-title">EARN MORE</div>
-            <div class="earn-cards">
-                <div class="earn-card watch" onclick="switchTab('ads')">
-                    <i style="color: #007bff;">▶️</i>
-                    <h3>Watch Ads</h3>
-                    <p>Up to 10 Coins</p>
-                </div>
-                <div class="earn-card tasks" onclick="switchTab('tasks')">
-                    <i style="color: #28a745;">✓</i>
-                    <h3>Tasks</h3>
-                    <p>20-200 Coins</p>
-                </div>
-                <div class="earn-card refer" onclick="switchTab('refer')">
-                    <i style="color: #6f42c1;">👥</i>
-                    <h3>Refer</h3>
-                    <p>Up to 150 Coins</p>
-                </div>
-            </div>
+        <div id="status" class="status loading">⏳ Loading AdsGram SDK...</div>
+        
+        <div style="font-size: 32px; margin: 20px 0;">
+            🪙 <span id="balance">0.00</span>
         </div>
         
-        <div class="referral-section">
-            <div class="referral-title">
-                <i style="color: #6f42c1;">👥</i>
-                Your Referral Link
-                <span style="margin-left: auto; color: #ffd700;">+150 Coins</span>
-            </div>
-            <div class="referral-link" id="referral-link">https://t.me/CoinpulseBot/play?startapp=ref123</div>
-            <button class="copy-btn" onclick="copyReferral()">📋 Copy Link</button>
-        </div>
-    </div>
-    
-    <!-- Ads Section -->
-    <div id="ads" class="content-section">
-        <div class="app-header">
-            <h2 style="margin-bottom: 10px;">Watch Ads & Earn</h2>
-            <div class="block-id-display">
-                📡 Block ID: <strong id="block-id-display">36912</strong>
-                <span id="status-dot" style="margin-left: 10px;">
-                    <span class="status-dot gray" id="statusDot"></span>
-                    <span id="statusText" style="color: #888; font-size: 12px;">Initializing...</span>
-                </span>
-            </div>
-            <div class="ad-status loading" id="ad-status">⏳ Loading AdsGram SDK...</div>
-        </div>
-        
-        <div class="ad-card">
-            <div class="ad-header">
-                <div class="ad-icon">📺</div>
-                <div class="ad-info">
-                    <h3>AdsGram Reward</h3>
-                    <p>+10 Coins per ad</p>
-                </div>
-            </div>
-            <div class="ad-progress">
-                <div class="progress-text">
-                    <span id="ads-watched">0 / 5 ads</span>
-                    <span id="ads-left">5 left</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="ads-progress" style="width: 0%"></div>
-                </div>
-            </div>
-            <button class="watch-btn" onclick="startWatching(5, 0.010, 'ads-progress', 'ads-watched', 'ads-left', 'watch-btn-1')" id="watch-btn-1" disabled>
-                ▶️ Watch Ad - +10 Coins
-            </button>
-            <div class="ad-counter" id="ad-counter-1"></div>
-        </div>
-        
-        <div class="ad-card">
-            <div class="ad-header">
-                <div class="ad-icon" style="background: linear-gradient(135deg, #ff4444, #ff0000);">🎯</div>
-                <div class="ad-info">
-                    <h3>AdsGram AI</h3>
-                    <p>+8 Coins per ad</p>
-                </div>
-            </div>
-            <div class="ad-progress">
-                <div class="progress-text">
-                    <span id="ads-watched-2">0 / 15 ads</span>
-                    <span id="ads-left-2">15 left</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="ads-progress-2" style="width: 0%"></div>
-                </div>
-            </div>
-            <button class="watch-btn" style="background: linear-gradient(135deg, #ff4444, #ff0000);" onclick="startWatching(15, 0.008, 'ads-progress-2', 'ads-watched-2', 'ads-left-2', 'watch-btn-2')" id="watch-btn-2" disabled>
-                ▶️ Watch Ad - +8 Coins
-            </button>
-            <div class="ad-counter" id="ad-counter-2"></div>
-        </div>
-        
-        <!-- Manual Reload Button -->
-        <button onclick="forceReloadAdsGram()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 12px; border-radius: 10px; width: 100%; margin-top: 10px; cursor: pointer;">
-            🔄 Reload AdsGram
+        <button id="watchBtn" onclick="watchAd()" disabled>
+            ▶️ Watch Ad - +10 Coins
         </button>
-    </div>
-    
-    <!-- Tasks Section -->
-    <div id="tasks" class="content-section">
-        <div class="app-header">
-            <h2 style="margin-bottom: 20px;">Complete Tasks</h2>
-            <p style="opacity: 0.7; margin-bottom: 20px;">Complete tasks to earn Coins</p>
-        </div>
         
-        <div class="task-card">
-            <div class="task-header">
-                <div class="task-title">
-                    <div class="task-icon" style="background: #1da1f2;">🐦</div>
-                    <div class="task-info">
-                        <h3>Follow on Twitter</h3>
-                        <p>Follow @CoinpulseApp</p>
-                    </div>
-                </div>
-                <div class="task-reward">+10</div>
-            </div>
-            <button class="task-btn" onclick="completeTask('twitter', 0.010)">Complete Task</button>
-        </div>
+        <button onclick="testAdsGram()" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+            🔧 Test AdsGram
+        </button>
         
-        <div class="task-card">
-            <div class="task-header">
-                <div class="task-title">
-                    <div class="task-icon" style="background: #0088cc;">✈️</div>
-                    <div class="task-info">
-                        <h3>Join Telegram</h3>
-                        <p>Join our official channel</p>
-                    </div>
-                </div>
-                <div class="task-reward">+10</div>
-            </div>
-            <button class="task-btn" onclick="completeTask('telegram', 0.010)">Complete Task</button>
-        </div>
+        <button onclick="forceReload()" style="background: linear-gradient(135deg, #ff4444, #cc0000);">
+            🔄 Force Reload
+        </button>
         
-        <div class="task-card">
-            <div class="task-header">
-                <div class="task-title">
-                    <div class="task-icon" style="background: #ff0000;">📺</div>
-                    <div class="task-info">
-                        <h3>Subscribe YouTube</h3>
-                        <p>Subscribe to our channel</p>
-                    </div>
-                </div>
-                <div class="task-reward">+20</div>
-            </div>
-            <button class="task-btn" onclick="completeTask('youtube', 0.020)">Complete Task</button>
-        </div>
-    </div>
-    
-    <!-- Refer Section -->
-    <div id="refer" class="content-section">
-        <div class="app-header">
-            <h2 style="margin-bottom: 20px;">Refer Friends</h2>
-            <p style="opacity: 0.7; margin-bottom: 20px;">Earn 150 Coins for each friend</p>
-        </div>
-        
-        <div class="referral-section" style="margin-bottom: 20px;">
-            <div class="referral-title">
-                <i style="color: #6f42c1;">🔗</i>
-                Your Referral Link
-            </div>
-            <div class="referral-link" id="ref-link">https://t.me/CoinpulseBot/play?startapp=ref123</div>
-            <button class="copy-btn" onclick="copyReferral()">📋 Copy Link</button>
-        </div>
-        
-        <div class="earn-card" style="background: linear-gradient(135deg, rgba(111,66,193,0.3), rgba(111,66,193,0.1)); margin-bottom: 15px;">
-            <i style="color: #6f42c1; font-size: 48px; margin-bottom: 15px;">👥</i>
-            <h3>Invite Friends</h3>
-            <p>Earn 150 Coins for each friend who joins</p>
-            <div style="margin-top: 15px; font-size: 24px; font-weight: bold; color: #ffd700;">
-                <span id="total-referrals">0</span> Friends
-            </div>
-        </div>
-    </div>
-    
-    <!-- Profile Section -->
-    <div id="profile" class="content-section">
-        <div class="app-header" style="text-align: center; padding: 30px 20px;">
-            <div class="user-avatar" style="width: 80px; height: 80px; font-size: 36px; margin: 0 auto 15px;" id="profile-avatar">U</div>
-            <h2 id="profile-name">User</h2>
-            <p style="opacity: 0.7; margin: 5px 0;" id="profile-username">@user</p>
-            <p style="opacity: 0.5; font-size: 12px;">ID: <span id="profile-id">12345</span></p>
-        </div>
-        
-        <div style="padding: 0 20px;">
-            <div style="background: rgba(255,255,255,0.05); border-radius: 15px; padding: 20px; margin-bottom: 15px;">
-                <h3 style="margin-bottom: 15px; font-size: 14px; opacity: 0.8;">FINANCE</h3>
-                <div class="action-btn" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; background: rgba(30,144,255,0.2);" onclick="openWithdraw()">
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <i style="color: #1e90ff; font-size: 24px;">💳</i>
-                        <span>Wallet</span>
-                    </div>
-                    <i style="opacity: 0.5;">›</i>
-                </div>
-                <div class="action-btn" style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,255,136,0.2);" onclick="viewTransactions()">
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <i style="color: #00ff88; font-size: 24px;">📊</i>
-                        <span>Transactions</span>
-                    </div>
-                    <i style="opacity: 0.5;">›</i>
-                </div>
-            </div>
-            
-            <div style="background: rgba(255,255,255,0.05); border-radius: 15px; padding: 20px;">
-                <h3 style="margin-bottom: 15px; font-size: 14px; opacity: 0.8;">SOCIAL</h3>
-                <div class="action-btn" style="display: flex; align-items: center; justify-content: space-between; background: rgba(111,66,193,0.2);" onclick="switchTab('refer')">
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <i style="color: #6f42c1; font-size: 24px;">👥</i>
-                        <span>Refer Friends</span>
-                    </div>
-                    <i style="opacity: 0.5;">›</i>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Bottom Navigation -->
-    <div class="bottom-nav">
-        <div class="nav-item active" onclick="switchTab('home')">
-            <i class="fas fa-home"></i>
-            <span>Home</span>
-        </div>
-        <div class="nav-item" onclick="switchTab('ads')">
-            <i class="fas fa-play-circle"></i>
-            <span>Ads</span>
-        </div>
-        <div class="nav-item" onclick="switchTab('tasks')">
-            <i class="fas fa-tasks"></i>
-            <span>Tasks</span>
-        </div>
-        <div class="nav-item" onclick="switchTab('refer')">
-            <i class="fas fa-users"></i>
-            <span>Refer</span>
-        </div>
-        <div class="nav-item" onclick="switchTab('profile')">
-            <i class="fas fa-user"></i>
-            <span>Profile</span>
-        </div>
-    </div>
-    
-    <!-- Withdraw Modal -->
-    <div class="modal" id="withdraw-modal">
-        <div class="modal-content">
-            <div class="modal-icon">💳</div>
-            <div class="modal-title">Withdraw USDT</div>
-            <div class="modal-text">Enter your USDT wallet address (Minimum: 0.01 USDT)</div>
-            <input type="text" class="wallet-input" id="wallet-address" placeholder="Enter wallet address">
-            <div style="margin-bottom: 15px; font-size: 14px;">
-                Available: <strong id="withdraw-balance">0.00 USDT</strong>
-            </div>
-            <button class="watch-btn" onclick="processWithdraw()">Confirm Withdraw</button>
-            <button class="watch-btn" style="background: rgba(255,255,255,0.2); color: white; margin-top: 10px;" onclick="closeModal('withdraw-modal')">Cancel</button>
+        <div class="log" id="log">
+            <div class="info">📋 Log started...</div>
         </div>
     </div>
 
     <script>
         // =============================================
-        // 🔴 IMPORTANT: ඔබගේ AdsGram Block ID එක මෙතන දාන්න!
+        // CONFIG
         // =============================================
-        // 👇 මෙය ඔබගේ Block ID එකට වෙනස් කරන්න
-        const ADSGRAM_BLOCK_ID = '36912';  
-        
-        // =============================================
-        // Telegram WebApp
-        // =============================================
-        let tg;
-        try {
-            tg = window.Telegram.WebApp;
-            tg.expand();
-            tg.ready();
-        } catch(e) {
-            tg = {
-                expand: function(){},
-                ready: function(){},
-                initDataUnsafe: { user: null },
-                BackButton: { onClick: function(){}, show: function(){} },
-                HapticFeedback: { notificationOccurred: function(){} },
-                showAlert: function(msg){ alert(msg); },
-                showConfirm: function(msg, cb){ cb(confirm(msg)); },
-                showProgress: function(){}
-            };
-        }
-        
-        // =============================================
-        // User Data
-        // =============================================
-        const user = tg.initDataUnsafe ? tg.initDataUnsafe.user : null;
-        const userId = user ? user.id : 'guest_' + Date.now();
-        const username = user ? (user.username || user.first_name || 'Guest') : 'Guest';
-        const userInitial = username.charAt(0).toUpperCase();
-        
-        // =============================================
-        // Display Block ID
-        // =============================================
-        document.getElementById('block-id-display').textContent = ADSGRAM_BLOCK_ID;
-        
-        // =============================================
-        // AdsGram SDK - Real Ads Working Version
-        // =============================================
+        let BLOCK_ID = '36912';
         let adsgram = null;
-        let adsgramReady = false;
+        let isReady = false;
+        let balance = 0;
         let isWatching = false;
         let initAttempts = 0;
-        const MAX_ATTEMPTS = 5;
         
-        function updateStatus(message, type) {
-            const statusEl = document.getElementById('ad-status');
-            const dot = document.getElementById('statusDot');
-            const text = document.getElementById('statusText');
-            
-            if (type === 'loading') {
-                statusEl.className = 'ad-status loading';
-                dot.className = 'status-dot yellow';
-                text.textContent = 'Loading...';
-            } else if (type === 'ready') {
-                statusEl.className = 'ad-status';
-                dot.className = 'status-dot green';
-                text.textContent = 'Ready';
-            } else if (type === 'error') {
-                statusEl.className = 'ad-status error';
-                dot.className = 'status-dot red';
-                text.textContent = 'Error';
-            }
-            
-            statusEl.textContent = message;
+        // =============================================
+        // LOG FUNCTION
+        // =============================================
+        function addLog(message, type = 'info') {
+            const log = document.getElementById('log');
+            const div = document.createElement('div');
+            div.className = type;
+            div.textContent = '[' + new Date().toLocaleTimeString() + '] ' + message;
+            log.appendChild(div);
+            log.scrollTop = log.scrollHeight;
+            console.log(message);
         }
         
+        function setBlockId() {
+            const input = document.getElementById('blockIdInput');
+            BLOCK_ID = input.value.trim() || '36912';
+            addLog('📡 Block ID set to: ' + BLOCK_ID, 'info');
+            // Reinitialize
+            isReady = false;
+            initAttempts = 0;
+            document.getElementById('watchBtn').disabled = true;
+            document.getElementById('status').className = 'status loading';
+            document.getElementById('status').textContent = '⏳ Reinitializing...';
+            setTimeout(initAdsGram, 500);
+        }
+        
+        // =============================================
+        // INIT ADSGRAM - Detailed Version
+        // =============================================
         function initAdsGram() {
-            const statusEl = document.getElementById('ad-status');
+            const statusEl = document.getElementById('status');
             initAttempts++;
             
+            addLog('🔄 Initializing AdsGram... (Attempt ' + initAttempts + ')', 'info');
+            addLog('📡 Block ID: ' + BLOCK_ID, 'info');
+            
             try {
-                // Check if SDK is loaded
+                // Step 1: Check if SDK is loaded
                 if (typeof window.AdsGram === 'undefined') {
-                    if (initAttempts < MAX_ATTEMPTS) {
-                        updateStatus('⏳ Loading AdsGram SDK... (' + initAttempts + '/' + MAX_ATTEMPTS + ')', 'loading');
+                    addLog('❌ AdsGram SDK not found!', 'error-text');
+                    addLog('💡 Check: Script tag is loading properly', 'error-text');
+                    
+                    if (initAttempts < 3) {
+                        statusEl.textContent = '⏳ Loading SDK... (' + initAttempts + '/3)';
+                        statusEl.className = 'status loading';
                         setTimeout(initAdsGram, 2000);
                         return;
                     } else {
-                        updateStatus('⚠️ SDK not loaded. Using demo mode.', 'error');
-                        adsgramReady = true;
-                        enableButtons(true);
+                        statusEl.textContent = '❌ SDK Not Loaded';
+                        statusEl.className = 'status error';
+                        addLog('❌ SDK failed to load after 3 attempts', 'error-text');
+                        addLog('💡 Try: Reload page or check internet', 'error-text');
                         return;
                     }
                 }
+                addLog('✅ AdsGram SDK found!', 'success');
                 
-                updateStatus('⏳ Initializing AdsGram...', 'loading');
+                // Step 2: Create AdsGram instance
+                statusEl.textContent = '⏳ Creating AdsGram instance...';
+                statusEl.className = 'status loading';
+                addLog('🔄 Creating AdsGram instance...', 'info');
                 
-                // Create AdsGram instance
                 adsgram = new window.AdsGram({
-                    blockId: ADSGRAM_BLOCK_ID,
+                    blockId: BLOCK_ID,
                     onReady: function() {
-                        console.log('✅ AdsGram Ready! Block:', ADSGRAM_BLOCK_ID);
-                        adsgramReady = true;
-                        updateStatus('✅ AdsGram Ready! Block: ' + ADSGRAM_BLOCK_ID, 'ready');
-                        enableButtons(true);
-                        showNotification('✅ AdsGram Ready! You can watch ads now.', 'success');
+                        addLog('✅ AdsGram Ready! Block: ' + BLOCK_ID, 'success');
+                        isReady = true;
+                        statusEl.textContent = '✅ AdsGram Ready! Block: ' + BLOCK_ID;
+                        statusEl.className = 'status ready';
+                        document.getElementById('watchBtn').disabled = false;
+                        addLog('✅ Watch button enabled!', 'success');
                     },
                     onError: function(error) {
-                        console.warn('AdsGram error:', error);
-                        adsgramReady = true;
-                        updateStatus('⚠️ Ads Ready (limited mode)', 'error');
-                        enableButtons(true);
+                        addLog('⚠️ AdsGram Error: ' + JSON.stringify(error), 'error-text');
+                        // Still enable buttons
+                        isReady = true;
+                        statusEl.textContent = '⚠️ Ads Ready (Limited)';
+                        statusEl.className = 'status error';
+                        document.getElementById('watchBtn').disabled = false;
+                        addLog('⚠️ Watch button enabled (limited mode)', 'info');
                     }
                 });
                 
-                // Check if showAd exists
+                // Step 3: Check if showAd exists
                 setTimeout(function() {
-                    if (adsgram && typeof adsgram.showAd === 'function') {
-                        console.log('✅ showAd() method available');
+                    if (adsgram) {
+                        addLog('📊 AdsGram instance created', 'info');
+                        if (typeof adsgram.showAd === 'function') {
+                            addLog('✅ showAd() method available!', 'success');
+                        } else {
+                            addLog('❌ showAd() method NOT available!', 'error-text');
+                            addLog('📊 Type of showAd: ' + typeof adsgram.showAd, 'error-text');
+                        }
                     } else {
-                        console.warn('⚠️ showAd() method not available');
+                        addLog('❌ AdsGram instance is null', 'error-text');
                     }
                 }, 1000);
                 
-                // Fallback timeout
+                // Step 4: Fallback timeout
                 setTimeout(function() {
-                    if (!adsgramReady) {
-                        adsgramReady = true;
-                        updateStatus('✅ Ads Ready (fallback)', 'ready');
-                        enableButtons(true);
+                    if (!isReady) {
+                        addLog('⏳ Timeout - enabling anyway', 'info');
+                        isReady = true;
+                        statusEl.textContent = '⚠️ Ads Ready (Timeout)';
+                        statusEl.className = 'status error';
+                        document.getElementById('watchBtn').disabled = false;
+                        addLog('⚠️ Watch button enabled (timeout)', 'info');
                     }
-                }, 5000);
+                }, 8000);
                 
-            } catch(e) {
-                console.error('Init error:', e);
-                adsgramReady = true;
-                updateStatus('✅ Ads Ready', 'ready');
-                enableButtons(true);
+            } catch (error) {
+                addLog('❌ Init Error: ' + error.message, 'error-text');
+                addLog('📊 Error stack: ' + error.stack, 'error-text');
+                statusEl.textContent = '❌ Init Failed';
+                statusEl.className = 'status error';
             }
         }
         
-        function enableButtons(ready) {
-            const btn1 = document.getElementById('watch-btn-1');
-            const btn2 = document.getElementById('watch-btn-2');
-            if (btn1) {
-                btn1.disabled = !ready;
-                if (ready) btn1.className = 'watch-btn ready';
+        // =============================================
+        // WATCH AD - With Detailed Logging
+        // =============================================
+        function watchAd() {
+            addLog('▶️ Watch Ad clicked!', 'info');
+            addLog('📊 isReady: ' + isReady, 'info');
+            addLog('📊 adsgram: ' + (adsgram ? 'exists' : 'null'), 'info');
+            
+            if (isWatching) {
+                addLog('⏳ Already watching...', 'info');
+                return;
             }
-            if (btn2) {
-                btn2.disabled = !ready;
-                if (ready) btn2.className = 'watch-btn ready';
+            
+            if (!isReady) {
+                addLog('⚠️ Not ready yet!', 'error-text');
+                addLog('💡 Please wait or click "Test AdsGram"', 'error-text');
+                return;
             }
-            console.log('Buttons enabled:', ready);
+            
+            if (!adsgram) {
+                addLog('❌ adsgram is null!', 'error-text');
+                addLog('🔄 Reinitializing...', 'info');
+                initAdsGram();
+                return;
+            }
+            
+            if (typeof adsgram.showAd !== 'function') {
+                addLog('❌ showAd() is not a function!', 'error-text');
+                addLog('📊 Type: ' + typeof adsgram.showAd, 'error-text');
+                return;
+            }
+            
+            isWatching = true;
+            document.getElementById('watchBtn').disabled = true;
+            document.getElementById('watchBtn').textContent = '⏳ Watching...';
+            addLog('▶️ Starting ad...', 'info');
+            
+            try {
+                addLog('📺 Calling adsgram.showAd()...', 'info');
+                
+                adsgram.showAd()
+                    .then(function(result) {
+                        addLog('✅ Ad completed!', 'success');
+                        addLog('📊 Result: ' + JSON.stringify(result), 'success');
+                        balance += 0.010;
+                        document.getElementById('balance').textContent = balance.toFixed(2);
+                        addLog('🪙 +10 Coins! Total: ' + balance.toFixed(2), 'success');
+                        isWatching = false;
+                        document.getElementById('watchBtn').disabled = false;
+                        document.getElementById('watchBtn').textContent = '▶️ Watch Ad - +10 Coins';
+                    })
+                    .catch(function(error) {
+                        addLog('❌ Ad error: ' + JSON.stringify(error), 'error-text');
+                        addLog('📊 Error details: ' + (error.message || 'Unknown'), 'error-text');
+                        // Still give coins (demo mode)
+                        balance += 0.010;
+                        document.getElementById('balance').textContent = balance.toFixed(2);
+                        addLog('🪙 +10 Coins (demo mode)!', 'info');
+                        isWatching = false;
+                        document.getElementById('watchBtn').disabled = false;
+                        document.getElementById('watchBtn').textContent = '▶️ Watch Ad - +10 Coins';
+                    });
+            } catch (error) {
+                addLog('❌ Exception: ' + error.message, 'error-text');
+                addLog('📊 Stack: ' + error.stack, 'error-text');
+                isWatching = false;
+                document.getElementById('watchBtn').disabled = false;
+                document.getElementById('watchBtn').textContent = '▶️ Watch Ad - +10 Coins';
+            }
         }
         
-        function forceReloadAdsGram() {
-            const statusEl = document.getElementById('ad-status');
-            updateStatus('🔄 Reloading AdsGram...', 'loading');
-            adsgramReady = false;
+        // =============================================
+        // TEST ADSGRAM - Detailed Check
+        // =============================================
+        function testAdsGram() {
+            addLog('🔧 ===== STARTING TEST =====', 'info');
+            
+            // Check 1: SDK
+            if (typeof window.AdsGram === 'undefined') {
+                addLog('❌ FAIL: AdsGram SDK is undefined', 'error-text');
+                addLog('💡 Solution: Check script tag', 'error-text');
+            } else {
+                addLog('✅ PASS: AdsGram SDK exists', 'success');
+            }
+            
+            // Check 2: Block ID
+            addLog('📡 Block ID: ' + BLOCK_ID, 'info');
+            
+            // Check 3: adsgram instance
+            if (!adsgram) {
+                addLog('❌ FAIL: adsgram instance is null', 'error-text');
+                addLog('🔄 Trying to initialize...', 'info');
+                initAdsGram();
+            } else {
+                addLog('✅ PASS: adsgram instance exists', 'success');
+            }
+            
+            // Check 4: showAd method
+            if (adsgram && typeof adsgram.showAd === 'function') {
+                addLog('✅ PASS: showAd() is a function', 'success');
+                
+                // Try to call showAd directly
+                addLog('🔄 Testing showAd() directly...', 'info');
+                try {
+                    adsgram.showAd()
+                        .then(function() {
+                            addLog('✅ Test ad completed successfully!', 'success');
+                        })
+                        .catch(function(e) {
+                            addLog('❌ Test ad failed: ' + JSON.stringify(e), 'error-text');
+                        });
+                } catch(e) {
+                    addLog('❌ Test exception: ' + e.message, 'error-text');
+                }
+            } else {
+                addLog('❌ FAIL: showAd() is NOT a function', 'error-text');
+                if (adsgram) {
+                    addLog('📊 showAd type: ' + typeof adsgram.showAd, 'error-text');
+                }
+            }
+            
+            // Check 5: isReady
+            addLog('📊 isReady: ' + isReady, 'info');
+            
+            // Check 6: Watch button
+            const btn = document.getElementById('watchBtn');
+            addLog('📊 Watch button disabled: ' + btn.disabled, 'info');
+            
+            addLog('🔧 ===== TEST COMPLETE =====', 'info');
+        }
+        
+        // =============================================
+        // FORCE RELOAD
+        // =============================================
+        function forceReload() {
+            addLog('🔄 ===== FORCE RELOAD =====', 'info');
+            isReady = false;
             initAttempts = 0;
-            enableButtons(false);
+            document.getElementById('watchBtn').disabled = true;
+            document.getElementById('status').className = 'status loading';
+            document.getElementById('status').textContent = '⏳ Reloading...';
             
             // Remove existing script
             const scripts = document.querySelectorAll('script[src="https://partner.adsgram.ai/adsgram.min.js"]');
-            scripts.forEach(s => s.remove());
+            scripts.forEach(function(s) {
+                s.remove();
+                addLog('🗑️ Removed old script', 'info');
+            });
             
-            // Reload script
+            // Load new script
+            addLog('📥 Loading fresh SDK...', 'info');
             const script = document.createElement('script');
             script.src = 'https://partner.adsgram.ai/adsgram.min.js';
             script.onload = function() {
-                console.log('✅ AdsGram script reloaded');
+                addLog('✅ SDK reloaded!', 'success');
                 setTimeout(initAdsGram, 500);
             };
             script.onerror = function() {
-                updateStatus('⚠️ Failed to reload. Using demo.', 'error');
-                adsgramReady = true;
-                enableButtons(true);
+                addLog('❌ Failed to load SDK!', 'error-text');
+                document.getElementById('status').textContent = '❌ SDK Load Failed';
+                document.getElementById('status').className = 'status error';
             };
             document.head.appendChild(script);
         }
         
         // =============================================
-        // Data Management
-        // =============================================
-        let data = {
-            balance: 0,
-            totalCoins: 0,
-            gamesPlayed: 0,
-            adsWatched: 0,
-            tasks: [],
-            referrals: 0
-        };
-        
-        function loadData() {
-            try {
-                const saved = localStorage.getItem('coinpulse_' + userId);
-                if (saved) {
-                    const parsed = JSON.parse(saved);
-                    data = { ...data, ...parsed };
-                }
-            } catch(e) {}
-        }
-        
-        function saveData() {
-            try {
-                localStorage.setItem('coinpulse_' + userId, JSON.stringify(data));
-            } catch(e) {}
-        }
-        
-        loadData();
-        
-        // =============================================
-        // UI Functions
-        // =============================================
-        function updateUI() {
-            document.getElementById('balance').textContent = data.balance.toFixed(2);
-            document.getElementById('usd-value').textContent = data.balance.toFixed(2);
-            document.getElementById('total-coins').textContent = data.totalCoins;
-            document.getElementById('games-played').textContent = data.gamesPlayed;
-            document.getElementById('total-referrals').textContent = data.referrals;
-            document.getElementById('withdraw-balance').textContent = data.balance.toFixed(2) + ' USDT';
-        }
-        
-        function initUI() {
-            document.getElementById('username').textContent = username;
-            document.getElementById('user-id').textContent = 'ID: ' + userId;
-            document.getElementById('user-avatar').textContent = userInitial;
-            document.getElementById('profile-name').textContent = username;
-            document.getElementById('profile-username').textContent = '@' + (user?.username || 'user');
-            document.getElementById('profile-id').textContent = userId;
-            document.getElementById('profile-avatar').textContent = userInitial;
-            updateUI();
-        }
-        
-        // =============================================
-        // Tab Switching
-        // =============================================
-        function switchTab(tabName) {
-            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById(tabName).classList.add('active');
-            
-            const navMap = { 'home': 0, 'ads': 1, 'tasks': 2, 'refer': 3, 'profile': 4 };
-            const idx = navMap[tabName];
-            if (idx !== undefined) {
-                const items = document.querySelectorAll('.nav-item');
-                if (items[idx]) items[idx].classList.add('active');
-            }
-        }
-        
-        // =============================================
-        // START WATCHING REAL ADS - WORKING VERSION
-        // =============================================
-        function startWatching(count, reward, progressId, watchedId, leftId, btnId) {
-            if (isWatching) {
-                showNotification('⏳ Please wait, ads are playing...', 'info');
-                return;
-            }
-            
-            if (!adsgramReady) {
-                showNotification('⏳ Please wait for Ads to load...', 'info');
-                return;
-            }
-            
-            // Check if real ads are available
-            if (!adsgram || typeof adsgram.showAd !== 'function') {
-                showNotification('⚠️ Ads not available. Using demo mode.', 'error');
-            }
-            
-            const totalReward = (reward * 1000 * count).toFixed(0);
-            tg.showConfirm('Watch ' + count + ' ads to earn ' + totalReward + ' Coins?', function(confirmed) {
-                if (!confirmed) return;
-                
-                isWatching = true;
-                let watched = 0;
-                const progressEl = document.getElementById(progressId);
-                const watchedEl = document.getElementById(watchedId);
-                const leftEl = document.getElementById(leftId);
-                const btn = document.getElementById(btnId);
-                const otherBtn = btnId === 'watch-btn-1' ? document.getElementById('watch-btn-2') : document.getElementById('watch-btn-1');
-                
-                // Disable buttons
-                btn.disabled = true;
-                btn.textContent = '⏳ Watching...';
-                btn.className = 'watch-btn watching';
-                if (otherBtn) otherBtn.disabled = true;
-                
-                function showNextAd() {
-                    if (watched >= count) {
-                        // All done - give reward
-                        data.balance += (reward * count);
-                        data.adsWatched += count;
-                        data.totalCoins += Math.floor(reward * 1000 * count);
-                        saveData();
-                        updateUI();
-                        isWatching = false;
-                        
-                        btn.textContent = '▶️ Watch Ad - +' + (reward * 1000).toFixed(0) + ' Coins';
-                        btn.className = 'watch-btn ready';
-                        btn.disabled = false;
-                        if (otherBtn) otherBtn.disabled = false;
-                        
-                        showNotification('✅ Earned ' + totalReward + ' Coins!', 'success');
-                        if (tg && tg.HapticFeedback) {
-                            tg.HapticFeedback.notificationOccurred('success');
-                        }
-                        return;
-                    }
-                    
-                    try {
-                        // Try to show real ad
-                        if (adsgram && typeof adsgram.showAd === 'function') {
-                            showNotification('📺 Showing real ad ' + (watched + 1) + '/' + count, 'info');
-                            
-                            adsgram.showAd()
-                                .then(function(result) {
-                                    console.log('✅ Ad completed:', result);
-                                    watched++;
-                                    updateProgress(watched, count, progressEl, watchedEl, leftEl);
-                                    showNotification('✅ Ad ' + watched + '/' + count + ' completed!', 'success');
-                                    setTimeout(showNextAd, 500);
-                                })
-                                .catch(function(err) {
-                                    console.warn('Ad error:', err);
-                                    // Still count as watched and continue
-                                    watched++;
-                                    updateProgress(watched, count, progressEl, watchedEl, leftEl);
-                                    showNotification('⚠️ Ad ' + watched + '/' + count + ' (skipped)', 'error');
-                                    setTimeout(showNextAd, 500);
-                                });
-                        } else {
-                            // Demo mode - simulate ad watching
-                            showNotification('📺 Demo ad ' + (watched + 1) + '/' + count, 'info');
-                            watched++;
-                            updateProgress(watched, count, progressEl, watchedEl, leftEl);
-                            showNotification('Ad ' + watched + '/' + count + ' (demo)', 'info');
-                            setTimeout(showNextAd, 1000);
-                        }
-                    } catch(e) {
-                        console.error('Ad exception:', e);
-                        watched++;
-                        updateProgress(watched, count, progressEl, watchedEl, leftEl);
-                        setTimeout(showNextAd, 500);
-                    }
-                }
-                
-                showNextAd();
-            });
-        }
-        
-        function updateProgress(watched, count, progressEl, watchedEl, leftEl) {
-            if (watchedEl) watchedEl.textContent = watched + ' / ' + count + ' ads';
-            if (leftEl) leftEl.textContent = (count - watched) + ' left';
-            if (progressEl) progressEl.style.width = (watched / count * 100) + '%';
-        }
-        
-        // =============================================
-        // Other Functions
-        // =============================================
-        function completeTask(taskId, reward) {
-            if (data.tasks.includes(taskId)) {
-                showNotification('Task already completed!', 'info');
-                return;
-            }
-            
-            tg.showConfirm('Complete task for ' + (reward * 1000).toFixed(0) + ' Coins?', function(c) {
-                if (c) {
-                    data.tasks.push(taskId);
-                    data.balance += reward;
-                    data.totalCoins += Math.floor(reward * 1000);
-                    saveData();
-                    updateUI();
-                    showNotification('✅ +' + (reward * 1000).toFixed(0) + ' Coins', 'success');
-                }
-            });
-        }
-        
-        function copyReferral() {
-            const link = document.getElementById('referral-link') || document.getElementById('ref-link');
-            if (link) {
-                const text = link.textContent;
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    navigator.clipboard.writeText(text).then(function() {
-                        showNotification('📋 Link copied!', 'success');
-                    });
-                } else {
-                    const textarea = document.createElement('textarea');
-                    textarea.value = text;
-                    document.body.appendChild(textarea);
-                    textarea.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(textarea);
-                    showNotification('📋 Link copied!', 'success');
-                }
-            }
-        }
-        
-        function openWithdraw() {
-            if (data.balance < 0.01) {
-                showNotification('Minimum withdrawal: 0.01 USDT', 'error');
-                return;
-            }
-            document.getElementById('withdraw-modal').classList.add('show');
-        }
-        
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.remove('show');
-        }
-        
-        function processWithdraw() {
-            const wallet = document.getElementById('wallet-address').value.trim();
-            if (!wallet) {
-                showNotification('Enter wallet address', 'error');
-                return;
-            }
-            if (data.balance < 0.01) {
-                showNotification('Minimum: 0.01 USDT', 'error');
-                return;
-            }
-            
-            tg.showConfirm('Withdraw ' + data.balance.toFixed(2) + ' USDT?', function(c) {
-                if (c) {
-                    const amount = data.balance;
-                    data.balance = 0;
-                    saveData();
-                    updateUI();
-                    closeModal('withdraw-modal');
-                    document.getElementById('wallet-address').value = '';
-                    showNotification('✅ Withdrawal of ' + amount.toFixed(2) + ' USDT submitted!', 'success');
-                }
-            });
-        }
-        
-        function openDailyBonus() { showNotification('🎁 Daily Bonus coming soon!', 'info'); }
-        function openRewardCode() { showNotification('🎟️ Reward Code coming soon!', 'info'); }
-        function openLeaderboard() { showNotification('🏆 Leaderboard coming soon!', 'info'); }
-        function viewTransactions() { showNotification('📊 Transactions coming soon!', 'info'); }
-        
-        function showNotification(msg, type) {
-            const n = document.getElementById('notification');
-            if (n) {
-                n.textContent = msg;
-                n.className = 'notification';
-                if (type) n.classList.add(type);
-                n.classList.add('show');
-                setTimeout(function() {
-                    n.classList.remove('show');
-                }, 3000);
-            }
-        }
-        
-        // =============================================
-        // Initialize
+        // START
         // =============================================
         window.addEventListener('load', function() {
-            console.log('🚀 Page loaded. Block ID:', ADSGRAM_BLOCK_ID);
-            console.log('📡 Make sure this Block ID is correct in your AdsGram dashboard!');
-            initUI();
+            addLog('🚀 Page loaded', 'info');
+            addLog('📡 Default Block ID: ' + BLOCK_ID, 'info');
+            addLog('💡 You can change Block ID in the input above', 'info');
             setTimeout(initAdsGram, 1000);
-            
-            if (tg && tg.BackButton) {
-                tg.BackButton.onClick(function() {
-                    switchTab('home');
-                });
-                tg.BackButton.show();
-            }
         });
     </script>
 </body>
