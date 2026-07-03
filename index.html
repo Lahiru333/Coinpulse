@@ -1,4 +1,4 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
@@ -12,27 +12,49 @@
     <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
-
-        :root {
-            --bg-0: #050814; --bg-1: #0b1024; --bg-2: #141a35; --bg-card: #1a2140;
-            --accent: #ffc83d; --accent-2: #ff8a3d; --accent-glow: rgba(255, 200, 61, 0.4);
-            --purple: #8b5cf6; --purple-glow: rgba(139, 92, 246, 0.4);
-            --green: #4ade80; --green-glow: rgba(74, 222, 128, 0.4);
-            --red: #ef4444; --usdt: #26a17b;
-            --text: #ffffff; --text-dim: #9aa3b8; --text-mute: #5b6480;
-            --border: rgba(255, 255, 255, 0.08); --border-strong: rgba(255, 255, 255, 0.15);
-            --shadow: 0 8px 24px rgba(0, 0, 0, 0.5); --radius: 14px;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
         }
 
-        html, body {
-            height: 100%; overflow: hidden;
+        :root {
+            --bg-0: #050814;
+            --bg-1: #0b1024;
+            --bg-2: #141a35;
+            --bg-card: #1a2140;
+            --accent: #ffc83d;
+            --accent-2: #ff8a3d;
+            --accent-glow: rgba(255, 200, 61, 0.4);
+            --purple: #8b5cf6;
+            --purple-glow: rgba(139, 92, 246, 0.4);
+            --green: #4ade80;
+            --green-glow: rgba(74, 222, 128, 0.4);
+            --red: #ef4444;
+            --usdt: #26a17b;
+            --text: #ffffff;
+            --text-dim: #9aa3b8;
+            --text-mute: #5b6480;
+            --border: rgba(255, 255, 255, 0.08);
+            --border-strong: rgba(255, 255, 255, 0.15);
+            --shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            --radius: 14px;
+        }
+
+        html,
+        body {
+            height: 100%;
+            overflow: hidden;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: var(--bg-0); color: var(--text);
+            background: var(--bg-0);
+            color: var(--text);
         }
 
         body {
-            display: flex; flex-direction: column;
+            display: flex;
+            flex-direction: column;
             padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
             background:
                 radial-gradient(ellipse at top left, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
@@ -41,215 +63,403 @@
         }
 
         .top-hud {
-            display: flex; justify-content: space-between; align-items: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             padding: 12px 16px;
-            background: rgba(11, 16, 36, 0.7); backdrop-filter: blur(16px);
-            border-bottom: 1px solid var(--border); z-index: 10;
+            background: rgba(11, 16, 36, 0.7);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+            z-index: 10;
         }
 
-        .hud-left { display: flex; align-items: center; gap: 10px; }
+        .hud-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
         .avatar {
-            width: 40px; height: 40px; border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
             background: linear-gradient(135deg, var(--accent), var(--accent-2));
-            display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-size: 18px; color: var(--bg-0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            color: var(--bg-0);
             box-shadow: 0 0 12px var(--accent-glow);
         }
 
-        .user-info { display: flex; flex-direction: column; }
-        .username { font-size: 14px; font-weight: 600; }
-
-        .level-badge {
-            font-size: 10px; color: var(--accent);
-            background: rgba(255, 200, 61, 0.12);
-            padding: 2px 8px; border-radius: 10px;
-            margin-top: 2px; width: fit-content; font-weight: 700;
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+        .username {
+            font-size: 14px;
+            font-weight: 600;
         }
 
-        .hud-right { display: flex; gap: 8px; }
+        .level-badge {
+            font-size: 10px;
+            color: var(--accent);
+            background: rgba(255, 200, 61, 0.12);
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-top: 2px;
+            width: fit-content;
+            font-weight: 700;
+        }
+
+        .hud-right {
+            display: flex;
+            gap: 8px;
+        }
 
         .hud-chip {
-            display: flex; align-items: center; gap: 5px;
-            background: var(--bg-card); padding: 7px 12px; border-radius: 18px;
-            font-weight: 700; font-size: 13px; border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: var(--bg-card);
+            padding: 7px 12px;
+            border-radius: 18px;
+            font-weight: 700;
+            font-size: 13px;
+            border: 1px solid var(--border);
         }
 
         .hud-chip.usdt {
             background: linear-gradient(135deg, rgba(38, 161, 123, 0.2), var(--bg-card));
-            border-color: rgba(38, 161, 123, 0.3); color: var(--usdt);
+            border-color: rgba(38, 161, 123, 0.3);
+            color: var(--usdt);
         }
 
-        .energy-wrap { padding: 10px 16px 6px; }
+        .energy-wrap {
+            padding: 10px 16px 6px;
+        }
 
         .energy-label {
-            display: flex; justify-content: space-between;
-            font-size: 11px; color: var(--text-dim);
-            margin-bottom: 4px; font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: var(--text-dim);
+            margin-bottom: 4px;
+            font-weight: 600;
         }
 
         .energy-bar {
-            height: 8px; background: var(--bg-card);
-            border-radius: 4px; overflow: hidden; border: 1px solid var(--border);
+            height: 8px;
+            background: var(--bg-card);
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid var(--border);
         }
 
         .energy-fill {
-            height: 100%; width: 100%;
+            height: 100%;
+            width: 100%;
             background: linear-gradient(90deg, var(--green), #22d3ee);
-            border-radius: 4px; transition: width 0.3s ease;
+            border-radius: 4px;
+            transition: width 0.3s ease;
             box-shadow: 0 0 8px var(--green-glow);
         }
 
         .main-content {
-            flex: 1; overflow-y: auto; padding: 10px 16px 20px;
-            position: relative; scrollbar-width: none;
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px 16px 20px;
+            position: relative;
+            scrollbar-width: none;
         }
-        .main-content::-webkit-scrollbar { display: none; }
+        .main-content::-webkit-scrollbar {
+            display: none;
+        }
 
-        .page { display: none; animation: fadeIn 0.3s ease; }
-        .page.active { display: block; }
+        .page {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        .page.active {
+            display: block;
+        }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .page-title {
-            font-size: 22px; margin-bottom: 16px; font-weight: 800;
+            font-size: 22px;
+            margin-bottom: 16px;
+            font-weight: 800;
             background: linear-gradient(135deg, var(--text), var(--text-dim));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
         .tap-area {
-            display: flex; flex-direction: column; align-items: center;
-            justify-content: center; min-height: calc(100vh - 240px); gap: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 240px);
+            gap: 16px;
         }
 
-        .tap-info { text-align: center; color: var(--text-dim); font-size: 13px; }
-        .tap-info .per-tap { color: var(--accent); font-weight: 700; font-size: 15px; }
+        .tap-info {
+            text-align: center;
+            color: var(--text-dim);
+            font-size: 13px;
+        }
+        .tap-info .per-tap {
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 15px;
+        }
 
         .coin-wrapper {
-            position: relative; width: 260px; height: 260px;
-            display: flex; align-items: center; justify-content: center; cursor: pointer;
+            position: relative;
+            width: 260px;
+            height: 260px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 5;
         }
 
         .coin-glow {
-            position: absolute; width: 300px; height: 300px; border-radius: 50%;
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
             background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
-            animation: pulseGlow 2s ease-in-out infinite; pointer-events: none;
+            animation: pulseGlow 2s ease-in-out infinite;
+            pointer-events: none;
         }
 
         @keyframes pulseGlow {
-            0%, 100% { transform: scale(1); opacity: 0.6; }
-            50% { transform: scale(1.1); opacity: 0.9; }
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.6;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.9;
+            }
         }
 
         .coin {
-            width: 220px; height: 220px; border-radius: 50%;
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
             background: radial-gradient(circle at 30% 30%, #fff4b8 0%, #ffe066 20%, #ffc83d 50%, #b8860b 100%);
-            display: flex; align-items: center; justify-content: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             box-shadow:
                 0 0 60px var(--accent-glow),
                 inset 0 -10px 25px rgba(0, 0, 0, 0.3),
                 inset 0 10px 25px rgba(255, 255, 255, 0.4),
                 0 10px 30px rgba(0, 0, 0, 0.5);
-            transition: transform 0.08s ease; position: relative;
+            transition: transform 0.08s ease;
+            position: relative;
             border: 3px solid rgba(255, 255, 255, 0.2);
+            pointer-events: auto;
+            z-index: 10;
         }
 
-        .coin-face { font-size: 110px; filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3)); }
+        .coin-face {
+            font-size: 110px;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+        }
 
         .coin-ring {
-            position: absolute; inset: -12px; border-radius: 50%;
-            border: 2px solid var(--accent); opacity: 0; pointer-events: none;
+            position: absolute;
+            inset: -12px;
+            border-radius: 50%;
+            border: 2px solid var(--accent);
+            opacity: 0;
+            pointer-events: none;
         }
 
-        .coin.pulse { transform: scale(0.92); }
-        .coin-ring.pulse { animation: ringPulse 0.6s ease-out; }
+        .coin.pulse {
+            transform: scale(0.92);
+        }
+        .coin-ring.pulse {
+            animation: ringPulse 0.6s ease-out;
+        }
 
         @keyframes ringPulse {
-            0% { transform: scale(0.9); opacity: 1; }
-            100% { transform: scale(1.5); opacity: 0; }
+            0% {
+                transform: scale(0.9);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
         }
 
         .float-text {
-            position: absolute; color: var(--accent);
-            font-weight: 800; font-size: 30px; pointer-events: none;
+            position: absolute;
+            color: var(--accent);
+            font-weight: 800;
+            font-size: 30px;
+            pointer-events: none;
             animation: floatUp 1s ease-out forwards;
             text-shadow: 0 2px 10px rgba(255, 200, 61, 0.8);
+            z-index: 20;
         }
 
         @keyframes floatUp {
-            0% { opacity: 1; transform: translateY(0) scale(1); }
-            100% { opacity: 0; transform: translateY(-100px) scale(1.5); }
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) scale(1.5);
+            }
         }
 
-        .tap-actions { display: flex; gap: 10px; width: 100%; max-width: 400px; }
+        .tap-actions {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            max-width: 400px;
+            z-index: 5;
+        }
 
         .action-btn {
-            flex: 1; background: var(--bg-card); border: 1px solid var(--border);
-            color: var(--text); padding: 12px; border-radius: var(--radius);
-            font-size: 13px; font-weight: 600; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; gap: 6px;
+            flex: 1;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 12px;
+            border-radius: var(--radius);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
             transition: all 0.15s ease;
+            z-index: 5;
         }
 
-        .action-btn:active { transform: scale(0.96); }
+        .action-btn:active {
+            transform: scale(0.96);
+        }
 
         .action-btn.primary {
             background: linear-gradient(135deg, var(--purple), #6366f1);
-            border-color: transparent; box-shadow: 0 4px 16px var(--purple-glow);
+            border-color: transparent;
+            box-shadow: 0 4px 16px var(--purple-glow);
         }
 
         .action-btn.warning {
             background: linear-gradient(135deg, var(--accent), var(--accent-2));
-            color: var(--bg-0); border-color: transparent;
+            color: var(--bg-0);
+            border-color: transparent;
             box-shadow: 0 4px 16px var(--accent-glow);
         }
 
-        .action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
 
-        /* SDK Status Indicator */
         .sdk-status {
-            display: flex; align-items: center; gap: 6px;
-            padding: 8px 12px; border-radius: 10px;
-            font-size: 11px; font-weight: 600;
-            background: var(--bg-card); border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 600;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
             margin-bottom: 12px;
+            z-index: 5;
         }
 
         .sdk-status .dot {
-            width: 8px; height: 8px; border-radius: 50%;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
             background: var(--text-mute);
         }
 
-        .sdk-status.ready { border-color: var(--green); color: var(--green); }
-        .sdk-status.ready .dot { background: var(--green); box-shadow: 0 0 8px var(--green); }
-
-        .sdk-status.loading { border-color: var(--accent); color: var(--accent); }
-        .sdk-status.loading .dot { background: var(--accent); animation: blink 1s infinite; }
-
-        .sdk-status.error { border-color: var(--red); color: var(--red); }
-        .sdk-status.error .dot { background: var(--red); }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
+        .sdk-status.ready {
+            border-color: var(--green);
+            color: var(--green);
+        }
+        .sdk-status.ready .dot {
+            background: var(--green);
+            box-shadow: 0 0 8px var(--green);
         }
 
-        .task-section { margin-bottom: 20px; }
+        .sdk-status.loading {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        .sdk-status.loading .dot {
+            background: var(--accent);
+            animation: blink 1s infinite;
+        }
+
+        .sdk-status.error {
+            border-color: var(--red);
+            color: var(--red);
+        }
+        .sdk-status.error .dot {
+            background: var(--red);
+        }
+
+        @keyframes blink {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        .task-section {
+            margin-bottom: 20px;
+        }
 
         .section-title {
-            font-size: 14px; color: var(--text-dim); font-weight: 700;
-            margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;
+            font-size: 14px;
+            color: var(--text-dim);
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .task-card {
             background: linear-gradient(135deg, var(--bg-card), var(--bg-2));
-            border: 1px solid var(--border); border-radius: var(--radius);
-            padding: 14px; margin-bottom: 10px;
-            display: flex; align-items: center; gap: 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 14px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
         .task-card.usdt-task {
@@ -258,26 +468,48 @@
         }
 
         .task-icon {
-            width: 48px; height: 48px; border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 26px; background: rgba(255, 200, 61, 0.1); flex-shrink: 0;
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            background: rgba(255, 200, 61, 0.1);
+            flex-shrink: 0;
         }
 
-        .task-card.usdt-task .task-icon { background: rgba(38, 161, 123, 0.15); }
+        .task-card.usdt-task .task-icon {
+            background: rgba(38, 161, 123, 0.15);
+        }
 
-        .task-info { flex: 1; min-width: 0; }
-        .task-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
-        .task-subtitle { font-size: 11px; color: var(--text-dim); margin-bottom: 6px; }
+        .task-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .task-title {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .task-subtitle {
+            font-size: 11px;
+            color: var(--text-dim);
+            margin-bottom: 6px;
+        }
 
         .task-progress-bar {
-            height: 6px; background: var(--bg-1);
-            border-radius: 3px; overflow: hidden;
+            height: 6px;
+            background: var(--bg-1);
+            border-radius: 3px;
+            overflow: hidden;
         }
 
         .task-progress-fill {
             height: 100%;
             background: linear-gradient(90deg, var(--accent), var(--accent-2));
-            border-radius: 3px; transition: width 0.4s ease;
+            border-radius: 3px;
+            transition: width 0.4s ease;
         }
 
         .task-card.usdt-task .task-progress-fill {
@@ -285,15 +517,23 @@
         }
 
         .task-progress-text {
-            font-size: 10px; color: var(--text-mute);
-            margin-top: 4px; font-weight: 600;
+            font-size: 10px;
+            color: var(--text-mute);
+            margin-top: 4px;
+            font-weight: 600;
         }
 
         .task-action {
             background: linear-gradient(135deg, var(--accent), var(--accent-2));
-            color: var(--bg-0); border: none; padding: 8px 14px;
-            border-radius: 10px; font-size: 12px; font-weight: 700;
-            cursor: pointer; white-space: nowrap; flex-shrink: 0;
+            color: var(--bg-0);
+            border: none;
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
 
         .task-action.claim {
@@ -302,195 +542,257 @@
         }
 
         @keyframes claimPulse {
-            0%, 100% { box-shadow: 0 0 0 0 var(--green-glow); }
-            50% { box-shadow: 0 0 16px 4px var(--green-glow); }
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 var(--green-glow);
+            }
+            50% {
+                box-shadow: 0 0 16px 4px var(--green-glow);
+            }
         }
 
         .task-action:disabled {
-            background: var(--bg-1); color: var(--text-mute);
-            cursor: not-allowed; animation: none;
+            background: var(--bg-1);
+            color: var(--text-mute);
+            cursor: not-allowed;
+            animation: none;
         }
 
         .task-reward-badge {
-            display: inline-flex; align-items: center; gap: 4px;
-            background: rgba(38, 161, 123, 0.15); color: var(--usdt);
-            padding: 2px 8px; border-radius: 8px;
-            font-size: 11px; font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(38, 161, 123, 0.15);
+            color: var(--usdt);
+            padding: 2px 8px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
         }
 
-        .boost-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .boost-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
 
         .boost-card {
             background: linear-gradient(135deg, var(--bg-card), var(--bg-2));
-            border: 1px solid var(--border); border-radius: var(--radius);
-            padding: 14px; text-align: center; cursor: pointer;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 14px;
+            text-align: center;
+            cursor: pointer;
             transition: all 0.2s ease;
         }
 
-        .boost-card:active { transform: scale(0.96); }
-        .boost-card:hover { border-color: var(--accent); }
-        .boost-icon { font-size: 32px; margin-bottom: 8px; }
-        .boost-name { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
-        .boost-level { font-size: 11px; color: var(--text-dim); margin-bottom: 8px; }
+        .boost-card:active {
+            transform: scale(0.96);
+        }
+        .boost-card:hover {
+            border-color: var(--accent);
+        }
+        .boost-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+        .boost-name {
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .boost-level {
+            font-size: 11px;
+            color: var(--text-dim);
+            margin-bottom: 8px;
+        }
 
         .boost-cost {
-            display: inline-flex; align-items: center; gap: 4px;
-            background: rgba(255, 200, 61, 0.15); color: var(--accent);
-            padding: 4px 10px; border-radius: 8px;
-            font-size: 12px; font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(255, 200, 61, 0.15);
+            color: var(--accent);
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
         }
 
-        .boost-card.maxed { opacity: 0.5; cursor: not-allowed; }
+        .boost-card.maxed {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
         .boost-card.maxed .boost-cost {
-            background: rgba(74, 222, 128, 0.15); color: var(--green);
+            background: rgba(74, 222, 128, 0.15);
+            color: var(--green);
         }
-
-        .leaderboard-list { display: flex; flex-direction: column; gap: 8px; }
-
-        .leaderboard-item {
-            background: var(--bg-card); border: 1px solid var(--border);
-            border-radius: var(--radius); padding: 12px 14px;
-            display: flex; align-items: center; gap: 12px;
-        }
-
-        .leaderboard-item.top-1 {
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), var(--bg-card));
-            border-color: rgba(255, 215, 0, 0.3);
-        }
-        .leaderboard-item.top-2 {
-            background: linear-gradient(135deg, rgba(192, 192, 192, 0.12), var(--bg-card));
-            border-color: rgba(192, 192, 192, 0.25);
-        }
-        .leaderboard-item.top-3 {
-            background: linear-gradient(135deg, rgba(205, 127, 50, 0.12), var(--bg-card));
-            border-color: rgba(205, 127, 50, 0.25);
-        }
-        .leaderboard-item.me {
-            border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent);
-        }
-
-        .lb-rank {
-            font-size: 18px; font-weight: 800; width: 32px;
-            text-align: center; color: var(--text-dim);
-        }
-
-        .top-1 .lb-rank { color: #ffd700; }
-        .top-2 .lb-rank { color: #c0c0c0; }
-        .top-3 .lb-rank { color: #cd7f32; }
-
-        .lb-avatar {
-            width: 36px; height: 36px; border-radius: 50%;
-            background: linear-gradient(135deg, var(--purple), #6366f1);
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 700; font-size: 14px;
-        }
-
-        .lb-info { flex: 1; }
-        .lb-name { font-size: 14px; font-weight: 600; }
-        .lb-level { font-size: 11px; color: var(--text-dim); }
-        .lb-coins { font-weight: 700; color: var(--accent); font-size: 14px; }
 
         .wallet-balance {
             background: linear-gradient(135deg, rgba(38, 161, 123, 0.2), var(--bg-card));
             border: 1px solid rgba(38, 161, 123, 0.3);
-            border-radius: 20px; padding: 24px;
-            text-align: center; margin-bottom: 16px;
+            border-radius: 20px;
+            padding: 24px;
+            text-align: center;
+            margin-bottom: 16px;
         }
 
         .wallet-label {
-            font-size: 12px; color: var(--text-dim);
-            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;
+            font-size: 12px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
         }
 
         .wallet-amount {
-            font-size: 36px; font-weight: 800;
-            color: var(--usdt); margin-bottom: 4px;
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--usdt);
+            margin-bottom: 4px;
         }
 
-        .wallet-usd { font-size: 13px; color: var(--text-dim); }
+        .wallet-usd {
+            font-size: 13px;
+            color: var(--text-dim);
+        }
 
         .withdraw-btn {
             width: 100%;
             background: linear-gradient(135deg, var(--usdt), #2dd4bf);
-            color: white; border: none; padding: 14px;
-            border-radius: var(--radius); font-size: 15px; font-weight: 700;
-            cursor: pointer; margin-top: 12px;
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: var(--radius);
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 12px;
             box-shadow: 0 6px 20px rgba(38, 161, 123, 0.3);
         }
 
         .withdraw-btn:disabled {
-            background: var(--bg-1); color: var(--text-mute);
-            box-shadow: none; cursor: not-allowed;
+            background: var(--bg-1);
+            color: var(--text-mute);
+            box-shadow: none;
+            cursor: not-allowed;
         }
 
         .withdraw-info {
-            background: var(--bg-card); border: 1px solid var(--border);
-            border-radius: var(--radius); padding: 14px; margin-bottom: 10px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 14px;
+            margin-bottom: 10px;
         }
 
         .withdraw-info-title {
-            font-size: 13px; font-weight: 700;
-            margin-bottom: 6px; color: var(--usdt);
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: var(--usdt);
         }
 
         .withdraw-info-text {
-            font-size: 12px; color: var(--text-dim); line-height: 1.5;
+            font-size: 12px;
+            color: var(--text-dim);
+            line-height: 1.5;
         }
 
         .profile-card {
             background: linear-gradient(135deg, var(--bg-card), var(--bg-2));
-            border: 1px solid var(--border); border-radius: 20px;
-            padding: 24px; text-align: center; margin-bottom: 16px;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 24px;
+            text-align: center;
+            margin-bottom: 16px;
         }
 
         .profile-avatar {
-            width: 90px; height: 90px; border-radius: 50%;
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
             background: linear-gradient(135deg, var(--accent), var(--accent-2));
             margin: 0 auto 12px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 40px; font-weight: 800; color: var(--bg-0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            font-weight: 800;
+            color: var(--bg-0);
             box-shadow: 0 0 30px var(--accent-glow);
         }
 
-        .profile-name { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
-        .profile-id { font-size: 12px; color: var(--text-dim); margin-bottom: 20px; }
+        .profile-name {
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+        .profile-id {
+            font-size: 12px;
+            color: var(--text-dim);
+            margin-bottom: 20px;
+        }
 
         .profile-stats {
-            display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
         }
 
         .stat {
             background: rgba(255, 255, 255, 0.03);
-            border-radius: 12px; padding: 12px 8px;
+            border-radius: 12px;
+            padding: 12px 8px;
             border: 1px solid var(--border);
         }
 
-        .stat-value { font-size: 20px; font-weight: 800; color: var(--accent); }
+        .stat-value {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--accent);
+        }
         .stat-label {
-            font-size: 10px; color: var(--text-dim);
-            margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px;
+            font-size: 10px;
+            color: var(--text-dim);
+            margin-top: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .achievements {
-            background: var(--bg-card); border: 1px solid var(--border);
-            border-radius: var(--radius); padding: 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px;
         }
 
         .achievements-title {
-            font-size: 14px; font-weight: 700; margin-bottom: 12px;
-            text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim);
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-dim);
         }
 
         .badge-grid {
-            display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
         }
 
         .badge {
-            aspect-ratio: 1; background: var(--bg-1);
-            border: 1px solid var(--border); border-radius: 12px;
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            font-size: 24px; opacity: 0.3;
+            aspect-ratio: 1;
+            background: var(--bg-1);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            opacity: 0.3;
         }
 
         .badge.earned {
@@ -500,177 +802,277 @@
         }
 
         .badge-label {
-            font-size: 8px; color: var(--text-dim);
-            margin-top: 4px; text-align: center;
+            font-size: 8px;
+            color: var(--text-dim);
+            margin-top: 4px;
+            text-align: center;
         }
 
         .reset-btn {
-            width: 100%; background: transparent;
-            color: var(--red); border: 1px solid var(--red);
-            padding: 12px; border-radius: var(--radius);
-            font-size: 13px; font-weight: 600;
-            cursor: pointer; margin-top: 16px;
+            width: 100%;
+            background: transparent;
+            color: var(--red);
+            border: 1px solid var(--red);
+            padding: 12px;
+            border-radius: var(--radius);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 16px;
         }
 
         .bottom-nav {
-            display: flex; justify-content: space-around;
-            background: rgba(11, 16, 36, 0.95); backdrop-filter: blur(16px);
+            display: flex;
+            justify-content: space-around;
+            background: rgba(11, 16, 36, 0.95);
+            backdrop-filter: blur(16px);
             border-top: 1px solid var(--border);
             padding: 8px 4px calc(8px + env(safe-area-inset-bottom));
+            z-index: 10;
         }
 
         .nav-btn {
-            flex: 1; background: none; border: none;
-            color: var(--text-mute); padding: 8px 4px; cursor: pointer;
-            display: flex; flex-direction: column;
-            align-items: center; gap: 2px;
-            transition: color 0.2s ease; position: relative;
+            flex: 1;
+            background: none;
+            border: none;
+            color: var(--text-mute);
+            padding: 8px 4px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            transition: color 0.2s ease;
+            position: relative;
         }
 
-        .nav-btn.active { color: var(--accent); }
+        .nav-btn.active {
+            color: var(--accent);
+        }
 
         .nav-btn.active::before {
-            content: ''; position: absolute; top: -8px; left: 50%;
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 50%;
             transform: translateX(-50%);
-            width: 24px; height: 3px; background: var(--accent);
+            width: 24px;
+            height: 3px;
+            background: var(--accent);
             border-radius: 0 0 3px 3px;
         }
 
-        .nav-icon { font-size: 20px; }
-        .nav-label { font-size: 10px; font-weight: 600; }
+        .nav-icon {
+            font-size: 20px;
+        }
+        .nav-label {
+            font-size: 10px;
+            font-weight: 600;
+        }
 
         .toast-container {
-            position: fixed; top: 80px; left: 50%;
-            transform: translateX(-50%); z-index: 1000;
-            display: flex; flex-direction: column; gap: 8px;
-            pointer-events: none; max-width: 90%;
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            pointer-events: none;
+            max-width: 90%;
         }
 
         .toast {
-            background: var(--bg-card); border: 1px solid var(--border);
-            padding: 12px 18px; border-radius: 12px;
-            font-size: 13px; font-weight: 600;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 12px 18px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
             box-shadow: var(--shadow);
             animation: toastIn 0.3s ease, toastOut 0.3s ease 2.5s forwards;
-            white-space: nowrap; max-width: 100%;
-            overflow: hidden; text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        .toast.success { border-color: var(--green); color: var(--green); }
-        .toast.error { border-color: var(--red); color: var(--red); }
-        .toast.info { border-color: var(--accent); color: var(--accent); }
-        .toast.usdt { border-color: var(--usdt); color: var(--usdt); }
+        .toast.success {
+            border-color: var(--green);
+            color: var(--green);
+        }
+        .toast.error {
+            border-color: var(--red);
+            color: var(--red);
+        }
+        .toast.info {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        .toast.usdt {
+            border-color: var(--usdt);
+            color: var(--usdt);
+        }
 
         @keyframes toastIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         @keyframes toastOut {
-            to { opacity: 0; transform: translateY(-10px); }
+            to {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
         }
 
         .modal-overlay {
-            position: fixed; inset: 0;
-            background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(8px);
-            z-index: 100; display: none;
-            align-items: center; justify-content: center; padding: 20px;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
         }
 
-        .modal-overlay.active { display: flex; }
+        .modal-overlay.active {
+            display: flex;
+        }
 
         .modal {
             background: linear-gradient(135deg, var(--bg-card), var(--bg-2));
             border: 1px solid var(--border-strong);
-            border-radius: 20px; padding: 24px;
-            max-width: 400px; width: 100%;
+            border-radius: 20px;
+            padding: 24px;
+            max-width: 400px;
+            width: 100%;
             animation: modalIn 0.3s ease;
         }
 
         @keyframes modalIn {
-            from { transform: scale(0.9); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
 
         .modal-title {
-            font-size: 18px; font-weight: 800;
-            margin-bottom: 12px; text-align: center;
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            text-align: center;
         }
 
         .modal-text {
-            font-size: 13px; color: var(--text-dim);
-            margin-bottom: 16px; text-align: center; line-height: 1.5;
+            font-size: 13px;
+            color: var(--text-dim);
+            margin-bottom: 16px;
+            text-align: center;
+            line-height: 1.5;
         }
 
         .modal-input {
-            width: 100%; background: var(--bg-1);
-            border: 1px solid var(--border); color: var(--text);
-            padding: 12px; border-radius: 10px;
-            font-size: 14px; margin-bottom: 12px; font-family: inherit;
+            width: 100%;
+            background: var(--bg-1);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 14px;
+            margin-bottom: 12px;
+            font-family: inherit;
         }
 
-        .modal-input:focus { outline: none; border-color: var(--accent); }
+        .modal-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
 
-        .modal-buttons { display: flex; gap: 10px; }
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+        }
 
         .modal-btn {
-            flex: 1; padding: 12px; border-radius: 10px;
-            border: none; font-size: 14px; font-weight: 700; cursor: pointer;
+            flex: 1;
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
         }
 
-        .modal-btn.cancel { background: var(--bg-1); color: var(--text-dim); }
+        .modal-btn.cancel {
+            background: var(--bg-1);
+            color: var(--text-dim);
+        }
         .modal-btn.confirm {
-            background: linear-gradient(135deg, var(--usdt), #2dd4bf); color: white;
+            background: linear-gradient(135deg, var(--usdt), #2dd4bf);
+            color: white;
         }
 
         @media (min-width: 500px) {
-            .coin { width: 260px; height: 260px; }
-            .coin-face { font-size: 130px; }
-            .coin-wrapper { width: 300px; height: 300px; }
+            .coin {
+                width: 260px;
+                height: 260px;
+            }
+            .coin-face {
+                font-size: 130px;
+            }
+            .coin-wrapper {
+                width: 300px;
+                height: 300px;
+            }
         }
 
         .spinner {
-            display: inline-block; width: 14px; height: 14px;
-            border: 2px solid rgba(255,255,255,0.3);
-            border-top-color: white; border-radius: 50%;
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
             animation: spin 0.8s linear infinite;
         }
 
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* Claim button fix */
-        #claimBtn {
-            background: linear-gradient(135deg, #f7931a, #f5a623);
-            border: none;
-            color: #fff;
-            padding: 14px 32px;
-            border-radius: 30px;
-            font-size: 18px;
-            font-weight: 800;
-            cursor: pointer;
-            margin-top: 12px;
-            width: 100%;
-            display: none;
-            position: relative;
-            z-index: 99999;
-            pointer-events: auto !important;
-            touch-action: manipulation !important;
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
         }
-        #claimBtn.show { display: block !important; }
-        #claimBtn:active { transform: scale(0.95); }
 
         /* Ad Overlay */
         .ad-overlay {
             position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.95);
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
             display: none;
             align-items: center;
             justify-content: center;
             z-index: 9999;
             backdrop-filter: blur(10px);
         }
-        .ad-overlay.show { display: flex !important; }
+        .ad-overlay.show {
+            display: flex !important;
+        }
 
         .ad-container {
             background: #1a2332;
@@ -679,7 +1081,7 @@
             text-align: center;
             max-width: 340px;
             width: 90%;
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             position: relative;
         }
 
@@ -699,7 +1101,7 @@
         .ad-progress {
             width: 100%;
             height: 6px;
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 4px;
             margin: 16px 0;
             overflow: hidden;
@@ -713,8 +1115,32 @@
             transition: width 0.3s;
         }
 
+        #claimBtn {
+            background: linear-gradient(135deg, #f7931a, #f5a623);
+            border: none;
+            color: #fff;
+            padding: 14px 32px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: 800;
+            cursor: pointer;
+            margin-top: 12px;
+            width: 100%;
+            display: none;
+            position: relative;
+            z-index: 99999;
+            pointer-events: auto !important;
+            touch-action: manipulation !important;
+        }
+        #claimBtn.show {
+            display: block !important;
+        }
+        #claimBtn:active {
+            transform: scale(0.95);
+        }
+
         #adCloseBtn {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
             border: none;
             color: #8899bb;
             padding: 10px 24px;
@@ -857,7 +1283,7 @@
 
     <div class="toast-container" id="toastContainer"></div>
 
-    <!-- ===== AD OVERLAY ===== -->
+    <!-- Ad Overlay -->
     <div class="ad-overlay" id="adOverlay">
         <div class="ad-container">
             <div class="ad-spinner" id="adSpinner">⏳</div>
@@ -872,10 +1298,10 @@
 
     <script>
         /* ============================================================
-           CoinPulse Pro - FIXED AdsGram Integration with Block ID 36912
+           CoinPulse Pro - FIXED (Tap + Ads Working)
            ============================================================ */
 
-        // ========== Telegram WebApp Init ==========
+        // ========== Telegram WebApp ==========
         const tg = window.Telegram?.WebApp;
         if (tg) {
             try {
@@ -886,7 +1312,7 @@
             } catch (e) { console.warn('TG init:', e); }
         }
 
-        // ========== Config ==========
+        // ========== CONFIG ==========
         const CONFIG = {
             ENERGY_MAX_BASE: 100,
             ENERGY_REGEN_MS: 6000,
@@ -897,37 +1323,43 @@
             MIN_WITHDRAW: 0.01,
 
             USDT_TASKS: [
-                { id: 'ads50',  adsRequired: 50,  usdtReward: 0.0001, title: 'Watch 50 Ads',  desc: '50 ads = 0.0001 USDT' },
-                { id: 'ads100', adsRequired: 100, usdtReward: 0.0008, title: 'Watch 100 Ads', desc: '100 ads = 0.0008 USDT' },
-                { id: 'ads500', adsRequired: 500, usdtReward: 0.008,  title: 'Watch 500 Ads', desc: '500 ads = 0.008 USDT' },
+                { id: 'ads50', adsRequired: 50, usdtReward: 0.0001, title: 'Watch 50 Ads', desc: '50 ads = 0.0001 USDT' },
+                { id: 'ads100', adsRequired: 100, usdtReward: 0.0008, title: 'Watch 100 Ads',
+                desc: '100 ads = 0.0008 USDT' },
+                { id: 'ads500', adsRequired: 500, usdtReward: 0.008, title: 'Watch 500 Ads',
+                desc: '500 ads = 0.008 USDT' },
             ],
 
             BOOSTS: [
-                { id: 'tapPower',    name: 'Tap Power',    icon: '💪', maxLevel: 20, baseCost: 500 },
-                { id: 'energyMax',   name: 'Energy Tank',  icon: '🔋', maxLevel: 15, baseCost: 1000 },
-                { id: 'energyRegen', name: 'Fast Regen',   icon: '⚡', maxLevel: 10, baseCost: 2000 },
-                { id: 'adBonus',     name: 'Ad Bonus',     icon: '🎬', maxLevel: 10, baseCost: 3000 },
+                { id: 'tapPower', name: 'Tap Power', icon: '💪', maxLevel: 20, baseCost: 500 },
+                { id: 'energyMax', name: 'Energy Tank', icon: '🔋', maxLevel: 15, baseCost: 1000 },
+                { id: 'energyRegen', name: 'Fast Regen', icon: '⚡', maxLevel: 10, baseCost: 2000 },
+                { id: 'adBonus', name: 'Ad Bonus', icon: '🎬', maxLevel: 10, baseCost: 3000 },
             ],
 
             ACHIEVEMENTS: [
-                { id: 'tap100',    icon: '👆', label: '100 Taps',   check: s => s.totalTaps >= 100 },
-                { id: 'tap1000',   icon: '💪', label: '1K Taps',    check: s => s.totalTaps >= 1000 },
-                { id: 'tap10000',  icon: '🔥', label: '10K Taps',   check: s => s.totalTaps >= 10000 },
-                { id: 'coins10k',  icon: '💰', label: '10K Coins',  check: s => s.coins >= 10000 },
+                { id: 'tap100', icon: '👆', label: '100 Taps', check: s => s.totalTaps >= 100 },
+                { id: 'tap1000', icon: '💪', label: '1K Taps', check: s => s.totalTaps >= 1000 },
+                { id: 'tap10000', icon: '🔥', label: '10K Taps', check: s => s.totalTaps >= 10000 },
+                { id: 'coins10k', icon: '💰', label: '10K Coins', check: s => s.coins >= 10000 },
                 { id: 'coins100k', icon: '💎', label: '100K Coins', check: s => s.coins >= 100000 },
-                { id: 'ads10',     icon: '🎬', label: '10 Ads',     check: s => s.totalAdsWatched >= 10 },
-                { id: 'ads100',    icon: '📺', label: '100 Ads',    check: s => s.totalAdsWatched >= 100 },
-                { id: 'usdt1',     icon: '💵', label: '0.001 USDT', check: s => s.totalUsdtEarned >= 0.001 },
+                { id: 'ads10', icon: '🎬', label: '10 Ads', check: s => s.totalAdsWatched >= 10 },
+                { id: 'ads100', icon: '📺', label: '100 Ads', check: s => s.totalAdsWatched >= 100 },
+                { id: 'usdt1', icon: '💵', label: '0.001 USDT', check: s => s.totalUsdtEarned >= 0.001 },
             ],
         };
 
-        // ========== State ==========
+        // ========== STATE ==========
         const defaultState = () => ({
-            coins: 0, totalTaps: 0,
+            coins: 0,
+            totalTaps: 0,
             energy: CONFIG.ENERGY_MAX_BASE,
             lastEnergyUpdate: Date.now(),
-            totalAdsWatched: 0, totalUsdtEarned: 0, totalWithdrawn: 0,
-            usdtBalance: 0, walletAddress: '',
+            totalAdsWatched: 0,
+            totalUsdtEarned: 0,
+            totalWithdrawn: 0,
+            usdtBalance: 0,
+            walletAddress: '',
             usdtTasksClaimed: { ads50: 0, ads100: 0, ads500: 0 },
             boosts: { tapPower: 0, energyMax: 0, energyRegen: 0, adBonus: 0 },
             daily: { lastClaim: 0, streak: 0 },
@@ -963,19 +1395,24 @@
         }
 
         function saveState() {
-            try { localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(state)); }
-            catch (e) { console.warn('Save failed:', e); }
+            try { localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(state)); } catch (e) { console.warn('Save failed:',
+                    e); }
         }
 
         // ========== Computed ==========
         function getMaxEnergy() { return CONFIG.ENERGY_MAX_BASE + (state.boosts.energyMax * 50); }
+
         function getCoinsPerTap() { return CONFIG.COINS_PER_TAP_BASE + state.boosts.tapPower; }
+
         function getEnergyRegenMs() {
             const reduction = 1 - (state.boosts.energyRegen * 0.10);
             return Math.max(1000, CONFIG.ENERGY_REGEN_MS * reduction);
         }
+
         function getAdCoinReward() { return CONFIG.AD_COIN_REWARD + (state.boosts.adBonus * 20); }
+
         function getLevel(coins) { return Math.floor(Math.sqrt(coins / 500)) + 1; }
+
         function getBoostCost(boostId) {
             const boost = CONFIG.BOOSTS.find(b => b.id === boostId);
             return Math.floor(boost.baseCost * Math.pow(1.8, state.boosts[boostId]));
@@ -987,6 +1424,7 @@
             if (n >= 1_000) return (n / 1_000).toFixed(1) + 'K';
             return Math.floor(n).toLocaleString();
         }
+
         function formatUsdt(n) { return Number(n).toFixed(4); }
 
         function showToast(message, type = 'info') {
@@ -1084,15 +1522,32 @@
             }, getEnergyRegenMs());
         }
 
-        // ========== Tap ==========
+        // ============================================================
+        // ===== TAP - FIXED =====
+        // ============================================================
+
         const mainCoin = document.getElementById('mainCoin');
         const coinWrapper = document.getElementById('coinWrapper');
 
-        coinWrapper.addEventListener('click', (e) => {
+        // ✅ Click event
+        coinWrapper.addEventListener('click', function(e) {
+            console.log('🪙 Coin clicked!');
+            handleTap(e);
+        });
+
+        // ✅ Touch event
+        coinWrapper.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            console.log('🪙 Coin touched!');
+            handleTap(e);
+        }, { passive: false });
+
+        function handleTap(e) {
             if (state.isAdPlaying) {
                 showToast('⏳ Ad is playing!', 'error');
                 return;
             }
+
             const max = getMaxEnergy();
             if (state.energy < 1) {
                 showToast('⚡ No energy! Watch an ad or wait.', 'error');
@@ -1107,6 +1562,7 @@
             state.dailyCounters.daily_taps = (state.dailyCounters.daily_taps || 0) + 1;
             state.lastEnergyUpdate = Date.now();
 
+            // Animation
             mainCoin.classList.add('pulse');
             setTimeout(() => mainCoin.classList.remove('pulse'), 80);
 
@@ -1115,6 +1571,7 @@
             void ring.offsetWidth;
             ring.classList.add('pulse');
 
+            // Floating text
             const float = document.createElement('div');
             float.className = 'float-text';
             float.textContent = '+' + earned;
@@ -1130,25 +1587,10 @@
             updateHUD();
             updateEnergyUI();
             saveState();
-        });
-
-        document.getElementById('boostEnergyBtn').addEventListener('click', () => {
-            const cost = 200;
-            if (state.coins < cost) { showToast(`Need ${cost} coins`, 'error'); return; }
-            const max = getMaxEnergy();
-            if (state.energy >= max) { showToast('Energy already full!', 'info'); return; }
-            state.coins -= cost;
-            state.energy = max;
-            state.lastEnergyUpdate = Date.now();
-            haptic('success');
-            showToast('⚡ Energy refilled!', 'success');
-            updateHUD();
-            updateEnergyUI();
-            saveState();
-        });
+        }
 
         // ============================================================
-        // ✅ FIXED: AdsGram Integration with Block ID 36912
+        // ===== ADSGRAM - FIXED =====
         // ============================================================
 
         let adsgramController = null;
@@ -1168,18 +1610,15 @@
         }
 
         function initAdsGram() {
-            // ✅ Check if SDK loaded (window.Adsgram)
+            // Check if SDK loaded
             if (typeof window.Adsgram === 'undefined') {
                 console.warn('⏳ AdsGram SDK not loaded yet, retrying...');
                 updateSdkStatus('loading', 'Loading AdsGram SDK...');
-
-                // Retry after 1 second
                 setTimeout(initAdsGram, 1000);
                 return;
             }
 
             try {
-                // ✅ Initialize with Block ID 36912
                 adsgramController = window.Adsgram.init({
                     blockId: CONFIG.ADSGRAM_BLOCK_ID,
                     debug: false,
@@ -1209,6 +1648,7 @@
                 adsgramReady = true;
                 console.log('✅ AdsGram initialized | Block ID:', CONFIG.ADSGRAM_BLOCK_ID);
                 updateSdkStatus('ready', '✅ Ads ready - Tap to earn!');
+                showToast('✅ Ads ready! Watch ads to earn USDT.', 'success');
             } catch (e) {
                 console.error('❌ AdsGram init error:', e);
                 adsgramReady = false;
@@ -1253,7 +1693,6 @@
 
             if (!adsgramReady || !adsgramController) {
                 showToast('⏳ Ads loading, please wait...', 'error');
-                // Try to re-init
                 initAdsGram();
                 return;
             }
@@ -1265,7 +1704,6 @@
             btn.disabled = true;
             btn.innerHTML = '<span class="spinner"></span> Loading Ad...';
 
-            // Show overlay
             adOverlay.style.display = 'flex';
             adOverlay.className = 'ad-overlay show';
             adStatus.textContent = 'Loading ad...';
@@ -1281,11 +1719,9 @@
                 adsgramController.show()
                     .then(() => {
                         console.log('✅ Ad completed successfully');
-                        // Ad will be handled by onReward callback
                     })
                     .catch((err) => {
                         console.warn('❌ Ad error:', err);
-                        // Try to recover
                         setTimeout(function() {
                             if (!state.adCompleted) {
                                 handleAdComplete();
@@ -1513,87 +1949,4 @@
                                 data-mission="${m.id}" ${(!done || claimed) ? 'disabled' : ''}>
                             ${claimed ? '✓' : (done ? '🎁' : '🔒')}
                         </button>
-                    `;
-                list.appendChild(card);
-            });
-
-            list.querySelectorAll('.task-action.claim').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const m = MISSIONS.find(x => x.id === btn.dataset.mission);
-                    if (!m || state.missionsClaimed[m.id]) return;
-                    state.coins += m.reward;
-                    state.missionsClaimed[m.id] = true;
-                    haptic('success');
-                    showToast(`🎯 +${formatNumber(m.reward)} coins!`, 'success');
-                    updateHUD();
-                    renderMissions();
-                    saveState();
-                });
-            });
-        }
-
-        function renderAchievements() {
-            const list = document.getElementById('achievementList');
-            list.innerHTML = '';
-            CONFIG.ACHIEVEMENTS.forEach(a => {
-                const earned = a.check(state);
-                const card = document.createElement('div');
-                card.className = 'task-card';
-                card.style.opacity = earned ? '1' : '0.6';
-                card.innerHTML = `
-                        <div class="task-icon">${a.icon}</div>
-                        <div class="task-info">
-                            <div class="task-title">${a.label}</div>
-                            <div class="task-subtitle">${earned ? '✅ Unlocked' : '🔒 Locked'}</div>
-                        </div>
-                    `;
-                list.appendChild(card);
-            });
-        }
-
-        // ========== Boosts ==========
-        function renderBoosts() {
-            const grid = document.getElementById('boostGrid');
-            grid.innerHTML = '';
-            CONFIG.BOOSTS.forEach(b => {
-                const level = state.boosts[b.id];
-                const maxed = level >= b.maxLevel;
-                const cost = getBoostCost(b.id);
-                const canAfford = state.coins >= cost;
-                const card = document.createElement('div');
-                card.className = 'boost-card' + (maxed ? ' maxed' : '');
-                card.innerHTML = `
-                        <div class="boost-icon">${b.icon}</div>
-                        <div class="boost-name">${b.name}</div>
-                        <div class="boost-level">Level ${level} / ${b.maxLevel}</div>
-                        <div class="boost-cost">${maxed ? '✓ MAX' : `🪙 ${formatNumber(cost)}`}</div>
-                    `;
-                if (!maxed) {
-                    card.style.opacity = canAfford ? '1' : '0.6';
-                    card.addEventListener('click', () => purchaseBoost(b.id));
-                }
-                grid.appendChild(card);
-            });
-        }
-
-        function purchaseBoost(id) {
-            const boost = CONFIG.BOOSTS.find(b => b.id === id);
-            if (!boost) return;
-            const level = state.boosts[id];
-            if (level >= boost.maxLevel) { showToast('Maxed!', 'info'); return; }
-            const cost = getBoostCost(id);
-            if (state.coins < cost) { showToast(`Need ${formatNumber(cost)} coins`, 'error'); return; }
-            state.coins -= cost;
-            state.boosts[id] = level + 1;
-            if (id === 'energyRegen') startEnergyRegen();
-            haptic('success');
-            showToast(`🚀 ${boost.name} → Lvl ${level + 1}!`, 'success');
-            updateHUD();
-            updateEnergyUI();
-            renderBoosts();
-            saveState();
-        }
-
-        // ========== Badges ==========
-        function renderBadges() {
-            cons
+            
