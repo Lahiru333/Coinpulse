@@ -49,10 +49,7 @@
             color: #8899bb;
             font-size: 14px;
         }
-        .welcome span {
-            color: #f7931a;
-            font-weight: 700;
-        }
+        .welcome span { color: #f7931a; font-weight: 700; }
         .balance-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -227,19 +224,22 @@
         }
         .streak .fire { font-size: 24px; }
 
-        /* Ad Overlay */
+        /* AD OVERLAY - FIXED */
         .ad-overlay {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0,0,0,0.92);
+            background: rgba(0,0,0,0.95);
             display: none;
             align-items: center;
             justify-content: center;
             z-index: 1000;
             backdrop-filter: blur(10px);
+        }
+        .ad-overlay.show {
+            display: flex !important;
         }
         .ad-container {
             background: #1a2332;
@@ -250,9 +250,21 @@
             width: 90%;
             border: 1px solid rgba(255,255,255,0.1);
         }
-        .ad-spinner { font-size: 48px; animation: spin 1s linear infinite; display: block; margin-bottom: 16px; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .ad-status { font-size: 16px; margin-bottom: 12px; color: #ccc; }
+        .ad-spinner {
+            font-size: 48px;
+            animation: spin 1s linear infinite;
+            display: block;
+            margin-bottom: 16px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .ad-status {
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: #ccc;
+        }
         .ad-progress {
             width: 100%;
             height: 6px;
@@ -268,17 +280,29 @@
             border-radius: 4px;
             transition: width 0.3s;
         }
+        /* CLAIM BUTTON - හරියටම click වෙන විදියට */
         #adClaimBtn {
             background: linear-gradient(135deg, #f7931a, #f5a623);
             border: none;
             color: #fff;
-            padding: 12px 32px;
+            padding: 14px 32px;
             border-radius: 30px;
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 700;
             cursor: pointer;
             margin-top: 12px;
+            width: 100%;
             display: none;
+            transition: all 0.3s;
+            position: relative;
+            z-index: 1001;
+        }
+        #adClaimBtn.show {
+            display: block !important;
+        }
+        #adClaimBtn:active {
+            transform: scale(0.95);
+            opacity: 0.8;
         }
         #adCloseBtn {
             background: rgba(255,255,255,0.1);
@@ -390,7 +414,7 @@
         </div>
     </div>
 
-    <!-- Ad Overlay -->
+    <!-- AD OVERLAY -->
     <div class="ad-overlay" id="adOverlay">
         <div class="ad-container">
             <div class="ad-spinner" id="adSpinner">⏳</div>
@@ -398,25 +422,21 @@
             <div class="ad-progress">
                 <div class="ad-progress-fill" id="adProgressFill"></div>
             </div>
-            <button id="adClaimBtn">✅ Claim Reward</button>
+            <!-- CLAIM BUTTON - මෙය හරියටම click වෙනවා -->
+            <button id="adClaimBtn" onclick="claimAdReward()">💰 Claim Reward</button>
             <button id="adCloseBtn" onclick="closeAd()">✕ Close</button>
         </div>
     </div>
 
     <script>
         // ============================================================
-        // COINPULSE FARM - COMPLETE FIXED VERSION
+        // COINPULSE FARM - CLAIM BUTTON FIXED
         // ============================================================
 
-        // ============================================================
-        // ✅ ADSGRAM CONFIGURATION - BLOCK ID: 36912
-        // ============================================================
+        // ===== ADSGRAM BLOCK ID =====
         const ADSGRAM_BLOCK_ID = '36912';
-        const ADSGRAM_DEBUG = false;  // ✅ මෙය false විය යුතුයි - stats එකට එකතු වෙන්නේ මෙහෙමයි
 
-        // ============================================================
-        // STATE
-        // ============================================================
+        // ===== STATE =====
         const state = {
             gram: 0,
             usdt: 0.0000,
@@ -435,14 +455,10 @@
             isAdPlaying: false,
             adCompleted: false,
             pendingReward: 0.0005,
-            adTimer: null,
-            adForceTimer: null,
-            adStarted: false
+            adTimer: null
         };
 
-        // ============================================================
-        // DOM REFS
-        // ============================================================
+        // ===== DOM REFS =====
         const $ = id => document.getElementById(id);
         const gramBalance = $('gramBalance');
         const usdtBalance = $('usdtBalance');
@@ -461,9 +477,7 @@
         const adProgressFill = $('adProgressFill');
         const adClaimBtn = $('adClaimBtn');
 
-        // ============================================================
-        // TELEGRAM
-        // ============================================================
+        // ===== TELEGRAM =====
         let tg = window.Telegram?.WebApp || {
             initDataUnsafe: { user: { id: 12345, first_name: 'Lahiru' } },
             ready: () => {},
@@ -478,159 +492,117 @@
         }
 
         // ============================================================
-        // ✅ ADSGRAM INTEGRATION - FIXED
+        // ADSGRAM INTEGRATION
         // ============================================================
 
         let adController = null;
-        let adsgramInitialized = false;
 
-        function loadAdsgramSDK() {
-            return new Promise((resolve, reject) => {
-                if (typeof window.Adsgram !== 'undefined') {
-                    resolve(window.Adsgram);
-                    return;
-                }
-                const script = document.createElement('script');
-                script.src = 'https://sad.adsgram.ai/js/sad.min.js';
-                script.async = true;
-                script.onload = () => {
-                    if (typeof window.Adsgram !== 'undefined') {
-                        resolve(window.Adsgram);
-                    } else {
-                        reject(new Error('Adsgram not found after load'));
-                    }
-                };
-                script.onerror = () => reject(new Error('Failed to load Adsgram SDK'));
-                document.head.appendChild(script);
-            });
-        }
-
-        async function initAdsgram() {
+        function initAdsgram() {
             try {
-                console.log('📡 Initializing Adsgram with Block ID:', ADSGRAM_BLOCK_ID);
-                console.log('🔧 Debug mode:', ADSGRAM_DEBUG);
+                if (typeof window.Adsgram === 'undefined') {
+                    console.warn('⚠️ Adsgram SDK not loaded');
+                    return false;
+                }
                 
-                const Adsgram = await loadAdsgramSDK();
-                
-                adController = Adsgram.init({
+                adController = window.Adsgram.init({
                     blockId: ADSGRAM_BLOCK_ID,
-                    debug: ADSGRAM_DEBUG,  // ✅ False - Real ads, stats එකට එකතු වෙයි
-                    onReward: (data) => {
-                        console.log('✅✅✅ Ad reward received:', data);
-                        console.log('📊 This ad will count towards your stats!');
+                    debug: false,
+                    onReward: function(data) {
+                        console.log('✅ Ad reward received:', data);
                         handleAdComplete();
                     },
-                    onError: (error) => {
+                    onError: function(error) {
                         console.error('❌ Ad error:', error);
-                        // Try to recover
-                        setTimeout(() => {
-                            if (!state.adCompleted && state.isAdPlaying) {
-                                console.log('🔄 Attempting to recover from error...');
+                        setTimeout(function() {
+                            if (!state.adCompleted) {
                                 handleAdComplete();
                             }
-                        }, 2000);
+                        }, 3000);
                     },
-                    onClose: () => {
-                        console.log('👋 Ad closed by user');
-                        if (!state.adCompleted && state.isAdPlaying) {
-                            // If ad was closed early, try to complete anyway after a delay
-                            setTimeout(() => {
-                                if (!state.adCompleted && state.adStarted) {
-                                    console.log('🔄 Force completing ad (closed early)');
+                    onClose: function() {
+                        console.log('👋 Ad closed');
+                        if (!state.adCompleted) {
+                            setTimeout(function() {
+                                if (!state.adCompleted) {
                                     handleAdComplete();
                                 }
-                            }, 1500);
+                            }, 2000);
                         }
                     }
                 });
-                
-                adsgramInitialized = true;
-                console.log('✅✅✅ Adsgram initialized successfully!');
-                console.log('📊 Block ID:', ADSGRAM_BLOCK_ID);
-                console.log('📈 All ad views will be counted in your dashboard');
+                console.log('✅ Adsgram initialized!');
                 return true;
-                
-            } catch (e) {
-                console.warn('⚠️ Adsgram init failed:', e);
-                adsgramInitialized = false;
+            } catch(e) {
+                console.error('❌ Adsgram init error:', e);
                 return false;
             }
         }
 
         // ============================================================
-        // AD COMPLETE HANDLER
+        // AD COMPLETE - Claim Button එක පෙන්වයි
         // ============================================================
 
         function handleAdComplete() {
             if (state.adCompleted) return;
             
-            console.log('✅ Ad completed successfully!');
+            console.log('✅ Ad completed! Showing claim button...');
             state.adCompleted = true;
-            state.adStarted = false;
             
-            // Clear all timers
             if (state.adTimer) {
                 clearInterval(state.adTimer);
                 state.adTimer = null;
             }
-            if (state.adForceTimer) {
-                clearTimeout(state.adForceTimer);
-                state.adForceTimer = null;
-            }
 
+            // Claim button එක පෙන්වන්න
             adStatus.textContent = '✅ Ad complete! Claim your reward!';
             adSpinner.textContent = '✅';
             adSpinner.style.animation = 'none';
             adProgressFill.style.width = '100%';
+            
+            // CLAIM BUTTON එක show කරන්න
+            adClaimBtn.textContent = '💰 Claim ' + state.pendingReward.toFixed(4) + ' USDT';
+            adClaimBtn.className = 'show';  // display: block වෙනවා
             adClaimBtn.style.display = 'block';
-            adClaimBtn.textContent = `💰 Claim ${state.pendingReward.toFixed(4)} USDT`;
+            
+            console.log('🔘 Claim button is now visible and clickable!');
             
             tg.HapticFeedback?.impactOccurred('success');
-            
-            // Log for debugging
-            console.log('📊 Ad completed - this will appear in your Adsgram stats dashboard');
-            console.log('⏳ Stats may take 1-2 hours to update');
         }
 
         // ============================================================
         // SHOW AD
         // ============================================================
 
-        async function showAd(rewardAmount) {
+        function showAd(rewardAmount) {
             if (state.isAdPlaying) {
                 showNotification('⏳ Please wait for current ad');
                 return;
             }
 
-            console.log('🎬 Starting ad with reward:', rewardAmount);
+            console.log('🎬 Starting ad...');
             
             state.isAdPlaying = true;
             state.adCompleted = false;
-            state.adStarted = false;
             state.pendingReward = rewardAmount || 0.0005;
 
             // Show overlay
             adOverlay.style.display = 'flex';
+            adOverlay.className = 'ad-overlay show';
             adStatus.textContent = 'Loading ad...';
             adSpinner.textContent = '⏳';
             adSpinner.style.animation = 'spin 1s linear infinite';
             adProgressFill.style.width = '0%';
             adClaimBtn.style.display = 'none';
+            adClaimBtn.className = '';
 
             try {
-                if (adsgramInitialized && adController) {
-                    console.log('📺 Showing real Adsgram ad...');
-                    state.adStarted = true;
-                    
-                    // Show the ad
-                    await adController.show();
-                    
+                if (adController) {
+                    adController.show();
                     adStatus.textContent = '🎬 Watching ad...';
-                    console.log('🎬 Ad is now playing');
+                    console.log('🎬 Real ad playing');
                     
-                    // Progress animation
                     let progress = 0;
-                    state.adTimer = setInterval(() => {
+                    state.adTimer = setInterval(function() {
                         progress += 1;
                         if (progress >= 95) {
                             clearInterval(state.adTimer);
@@ -638,71 +610,62 @@
                             adProgressFill.style.width = '95%';
                             adStatus.textContent = '⏳ Almost done...';
                         } else {
-                            adProgressFill.style.width = `${Math.min(progress, 95)}%`;
+                            adProgressFill.style.width = Math.min(progress, 95) + '%';
                         }
                     }, 100);
 
-                    // Force complete after 12 seconds if stuck
-                    state.adForceTimer = setTimeout(() => {
+                    setTimeout(function() {
                         if (!state.adCompleted) {
-                            console.log('⚠️ Force completing ad (timeout after 12s)');
+                            console.log('⚠️ Force completing ad (timeout)');
                             handleAdComplete();
                         }
-                    }, 12000);
+                    }, 10000);
 
                 } else {
-                    // Fallback: Simulated ad
-                    console.log('📺 Using simulated ad (Adsgram not available)');
-                    await showSimulatedAd();
+                    showSimulatedAd();
                 }
-            } catch (e) {
-                console.error('❌ Ad show error:', e);
-                // Try simulated ad as fallback
-                await showSimulatedAd();
+            } catch(e) {
+                console.error('❌ Ad error:', e);
+                showSimulatedAd();
             }
         }
 
         // ============================================================
-        // SIMULATED AD (Fallback)
+        // SIMULATED AD
         // ============================================================
 
         function showSimulatedAd() {
-            return new Promise((resolve) => {
-                state.adStarted = true;
-                adStatus.textContent = '🎬 Watching ad (simulated)...';
-                adSpinner.textContent = '⏳';
-                adProgressFill.style.width = '0%';
+            adStatus.textContent = '🎬 Watching ad (simulated)...';
+            adSpinner.textContent = '⏳';
+            adProgressFill.style.width = '0%';
 
-                let progress = 0;
-                state.adTimer = setInterval(() => {
-                    progress += 2;
-                    if (progress >= 100) {
-                        clearInterval(state.adTimer);
-                        state.adTimer = null;
-                        console.log('✅ Simulated ad complete');
-                        handleAdComplete();
-                        resolve();
-                    } else {
-                        adProgressFill.style.width = `${Math.min(progress, 100)}%`;
-                        adStatus.textContent = `🎬 Watching ad... ${Math.round(progress)}%`;
-                    }
-                }, 100);
+            let progress = 0;
+            state.adTimer = setInterval(function() {
+                progress += 2;
+                if (progress >= 100) {
+                    clearInterval(state.adTimer);
+                    state.adTimer = null;
+                    handleAdComplete();
+                } else {
+                    adProgressFill.style.width = Math.min(progress, 100) + '%';
+                    adStatus.textContent = '🎬 Watching ad... ' + Math.round(progress) + '%';
+                }
+            }, 100);
 
-                // Force complete after 5 seconds
-                state.adForceTimer = setTimeout(() => {
-                    if (!state.adCompleted) {
-                        console.log('⚠️ Force completing simulated ad');
-                        handleAdComplete();
-                    }
-                }, 5000);
-            });
+            setTimeout(function() {
+                if (!state.adCompleted) {
+                    handleAdComplete();
+                }
+            }, 5000);
         }
 
         // ============================================================
-        // CLAIM AD REWARD
+        // CLAIM AD REWARD - මෙය හරියටම click වෙනවා
         // ============================================================
 
         function claimAdReward() {
+            console.log('🖱️ Claim button clicked!');
+            
             if (!state.adCompleted) {
                 showNotification('⏳ Please wait for ad to complete');
                 return;
@@ -713,12 +676,12 @@
             state.totalEarned += reward;
             state.gram += Math.floor(reward * 10);
 
-            console.log('💰 Claimed reward:', reward, 'USDT');
+            console.log('💰 Claimed reward:', reward);
             
             tg.HapticFeedback?.impactOccurred('success');
             updateUI();
             closeAd();
-            showNotification(`✅ +${reward.toFixed(4)} USDT earned from ad!`);
+            showNotification('✅ +' + reward.toFixed(4) + ' USDT earned from ad!');
         }
 
         // ============================================================
@@ -727,17 +690,15 @@
 
         function closeAd() {
             adOverlay.style.display = 'none';
+            adOverlay.className = 'ad-overlay';
             state.isAdPlaying = false;
             state.adCompleted = false;
-            state.adStarted = false;
+            adClaimBtn.style.display = 'none';
+            adClaimBtn.className = '';
             
             if (state.adTimer) {
                 clearInterval(state.adTimer);
                 state.adTimer = null;
-            }
-            if (state.adForceTimer) {
-                clearTimeout(state.adForceTimer);
-                state.adForceTimer = null;
             }
             
             adSpinner.style.animation = 'spin 1s linear infinite';
@@ -765,7 +726,7 @@
                     unlocked: state.unlocked
                 };
                 localStorage.setItem('coinpulse_farm_data', JSON.stringify(data));
-            } catch(e) { console.warn('Save error:', e); }
+            } catch(e) {}
         }
 
         function loadState() {
@@ -777,7 +738,7 @@
                 updateUI();
                 checkDailyReset();
                 checkStreak();
-            } catch(e) { console.warn('Load error:', e); }
+            } catch(e) {}
         }
 
         // ============================================================
@@ -786,14 +747,14 @@
 
         function updateUI() {
             gramBalance.textContent = state.gram;
-            usdtBalance.textContent = `$${state.usdt.toFixed(4)}`;
+            usdtBalance.textContent = '$' + state.usdt.toFixed(4);
             dailyDay.textContent = state.dailyDay;
             
             const dailyReward = 0.001 * state.dailyDay;
-            dailyAmount.textContent = `+${dailyReward.toFixed(3)} USDT`;
+            dailyAmount.textContent = '+' + dailyReward.toFixed(3) + ' USDT';
             
-            hourlyIncome.textContent = `+${state.farmHourly.toFixed(4)} USDT`;
-            dailyIncome.textContent = `+${state.farmDaily.toFixed(4)} USDT`;
+            hourlyIncome.textContent = '+' + state.farmHourly.toFixed(4) + ' USDT';
+            dailyIncome.textContent = '+' + state.farmDaily.toFixed(4) + ' USDT';
 
             dailyClaimBtn.textContent = state.dailyClaimed ? '✅ CLAIMED' : 'CLAIM';
             dailyClaimBtn.disabled = state.dailyClaimed;
@@ -849,7 +810,7 @@
 
             tg.HapticFeedback?.impactOccurred('success');
             updateUI();
-            showNotification(`✅ +${reward.toFixed(3)} USDT claimed! 🔥 ${state.streak} day streak!`);
+            showNotification('✅ +' + reward.toFixed(3) + ' USDT claimed! 🔥 ' + state.streak + ' day streak!');
         }
 
         // ============================================================
@@ -887,10 +848,10 @@
 
             tg.HapticFeedback?.impactOccurred('success');
             updateUI();
-            showNotification(`✅ +${reward.toFixed(4)} USDT farm income claimed!`);
+            showNotification('✅ +' + reward.toFixed(4) + ' USDT farm income claimed!');
         }
 
-        setInterval(() => {
+        setInterval(function() {
             if (state.lastFarmClaim) {
                 const last = new Date(state.lastFarmClaim);
                 const now = new Date();
@@ -914,7 +875,7 @@
 
             const cost = 5.00;
             if (state.usdt < cost) {
-                showNotification(`❌ Need $${cost} USDT to unlock!`);
+                showNotification('❌ Need $' + cost + ' USDT to unlock!');
                 return;
             }
 
@@ -929,25 +890,14 @@
         }
 
         // ============================================================
-        // TASKS WITH ADS
+        // TASKS
         // ============================================================
 
         function showTasks() {
-            // Show task options
-            const taskHTML = `
-📋 **TASKS**
-
-📺 **Watch Ad** → +0.0005 USDT
-👥 **Refer 5 friends** → +0.01 USDT
-🌾 **Farm 10 hours** → +0.005 USDT
-
-💡 Click "Watch Ad" button below to earn!
-            `;
-            showNotification(taskHTML);
+            showNotification('📋 TASKS:\n📺 Watch Ad → +0.0005 USDT\n👥 Refer 5 friends → +0.01 USDT\n🌾 Farm 10 hours → +0.005 USDT');
             
-            // Show ad watch option
             if (!state.isAdPlaying) {
-                const watchAd = confirm('📺 Watch ad for +0.0005 USDT?');
+                var watchAd = confirm('📺 Watch ad for +0.0005 USDT?');
                 if (watchAd) {
                     showAd(0.0005);
                 }
@@ -959,15 +909,7 @@
         // ============================================================
 
         function showWallet() {
-            const walletHTML = `
-💳 **WALLET**
-
-💰 USDT: $${state.usdt.toFixed(4)}
-🌾 GRAM: ${state.gram}
-📈 Total Earned: $${state.totalEarned.toFixed(4)}
-🔥 Streak: ${state.streak} days
-            `;
-            showNotification(walletHTML);
+            showNotification('💳 WALLET\nUSDT: $' + state.usdt.toFixed(4) + '\nGRAM: ' + state.gram + '\nTotal Earned: $' + state.totalEarned.toFixed(4));
         }
 
         // ============================================================
@@ -975,12 +917,12 @@
         // ============================================================
 
         function showSection(section) {
-            const sections = {
+            var names = {
                 'farm': '🌾 Farm',
                 'tasks': '📋 Tasks',
                 'wallet': '💳 Wallet'
             };
-            showNotification(`📌 ${sections[section] || section} section`);
+            showNotification('📌 ' + (names[section] || section) + ' section');
         }
 
         // ============================================================
@@ -988,23 +930,23 @@
         // ============================================================
 
         function shareReferral() {
-            const userId = tg.initDataUnsafe?.user?.id || '12345';
-            const link = `https://t.me/coinpulse_bot?start=ref_${userId}`;
+            var userId = tg.initDataUnsafe?.user?.id || '12345';
+            var link = 'https://t.me/coinpulse_bot?start=ref_' + userId;
             
             if (navigator.share) {
                 navigator.share({
                     title: '🌾 Join CoinPulse Farm!',
                     text: 'Earn USDT by farming! Use my referral:',
                     url: link
-                }).then(() => {
+                }).then(function() {
                     state.usdt += 0.005;
                     updateUI();
                     showNotification('👥 +0.005 USDT referral bonus!');
-                }).catch(() => {});
+                }).catch(function() {});
             } else {
-                navigator.clipboard?.writeText(link).then(() => {
+                navigator.clipboard?.writeText(link).then(function() {
                     showNotification('✅ Referral link copied!');
-                }).catch(() => {
+                }).catch(function() {
                     prompt('Copy this link:', link);
                 });
             }
@@ -1015,20 +957,18 @@
         // ============================================================
 
         function showNotification(message) {
-            const existing = document.querySelector('.notification');
+            var existing = document.querySelector('.notification');
             if (existing) existing.remove();
 
-            const notif = document.createElement('div');
+            var notif = document.createElement('div');
             notif.className = 'notification';
             notif.style.whiteSpace = 'pre-wrap';
-            notif.style.textAlign = 'left';
-            notif.style.fontWeight = '600';
-            notif.style.fontSize = '13px';
+            notif.style.textAlign = 'center';
             notif.textContent = message;
             document.body.appendChild(notif);
-            setTimeout(() => {
+            setTimeout(function() {
                 if (notif.parentNode) notif.remove();
-            }, 5000);
+            }, 4000);
         }
 
         // ============================================================
@@ -1038,15 +978,22 @@
         dailyClaimBtn.addEventListener('click', claimDaily);
         claimFarmBtn.addEventListener('click', claimFarm);
         unlockBtn.addEventListener('click', unlockFarm);
-        adClaimBtn.addEventListener('click', claimAdReward);
+
+        // CLAIM BUTTON - මෙය හරියටම click වෙනවා
+        adClaimBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('🖱️ Claim button clicked via listener!');
+            claimAdReward();
+        });
 
         // ============================================================
         // BACKGROUND FARM INCOME
         // ============================================================
 
-        setInterval(() => {
+        setInterval(function() {
             if (state.unlocked) {
-                const earn = state.farmHourly / 3600;
+                var earn = state.farmHourly / 3600;
                 state.usdt += earn;
                 state.totalEarned += earn;
                 state.gram += Math.floor(earn * 10);
@@ -1061,38 +1008,24 @@
         loadState();
         updateUI();
 
-        // Check daily reset every minute
-        setInterval(() => {
+        setInterval(function() {
             checkDailyReset();
             checkStreak();
         }, 60000);
 
-        // Initialize Adsgram
-        setTimeout(async () => {
-            const success = await initAdsgram();
+        setTimeout(function() {
+            var success = initAdsgram();
             if (success) {
-                console.log('✅✅✅ Adsgram ready!');
-                console.log('📊 Block ID:', ADSGRAM_BLOCK_ID);
-                console.log('📈 All ad views will count towards your stats!');
-                console.log('⏳ Stats update may take 1-2 hours');
-                showNotification('✅ Ads ready! Watch ads to earn USDT.');
+                console.log('✅ Adsgram ready! Block ID:', ADSGRAM_BLOCK_ID);
             } else {
                 console.log('⚠️ Using simulated ads');
-                showNotification('⚠️ Using simulated ads');
             }
         }, 1000);
 
         console.log('============================================');
         console.log('🌾 CoinPulse Farm Loaded!');
         console.log('📺 Adsgram Block ID:', ADSGRAM_BLOCK_ID);
-        console.log('🔧 Debug Mode:', ADSGRAM_DEBUG);
-        console.log('📊 Stats will appear in Adsgram dashboard');
-        console.log('⏳ Allow 1-2 hours for stats update');
-        console.log('============================================');
-        console.log('👤 User:', state.userName);
-        console.log('💵 USDT:', state.usdt);
-        console.log('🌾 GRAM:', state.gram);
-        console.log('🔥 Streak:', state.streak);
+        console.log('🔘 Claim button will be clickable after ad completes');
         console.log('============================================');
     </script>
 </body>
