@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Coinpulse - Earn USDT</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- AdsGram Official SDK Script -->
-    <script src="https://sad.adsgram.ai/js/advadsgram-sdk.js"></script>
+    <!-- AdsGram Official Native Asynchronous SDK -->
+    <script src="https://sad.adsgram.ai/js/advadsgram-sdk.js" defer></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -265,62 +265,6 @@
             margin-top: 10px;
         }
         
-        .task-card {
-            background: rgba(255,255,255,0.08);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 15px;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        
-        .task-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 15px;
-        }
-        
-        .task-title { 
-            display: flex; 
-            align-items: center; 
-            gap: 12px;
-        }
-        
-        .task-icon {
-            width: 45px;
-            height: 45px;
-            border-radius: 12px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-        }
-        
-        .task-info h3 { font-size: 15px; margin-bottom: 3px; }
-        .task-info p { font-size: 12px; opacity: 0.7; }
-        
-        .task-reward {
-            background: rgba(0,255,136,0.2);
-            padding: 8px 15px;
-            border-radius: 10px;
-            font-weight: bold;
-            color: #00ff88;
-            font-size: 14px;
-        }
-        
-        .task-btn {
-            background: linear-gradient(135deg, #00ff88, #00cc6a);
-            color: #000;
-            border: none;
-            padding: 12px;
-            border-radius: 10px;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-            font-size: 14px;
-        }
-        
         .notification {
             position: fixed;
             top: 20px;
@@ -341,50 +285,6 @@
             transform: translateX(-50%) translateY(0);
             opacity: 1;
         }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.9);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        
-        .modal.show { display: flex; }
-        
-        .modal-content {
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            border-radius: 25px;
-            padding: 30px;
-            max-width: 400px;
-            width: 100%;
-            text-align: center;
-            border: 2px solid rgba(255,255,255,0.2);
-        }
-        
-        .modal-icon { font-size: 80px; margin-bottom: 20px; }
-        .modal-title { font-size: 24px; font-weight: bold; margin-bottom: 15px; }
-        .modal-text { opacity: 0.9; margin-bottom: 25px; line-height: 1.6; }
-        
-        .wallet-input {
-            width: 100%;
-            padding: 15px;
-            border-radius: 12px;
-            border: 2px solid rgba(255,255,255,0.2);
-            background: rgba(255,255,255,0.1);
-            color: white;
-            font-size: 16px;
-            margin-bottom: 15px;
-            outline: none;
-        }
-        
-        .wallet-input:focus { border-color: #00ff88; }
         
         .ad-status {
             background: rgba(0,255,136,0.1);
@@ -422,62 +322,8 @@
                         <div class="detail-value" id="total-coins">0</div>
                         <div class="detail-label">Coins</div>
                     </div>
-                    <div class="detail-item">
-                        <div class="detail-value" id="games-played">0</div>
-                        <div class="detail-label">Games</div>
-                    </div>
                 </div>
             </div>
-            
-            <div class="quick-actions">
-                <div class="action-btn" onclick="openDailyBonus()">
-                    <i style="color: #00ff88;">🎁</i>
-                    <span>Daily Bonus</span>
-                </div>
-                <div class="action-btn" onclick="openRewardCode()">
-                    <i style="color: #8a2be2;">🎟️</i>
-                    <span>Reward Code</span>
-                </div>
-                <div class="action-btn" onclick="openWithdraw()">
-                    <i style="color: #1e90ff;">💳</i>
-                    <span>Withdraw</span>
-                </div>
-                <div class="action-btn" onclick="openLeaderboard()">
-                    <i style="color: #ffd700;">🏆</i>
-                    <span>Leaderboard</span>
-                </div>
-            </div>
-        </div>
-        
-        <div class="earn-section">
-            <div class="section-title">EARN MORE</div>
-            <div class="earn-cards">
-                <div class="earn-card watch" onclick="switchTab('ads')">
-                    <i style="color: #007bff;">▶️</i>
-                    <h3>Watch Ads</h3>
-                    <p>Up to 10 Coins</p>
-                </div>
-                <div class="earn-card tasks" onclick="switchTab('tasks')">
-                    <i style="color: #28a745;">✓</i>
-                    <h3>Tasks</h3>
-                    <p>20-200 Coins</p>
-                </div>
-                <div class="earn-card refer" onclick="switchTab('refer')">
-                    <i style="color: #6f42c1;">👥</i>
-                    <h3>Refer</h3>
-                    <p>Up to 150 Coins</p>
-                </div>
-            </div>
-        </div>
-        
-        <div class="referral-section">
-            <div class="referral-title">
-                <i style="color: #6f42c1;">👥</i>
-                Your Referral Link
-                <span style="margin-left: auto; color: #ffd700;">+150 Coins</span>
-            </div>
-            <div class="referral-link" id="referral-link">https://t.me/CoinpulseBot/play?startapp=ref123</div>
-            <button class="copy-btn" onclick="copyReferral()">📋 Copy Link</button>
         </div>
     </div>
     
@@ -485,7 +331,7 @@
     <div id="ads" class="content-section">
         <div class="app-header">
             <h2 style="margin-bottom: 10px;">Watch Ads & Earn</h2>
-            <div class="ad-status" id="ad-status">✅ AdsGram SDK Active (Embedded Link)</div>
+            <div class="ad-status" id="ad-status">🔄 Connecting to AdsGram Network...</div>
         </div>
         
         <!-- Reward Ad Type 1 -->
@@ -506,7 +352,7 @@
                     <div class="progress-fill" id="ads-progress-1" style="width: 0%"></div>
                 </div>
             </div>
-            <button class="watch-btn" onclick="triggerSingleAd(1, 5, 0.010, 10)" id="watch-btn-1">
+            <button class="watch-btn" onclick="triggerRealAd(1, 5, 0.010, 10)" id="watch-btn-1">
                 ▶️ Watch Ad - +10 Coins
             </button>
         </div>
@@ -529,50 +375,9 @@
                     <div class="progress-fill" id="ads-progress-2" style="width: 0%"></div>
                 </div>
             </div>
-            <button class="watch-btn" style="background: linear-gradient(135deg, #ff4444, #ff0000);" onclick="triggerSingleAd(2, 15, 0.008, 8)" id="watch-btn-2">
+            <button class="watch-btn" style="background: linear-gradient(135deg, #ff4444, #ff0000);" onclick="triggerRealAd(2, 15, 0.008, 8)" id="watch-btn-2">
                 ▶️ Watch Ad - +8 Coins
             </button>
-        </div>
-    </div>
-    
-    <!-- Tasks Section -->
-    <div id="tasks" class="content-section">
-        <div class="app-header">
-            <h2 style="margin-bottom: 20px;">Complete Tasks</h2>
-        </div>
-        <div class="task-card" onclick="completeTask('twitter', 0.010)">
-            <div class="task-header">
-                <div class="task-title">
-                    <div class="task-icon" style="background: #1da1f2;">🐦</div>
-                    <div class="task-info">
-                        <h3>Follow on Twitter</h3>
-                        <p>Follow @CoinpulseApp</p>
-                    </div>
-                </div>
-                <div class="task-reward">+10</div>
-            </div>
-            <button class="task-btn">Complete Task</button>
-        </div>
-    </div>
-    
-    <!-- Refer Section -->
-    <div id="refer" class="content-section">
-        <div class="app-header">
-            <h2 style="margin-bottom: 20px;">Refer Friends</h2>
-        </div>
-        <div class="referral-section">
-            <div class="referral-title">🔗 Your Referral Link</div>
-            <div class="referral-link" id="ref-link">https://t.me/CoinpulseBot/play?startapp=ref123</div>
-            <button class="copy-btn" onclick="copyReferral()">📋 Copy Link</button>
-        </div>
-    </div>
-    
-    <!-- Profile Section -->
-    <div id="profile" class="content-section">
-        <div class="app-header" style="text-align: center; padding: 30px 20px;">
-            <div class="user-avatar" style="width: 80px; height: 80px; font-size: 36px; margin: 0 auto 15px;" id="profile-avatar">U</div>
-            <h2 id="profile-name">User</h2>
-            <p style="opacity: 0.5; font-size: 12px;">ID: <span id="profile-id">12345</span></p>
         </div>
     </div>
     
@@ -580,20 +385,6 @@
     <div class="bottom-nav">
         <div class="nav-item active" onclick="switchTab('home')"><i class="fas fa-home"></i><span>Home</span></div>
         <div class="nav-item" onclick="switchTab('ads')"><i class="fas fa-play-circle"></i><span>Ads</span></div>
-        <div class="nav-item" onclick="switchTab('tasks')"><i class="fas fa-tasks"></i><span>Tasks</span></div>
-        <div class="nav-item" onclick="switchTab('refer')"><i class="fas fa-users"></i><span>Refer</span></div>
-        <div class="nav-item" onclick="switchTab('profile')"><i class="fas fa-user"></i><span>Profile</span></div>
-    </div>
-    
-    <!-- Withdraw Modal -->
-    <div class="modal" id="withdraw-modal">
-        <div class="modal-content">
-            <div class="modal-title">Withdraw USDT</div>
-            <input type="text" class="wallet-input" id="wallet-address" placeholder="Enter wallet address">
-            <div style="margin-bottom: 15px;">Available: <strong id="withdraw-balance">0.00 USDT</strong></div>
-            <button class="watch-btn" onclick="processWithdraw()">Confirm Withdraw</button>
-            <button class="watch-btn" style="background: rgba(255,255,255,0.2); color: white; margin-top: 10px;" onclick="closeModal('withdraw-modal')">Cancel</button>
-        </div>
     </div>
 
     <script>
@@ -606,26 +397,37 @@
         const username = user ? (user.username || user.first_name) : 'Guest';
         const userInitial = username.charAt(0).toUpperCase();
         
-        // Setup official AdsGram block ID
+        // 100% Real Live AdsGram Production Block ID
         const ADSGRAM_BLOCK_ID = '36912'; 
         let AdController = null;
 
-        if (window.AdsGram) {
-            AdController = window.AdsGram.init({ blockId: ADSGRAM_BLOCK_ID });
+        // Try to initialize authentic AdsGram controller
+        function initializeAdsGram() {
+            if (window.AdsGram) {
+                AdController = window.AdsGram.init({ blockId: ADSGRAM_BLOCK_ID });
+                document.getElementById('ad-status').textContent = "✅ AdsGram SDK Connected (Live Mode)";
+                document.getElementById('ad-status').style.borderColor = "#00ff88";
+                document.getElementById('ad-status').style.color = "#00ff88";
+            } else {
+                document.getElementById('ad-status').textContent = "❌ Network Error: AdsGram Script Blocked";
+                document.getElementById('ad-status').style.borderColor = "#ff4444";
+                document.getElementById('ad-status').style.color = "#ff4444";
+            }
         }
+
+        // Run checking shortly after load
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(initializeAdsGram, 1000);
+        });
         
-        // User Data Sync
+        // LocalStorage Data
         let data = {
             balance: parseFloat(localStorage.getItem(`balance_${userId}`)) || 0,
             totalCoins: parseInt(localStorage.getItem(`totalCoins_${userId}`)) || 0,
-            gamesPlayed: parseInt(localStorage.getItem(`gamesPlayed_${userId}`)) || 0,
             adCount1: parseInt(localStorage.getItem(`adCount1_${userId}`)) || 0,
-            adCount2: parseInt(localStorage.getItem(`adCount2_${userId}`)) || 0,
-            tasks: JSON.parse(localStorage.getItem(`tasks_${userId}`)) || [],
-            referrals: parseInt(localStorage.getItem(`referrals_${userId}`)) || 0
+            adCount2: parseInt(localStorage.getItem(`adCount2_${userId}`)) || 0
         };
         
-        // Initial setup
         document.getElementById('username').textContent = username;
         document.getElementById('user-id').textContent = 'ID: ' + userId;
         document.getElementById('user-avatar').textContent = userInitial;
@@ -634,65 +436,61 @@
             document.getElementById('balance').textContent = data.balance.toFixed(2);
             document.getElementById('usd-value').textContent = data.balance.toFixed(2);
             document.getElementById('total-coins').textContent = data.totalCoins;
-            document.getElementById('withdraw-balance').textContent = data.balance.toFixed(2) + ' USDT';
             
-            // Ad Card 1 Progress UI
             document.getElementById('ads-watched-1').textContent = `${data.adCount1} / 5 ads`;
             document.getElementById('ads-left-1').textContent = `${Math.max(0, 5 - data.adCount1)} left`;
             document.getElementById('ads-progress-1').style.width = (Math.min(5, data.adCount1) / 5 * 100) + '%';
             
-            // Ad Card 2 Progress UI
             document.getElementById('ads-watched-2').textContent = `${data.adCount2} / 15 ads`;
             document.getElementById('ads-left-2').textContent = `${Math.max(0, 15 - data.adCount2)} left`;
             document.getElementById('ads-progress-2').style.width = (Math.min(15, data.adCount2) / 15 * 100) + '%';
         }
 
-        // ONE SINGLE AD TRIGGER FUNCTION (No Auto Loops)
-        function triggerSingleAd(adBlockType, maxLimit, rewardUsdt, rewardCoins) {
-            // Limits check
+        // PURE REAL AD TRIGGER (NO TEST MODE FALLBACK)
+        function triggerRealAd(adBlockType, maxLimit, rewardUsdt, rewardCoins) {
             if (adBlockType === 1 && data.adCount1 >= maxLimit) {
-                tg.showAlert('You have completed today\'s limit for this Ad section!');
+                tg.showAlert('Daily limit reached for this section.');
                 return;
             }
             if (adBlockType === 2 && data.adCount2 >= maxLimit) {
-                tg.showAlert('You have completed today\'s limit for this Ad section!');
+                tg.showAlert('Daily limit reached for this section.');
                 return;
             }
 
-            showNotification('Loading Ad...');
-
-            // If true SDK active via Telegram Container
-            if (AdController) {
-                AdController.show().then((result) => {
-                    // Ad completely finished watching
-                    if (adBlockType === 1) data.adCount1++;
-                    if (adBlockType === 2) data.adCount2++;
-                    
-                    data.balance += rewardUsdt;
-                    data.totalCoins += rewardCoins;
-                    
-                    saveData();
-                    updateUI();
-                    showNotification(`✅ Earned +${rewardCoins} Coins!`);
-                    tg.HapticFeedback.notificationOccurred('success');
-                }).catch((err) => {
-                    console.error('Ad skipped or error:', err);
-                    tg.showAlert('Ad was skipped or connection error. Try again!');
-                });
-            } else {
-                // Fallback Test Mode configuration if running outside TG app context
-                setTimeout(() => {
-                    if (adBlockType === 1) data.adCount1++;
-                    if (adBlockType === 2) data.adCount2++;
-                    
-                    data.balance += rewardUsdt;
-                    data.totalCoins += rewardCoins;
-                    
-                    saveData();
-                    updateUI();
-                    showNotification(`✅ [Test Mode] Earned +${rewardCoins} Coins!`);
-                }, 1000);
+            // Force check initialization if it wasn't ready
+            if (!AdController && window.AdsGram) {
+                AdController = window.AdsGram.init({ blockId: ADSGRAM_BLOCK_ID });
             }
+
+            if (!AdController) {
+                tg.showAlert('Error: Unable to connect to AdsGram servers. Please check your internet or VPN settings!');
+                return;
+            }
+
+            showNotification('Opening Real Video Ad...');
+
+            // Execute Live Adsgram call
+            AdController.show().then((result) => {
+                // Verified Watch Reward Event Triggered
+                if (adBlockType === 1) data.adCount1++;
+                if (adBlockType === 2) data.adCount2++;
+                
+                data.balance += rewardUsdt;
+                data.totalCoins += rewardCoins;
+                
+                saveData();
+                updateUI();
+                showNotification(`✅ Success! +${rewardCoins} Coins credited.`);
+                tg.HapticFeedback.notificationOccurred('success');
+            }).catch((err) => {
+                console.error('AdsGram Error:', err);
+                // Handle different skip results properly
+                if (err && err.description) {
+                    tg.showAlert(`Ad terminated: ${err.description}`);
+                } else {
+                    tg.showAlert('Ad was skipped or could not load. Reward denied.');
+                }
+            });
         }
         
         function switchTab(tabName) {
@@ -703,9 +501,6 @@
             const navItems = document.querySelectorAll('.nav-item');
             if (tabName === 'home') navItems[0].classList.add('active');
             else if (tabName === 'ads') navItems[1].classList.add('active');
-            else if (tabName === 'tasks') navItems[2].classList.add('active');
-            else if (tabName === 'refer') navItems[3].classList.add('active');
-            else if (tabName === 'profile') navItems[4].classList.add('active');
         }
         
         function saveData() {
@@ -713,7 +508,6 @@
             localStorage.setItem(`totalCoins_${userId}`, data.totalCoins);
             localStorage.setItem(`adCount1_${userId}`, data.adCount1);
             localStorage.setItem(`adCount2_${userId}`, data.adCount2);
-            localStorage.setItem(`tasks_${userId}`, JSON.stringify(data.tasks));
         }
         
         function showNotification(msg) {
@@ -723,7 +517,6 @@
             setTimeout(() => n.classList.remove('show'), 2500);
         }
         
-        // Init Load UI 
         updateUI();
     </script>
 </body>
