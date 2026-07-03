@@ -3,153 +3,399 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CoinPulse - Mini Game</title>
+    <title>CoinPulse - Earn Points</title>
     
-    <!-- Telegram Web Apps SDK -->
+    <!-- Telegram SDK & Adsgram SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    
-    <!-- Adsgram SDK -->
     <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 
     <style>
+        :root {
+            --bg-color: #0d0d13;
+            --card-color: #161622;
+            --primary-color: #f39c12;
+            --text-color: #ffffff;
+            --text-muted: #8e8e93;
+        }
+
         body {
             margin: 0;
             padding: 0;
-            background: linear-gradient(135deg, #1e1e2f, #11111d);
-            color: #ffffff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            user-select: none;
+            overflow-x: hidden;
+        }
+
+        /* --- SPLASH SCREEN --- */
+        #splash-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: radial-gradient(circle, #1a1a26 0%, #0d0d13 100%);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
-            overflow: hidden;
-            user-select: none;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
         }
-
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 5px;
-            color: #00d2ff;
-            text-shadow: 0 0 10px rgba(0, 210, 255, 0.5);
-        }
-
-        .score-container {
-            font-size: 1.8rem;
-            font-weight: bold;
-            margin-bottom: 30px;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 10px 20px;
-            border-radius: 20px;
-            box-shadow: inset 0 0 10px rgba(255,255,255,0.05);
-        }
-
-        /* Coin Style */
-        .coin-btn {
-            width: 180px;
-            height: 180px;
-            background: radial-gradient(circle, #ffe066 0%, #f5b041 70%, #d35400 100%);
+        .splash-logo {
+            width: 130px; height: 130px;
+            background: linear-gradient(135deg, #ffe066, #f5b041);
             border-radius: 50%;
-            border: 8px solid #f39c12;
-            box-shadow: 0 0 25px rgba(241, 196, 15, 0.6);
-            cursor: pointer;
-            outline: none;
-            transition: transform 0.1s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 4rem;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 4rem; box-shadow: 0 0 30px rgba(243, 156, 18, 0.4);
         }
+        .splash-title { font-size: 2.2rem; font-weight: bold; margin-top: 20px; color: #fff; }
+        .splash-subtitle { color: var(--primary-color); letter-spacing: 2px; font-size: 0.9rem; margin-top: 5px; }
+        .loading-bar { width: 70%; height: 4px; background: #222; border-radius: 2px; margin-top: 50px; overflow: hidden; }
+        .loading-progress { width: 0%; height: 100%; background: var(--primary-color); transition: width 0.1s linear; }
 
-        .coin-btn:active {
-            transform: scale(0.92);
-        }
+        /* --- MAIN LAYOUT & APP CONTENT --- */
+        .app-container { padding: 20px; padding-bottom: 90px; display: none; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
 
-        /* Ad Button Style */
-        .ad-btn {
-            margin-top: 40px;
-            padding: 15px 30px;
-            font-size: 1rem;
-            font-weight: bold;
-            color: #11111d;
-            background: linear-gradient(90deg, #00ffcc, #00d2ff);
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            box-shadow: 0 5px 15px rgba(0, 210, 255, 0.4);
-            transition: all 0.3s ease;
-        }
+        /* Header Style */
+        .user-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+        .user-avatar { width: 45px; height: 45px; background: #34495e; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; border: 2px solid #2ecc71; }
+        .user-details h3 { margin: 0; font-size: 1rem; }
+        .user-details p { margin: 0; font-size: 0.8rem; color: var(--text-muted); }
 
-        .ad-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 210, 255, 0.6);
-        }
+        /* Balance Card */
+        .balance-card { background: var(--card-color); border-radius: 20px; padding: 25px; text-align: center; border: 1px solid #222; box-shadow: 0 10px 25px rgba(0,0,0,0.3); margin-bottom: 20px; }
+        .balance-title { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+        .balance-amount { font-size: 2.8rem; font-weight: 800; color: var(--primary-color); margin: 10px 0; }
+        .balance-sub { font-size: 0.9rem; color: var(--text-muted); }
 
-        .ad-btn:disabled {
-            background: #555;
-            color: #aaa;
-            box-shadow: none;
-            cursor: not-allowed;
-        }
+        /* Quick Action Grid */
+        .grid-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 25px; }
+        .action-btn { background: var(--card-color); border: 1px solid #222; border-radius: 15px; padding: 12px 5px; text-align: center; color: #fff; font-size: 0.75rem; font-weight: 600; cursor: pointer; }
+        .action-icon { font-size: 1.5rem; margin-bottom: 5px; }
+
+        /* Section Header */
+        .section-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* General Task Cards */
+        .card-list { display: flex; flex-direction: column; gap: 12px; }
+        .task-card { background: var(--card-color); border: 1px solid #222; border-radius: 18px; padding: 16px; display: flex; justify-content: space-between; align-items: center; }
+        .task-info { display: flex; align-items: center; gap: 15px; }
+        .task-icon { font-size: 2rem; }
+        .task-name { font-weight: 600; font-size: 0.95rem; margin-bottom: 4px; }
+        .task-reward { color: var(--primary-color); font-size: 0.85rem; font-weight: bold; }
+        .task-action-btn { background: var(--primary-color); border: none; padding: 10px 18px; border-radius: 20px; color: #000; font-weight: bold; font-size: 0.85rem; cursor: pointer; }
+
+        /* --- BOTTOM NAVIGATION BAR --- */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #07070a; border-top: 1px solid #1c1c24; display: flex; justify-content: space-around; padding: 10px 0; z-index: 1000; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); text-decoration: none; font-size: 0.75rem; font-weight: 500; cursor: pointer; background: none; border: none; }
+        .nav-item.active { color: var(--primary-color); }
+        .nav-icon { font-size: 1.4rem; margin-bottom: 4px; }
+
+        /* Refer Section Extra Styles */
+        .ref-box { background: #1c1c27; border: 1px dashed var(--primary-color); padding: 12px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; margin-top: 15px; font-family: monospace; }
+        .copy-btn { background: var(--primary-color); border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+
     </style>
 </head>
 <body>
 
-    <h1>CoinPulse</h1>
-    <div class="score-container">⚡ <span id="score">0</span> Coins</div>
+    <!-- 1. SPLASH SCREEN -->
+    <div id="splash-screen">
+        <div class="splash-logo">⚡</div>
+        <div class="splash-title">CoinPulse</div>
+        <div class="splash-subtitle">EARN PULSE POINTS</div>
+        <div class="loading-bar">
+            <div class="loading-progress" id="progress"></div>
+        </div>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 15px;" id="splash-status">Loading Complete</p>
+    </div>
 
-    <!-- Main Clicker Button -->
-    <button class="coin-btn" id="clickBtn">🪙</button>
+    <!-- MAIN APP WRAPPER -->
+    <div class="app-container" id="app">
+        
+        <!-- TOP PROFILE HEADER -->
+        <div class="user-header">
+            <div class="user-avatar" id="user-avatar">UN</div>
+            <div class="user-details">
+                <h3 id="user-name">Welcome Back</h3>
+                <p id="user-handle">@username</p>
+            </div>
+        </div>
 
-    <!-- Adsgram Button -->
-    <button class="ad-btn" id="adBtn">🎬 Watch Ad (+100 Bonus)</button>
+        <!-- ================= TAB 1: HOME ================= -->
+        <div id="tab-home" class="tab-content active">
+            <div class="balance-card">
+                <div class="balance-title">YOUR BALANCE</div>
+                <div class="balance-amount"><span id="main-balance">0</span> ⚡</div>
+                <div class="balance-sub">≈ <span id="usdt-balance">0.00</span> USDT</div>
+            </div>
+
+            <div class="grid-actions">
+                <div class="action-btn" onclick="alert('Daily Bonus Claimed! +10 ⚡')"><div class="action-icon">🎁</div>Daily Bonus</div>
+                <div class="action-btn" onclick="alert('Feature coming soon!')"><div class="action-icon">⚡</div>Promo Code</div>
+                <div class="action-btn" onclick="switchTab('profile')"><div class="action-icon">💼</div>Withdraw</div>
+                <div class="action-btn" onclick="alert('Leaderboard updating...')"><div class="action-icon">🏆</div>Rank</div>
+            </div>
+
+            <div class="section-title">Earn More</div>
+            <div class="card-list">
+                <div class="task-card" onclick="switchTab('ads')">
+                    <div class="task-info">
+                        <div class="task-icon">🎬</div>
+                        <div>
+                            <div class="task-name">Watch Video Ads</div>
+                            <div class="task-reward">Up to 50 ⚡</div>
+                        </div>
+                    </div>
+                    ➔
+                </div>
+                <div class="task-card" onclick="switchTab('tasks')">
+                    <div class="task-info">
+                        <div class="task-icon">✅</div>
+                        <div>
+                            <div class="task-name">Complete Tasks</div>
+                            <div class="task-reward">20 - 100 ⚡</div>
+                        </div>
+                    </div>
+                    ➔
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 2: ADS ================= -->
+        <div id="tab-ads" class="tab-content">
+            <div class="section-title">Watch Ads & Earn</div>
+            <div class="card-list">
+                
+                <!-- Ad Unit 1 -->
+                <div class="task-card">
+                    <div class="task-info">
+                        <div class="task-icon">📺</div>
+                        <div>
+                            <div class="task-name">Adsgram Reward Ad</div>
+                            <div class="task-reward">+10 Pulse Points per ad</div>
+                        </div>
+                    </div>
+                    <button class="task-action-btn" id="adBtn" onclick="watchAd()">Watch Ad</button>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ================= TAB 3: TASKS ================= -->
+        <div id="tab-tasks" class="tab-content">
+            <div class="section-title">Community Tasks</div>
+            <div class="card-list">
+                <div class="task-card">
+                    <div class="task-info">
+                        <div class="task-icon">📢</div>
+                        <div>
+                            <div class="task-name">Join Telegram Channel</div>
+                            <div class="task-reward">+50 ⚡</div>
+                        </div>
+                    </div>
+                    <button class="task-action-btn" onclick="completeTask(this, 50, 'https://t.me/your_channel')">Open</button>
+                </div>
+                <div class="task-card">
+                    <div class="task-info">
+                        <div class="task-icon">💬</div>
+                        <div>
+                            <div class="task-name">Join Group Chat</div>
+                            <div class="task-reward">+30 ⚡</div>
+                        </div>
+                    </div>
+                    <button class="task-action-btn" onclick="completeTask(this, 30, 'https://t.me/your_group')">Open</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 4: REFER ================= -->
+        <div id="tab-refer" class="tab-content">
+            <div class="section-title">Refer & Earn</div>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Earn 50 Pulse points for every friend you invite!</p>
+            
+            <div class="ref-box">
+                <span id="ref-url">https://t.me/your_bot/app?startapp=ref</span>
+                <button class="copy-btn" onclick="copyRef()">Copy</button>
+            </div>
+        </div>
+
+        <!-- ================= TAB 5: PROFILE ================= -->
+        <div id="tab-profile" class="tab-content">
+            <div class="section-title">My Account</div>
+            <div class="balance-card" style="text-align: left; padding: 15px;">
+                <p style="margin: 5px 0;"><strong>User ID:</strong> <span id="prof-id">6202492881</span></p>
+                <p style="margin: 5px 0;"><strong>Status:</strong> Premium Active</p>
+            </div>
+            
+            <div class="section-title" style="margin-top: 20px;">Wallet Settings</div>
+            <div class="task-card">
+                <div class="task-info">
+                    <div class="task-icon">🪙</div>
+                    <div>
+                        <div class="task-name">TON / BEP20 Wallet</div>
+                        <div class="task-reward" id="wallet-status">Not Connected</div>
+                    </div>
+                </div>
+                <button class="task-action-btn" onclick="connectWallet()">Connect</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- BOTTOM TAB NAVIGATION -->
+    <div class="bottom-nav">
+        <button class="nav-item active" onclick="switchTab('home', this)"><div class="nav-icon">🏠</div>Home</button>
+        <button class="nav-item" onclick="switchTab('ads', this)"><div class="nav-icon">🎬</div>Ads</button>
+        <button class="nav-item" onclick="switchTab('tasks', this)"><div class="nav-icon">✅</div>Tasks</button>
+        <button class="nav-item" onclick="switchTab('refer', this)"><div class="nav-icon">👥</div>Refer</button>
+        <button class="nav-item" onclick="switchTab('profile', this)"><div class="nav-icon">👤</div>Profile</button>
+    </div>
 
     <script>
-        // Telegram WebApp initialize කිරීම
+        // Initialize Telegram WebApp
         const tg = window.Telegram.WebApp;
-        tg.expand(); // Screen එක full size කරන්න
+        tg.expand();
 
-        let coins = 0;
-        const scoreDisplay = document.getElementById('score');
-        const clickBtn = document.getElementById('clickBtn');
-        const adBtn = document.getElementById('adBtn');
+        let totalBalance = 0;
 
-        // Click කරද්දී coin එකතු වීම
-        clickBtn.addEventListener('click', () => {
-            coins += 1;
-            scoreDisplay.innerText = coins;
-            
-            // Haptic Feedback (Phone එක vibration වීම - Telegram එක ඇතුලේ විතරයි වැඩ කරන්නේ)
-            if (tg.HapticFeedback) {
-                tg.HapticFeedback.impactOccurred('light');
+        // Fake Loader Script for Splash Screen
+        window.addEventListener('DOMContentLoaded', () => {
+            let progress = 0;
+            const progressEl = document.getElementById('progress');
+            const splashEl = document.getElementById('splash-screen');
+            const appEl = document.getElementById('app');
+
+            // Load Local Balance
+            if(localStorage.getItem('pulse_bal')) {
+                totalBalance = parseInt(localStorage.getItem('pulse_bal'));
+                updateBalanceUI();
             }
+
+            // Load User Telegram Info
+            if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                const user = tg.initDataUnsafe.user;
+                document.getElementById('user-name').innerText = `${user.first_name} ${user.last_name || ''}`;
+                document.getElementById('user-handle').innerText = user.username ? `@${user.username}` : `ID: ${user.id}`;
+                document.getElementById('prof-id').innerText = user.id;
+                document.getElementById('user-avatar').innerText = user.first_name.substring(0, 2).toUpperCase();
+                document.getElementById('ref-url').innerText = `https://t.me/coinpulse_bot/play?startapp=ref_${user.id}`;
+            }
+
+            const interval = setInterval(() => {
+                progress += 5;
+                progressEl.style.width = progress + '%';
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    splashEl.style.opacity = '0';
+                    setTimeout(() => {
+                        splashEl.style.display = 'none';
+                        appEl.style.display = 'block';
+                    }, 500);
+                }
+            }, 100);
         });
 
-        // Adsgram Initialize කිරීම (ඔයාගේ Block ID එක ඇතුලත් කර ඇත)
+        // Tab Switching Logic
+        function switchTab(tabId, buttonEl) {
+            // Hide all tabs
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(c => c.classList.remove('active'));
+            
+            // Show active tab
+            document.getElementById('tab-' + tabId).classList.add('active');
+
+            // Update Active Nav Item Style
+            if(buttonEl) {
+                const navItems = document.querySelectorAll('.nav-item');
+                navItems.forEach(item => item.classList.remove('active'));
+                buttonEl.classList.add('active');
+            }
+        }
+
+        // --- ADSGRAM ADS INTEGRATION ---
+        // ඔයාගේ Block ID එක මෙතනට දාලා තියෙන්නේ
         const AdController = window.Adsgram.init({ blockId: "37199" });
 
-        // Ad Button එක click කරද්දී ad එක play කිරීම
-        adBtn.addEventListener('click', () => {
-            adBtn.disabled = true; // Ad එක loading වෙද්දී button එක disable කරනවා
-            adBtn.innerText = "Loading Ad...";
+        function watchAd() {
+            const adBtn = document.getElementById('adBtn');
+            adBtn.disabled = true;
+            adBtn.innerText = "Loading...";
 
             AdController.show().then((result) => {
-                // Ad එක සාර්ථකව බලා ඉවර වුනොත් (Reward user)
-                coins += 100;
-                scoreDisplay.innerText = coins;
-                alert("🎉 Congratulations! You received 100 Bonus Coins!");
-                resetAdButton();
-            }).catch((result) => {
-                // Ad එකේ මොකක් හරි error එකක් ආවොත් හෝ user ad එක skip කලොත්
-                console.error("Adsgram Error:", result);
-                alert("⚠️ Ad not available or skipped. Please try again later.");
-                resetAdButton();
+                // Ad completed successfully
+                addCoins(10);
+                alert("🎉 Ad watched successfully! You earned +10 ⚡");
+                triggerHaptic();
+                cooldownAdButton();
+            }).catch((err) => {
+                // Ad failed or skipped
+                alert("⚠️ Ad not available or skipped. Try again later.");
+                adBtn.disabled = false;
+                adBtn.innerText = "Watch Ad";
             });
-        });
+        }
 
-        function resetAdButton() {
-            adBtn.disabled = false;
-            adBtn.innerText = "🎬 Watch Ad (+100 Bonus)";
+        function cooldownAdButton() {
+            const adBtn = document.getElementById('adBtn');
+            let timeLeft = 30; // 30 seconds cooldown
+            adBtn.disabled = true;
+
+            const timer = setInterval(() => {
+                timeLeft--;
+                adBtn.innerText = `⏳ ${timeLeft}s`;
+                if(timeLeft <= 0) {
+                    clearInterval(timer);
+                    adBtn.disabled = false;
+                    adBtn.innerText = "Watch Ad";
+                }
+            }, 1000);
+        }
+
+        // --- EXTRA GAME LOGIC ---
+        function addCoins(amount) {
+            totalBalance += amount;
+            localStorage.setItem('pulse_bal', totalBalance);
+            updateBalanceUI();
+        }
+
+        function updateBalanceUI() {
+            document.getElementById('main-balance').innerText = totalBalance;
+            // Fake USDT Valuation (100 coins = 1 USDT)
+            document.getElementById('usdt-balance').innerText = (totalBalance * 0.01).toFixed(2);
+        }
+
+        function completeTask(btn, reward, url) {
+            window.open(url, '_blank');
+            btn.innerText = "Verifying...";
+            setTimeout(() => {
+                btn.innerText = "Claimed";
+                btn.disabled = true;
+                btn.style.background = "#555";
+                addCoins(reward);
+                triggerHaptic();
+            }, 4000);
+        }
+
+        function copyRef() {
+            const urlText = document.getElementById('ref-url').innerText;
+            navigator.clipboard.writeText(urlText);
+            alert("🔗 Referral link copied to clipboard!");
+        }
+
+        function connectWallet() {
+            let address = prompt("Enter your TON/BEP20 Wallet Address:");
+            if(address) {
+                document.getElementById('wallet-status').innerText = address.substring(0,6) + "..." + address.substr(-4);
+                alert("Wallet connected successfully!");
+            }
+        }
+
+        function triggerHaptic() {
+            if (tg.HapticFeedback) {
+                tg.HapticFeedback.impactOccurred('medium');
+            }
         }
     </script>
 </body>
