@@ -250,7 +250,6 @@
             width: 90%;
             border: 1px solid rgba(255,255,255,0.1);
             position: relative;
-            z-index: 10000;
         }
         .ad-spinner {
             font-size: 48px;
@@ -283,38 +282,40 @@
             transition: width 0.3s;
         }
 
-        /* ===== CLAIM BUTTON - FIXED ===== */
-        #adClaimBtn {
+        /* ===== CLAIM BUTTON - ULTIMATE FIX ===== */
+        #claimBtn {
             background: linear-gradient(135deg, #f7931a, #f5a623);
-            border: 2px solid #f7931a;
+            border: none;
             color: #fff;
-            padding: 16px 32px;
+            padding: 18px 32px;
             border-radius: 30px;
-            font-size: 20px;
+            font-size: 22px;
             font-weight: 800;
             cursor: pointer;
-            margin-top: 12px;
+            margin-top: 16px;
             width: 100%;
             display: none;
-            transition: all 0.2s;
             position: relative;
             z-index: 99999;
             pointer-events: auto !important;
             touch-action: manipulation !important;
             -webkit-tap-highlight-color: rgba(247,147,26,0.3);
+            box-shadow: 0 4px 20px rgba(247,147,26,0.3);
+            transition: all 0.2s;
+            letter-spacing: 1px;
         }
-        #adClaimBtn.show {
+        #claimBtn.show {
             display: block !important;
         }
-        #adClaimBtn:active {
+        #claimBtn:active {
             transform: scale(0.95);
-            background: linear-gradient(135deg, #f5a623, #f7931a);
         }
-        #adClaimBtn:hover {
-            opacity: 0.9;
+        #claimBtn.loading {
+            opacity: 0.6;
+            pointer-events: none;
         }
 
-        #adCloseBtn {
+        #closeBtn {
             background: rgba(255,255,255,0.1);
             border: none;
             color: #8899bb;
@@ -384,7 +385,7 @@
         </div>
 
         <div class="quick-actions">
-            <div class="quick-action" onclick="showSection('farm')">
+            <div class="quick-action" onclick="showFarm()">
                 <span class="icon">🌾</span>
                 <span class="name">My Farm</span>
             </div>
@@ -427,7 +428,7 @@
         </div>
     </div>
 
-    <!-- AD OVERLAY -->
+    <!-- ===== AD OVERLAY ===== -->
     <div class="ad-overlay" id="adOverlay">
         <div class="ad-container">
             <div class="ad-spinner" id="adSpinner">⏳</div>
@@ -435,17 +436,18 @@
             <div class="ad-progress">
                 <div class="ad-progress-fill" id="adProgressFill"></div>
             </div>
-            <!-- CLAIM BUTTON - මෙය click වෙනවා -->
-            <button id="adClaimBtn">💰 Claim 0.0005 USDT</button>
-            <button id="adCloseBtn" onclick="closeAd()">✕ Close</button>
+            <!-- ✅ CLAIM BUTTON - FIXED -->
+            <button id="claimBtn">💰 Claim 0.0005 USDT</button>
+            <button id="closeBtn">✕ Close</button>
         </div>
     </div>
 
     <script>
         // ============================================================
-        // COINPULSE FARM - CLAIM BUTTON FIXED
+        // COINPULSE FARM - COMPLETE FIXED VERSION
         // ============================================================
 
+        // ===== CONFIG =====
         const ADSGRAM_BLOCK_ID = '36912';
 
         // ===== STATE =====
@@ -487,7 +489,8 @@
         const adStatus = $('adStatus');
         const adSpinner = $('adSpinner');
         const adProgressFill = $('adProgressFill');
-        const adClaimBtn = $('adClaimBtn');
+        const claimBtn = $('claimBtn');
+        const closeBtn = $('closeBtn');
 
         // ===== TELEGRAM =====
         let tg = window.Telegram?.WebApp || {
@@ -504,7 +507,7 @@
         }
 
         // ============================================================
-        // ADSGRAM
+        // ===== ADSGRAM =====
         // ============================================================
 
         let adController = null;
@@ -547,13 +550,13 @@
         }
 
         // ============================================================
-        // AD COMPLETE
+        // ===== AD COMPLETE =====
         // ============================================================
 
         function handleAdComplete() {
             if (state.adCompleted) return;
             
-            console.log('✅ Ad completed! Showing claim button...');
+            console.log('✅ Ad completed!');
             state.adCompleted = true;
             
             if (state.adTimer) {
@@ -566,25 +569,24 @@
             adSpinner.style.animation = 'none';
             adProgressFill.style.width = '100%';
             
-            // CLAIM BUTTON එක show කරන්න
-            adClaimBtn.textContent = '💰 Claim ' + state.pendingReward.toFixed(4) + ' USDT';
-            adClaimBtn.className = 'show';
-            adClaimBtn.style.display = 'block';
-            adClaimBtn.style.pointerEvents = 'auto';
+            // ✅ Claim button එක show කරන්න
+            claimBtn.textContent = '💰 Claim ' + state.pendingReward.toFixed(4) + ' USDT';
+            claimBtn.className = 'show';
+            claimBtn.style.display = 'block';
+            claimBtn.style.pointerEvents = 'auto';
             
-            console.log('🔘 Claim button is now visible and clickable!');
-            console.log('🔘 Button text:', adClaimBtn.textContent);
+            console.log('🔘 Claim button is now visible!');
             
             tg.HapticFeedback?.impactOccurred('success');
         }
 
         // ============================================================
-        // SHOW AD
+        // ===== SHOW AD =====
         // ============================================================
 
         function showAd(rewardAmount) {
             if (state.isAdPlaying) {
-                showNotification('⏳ Please wait for current ad');
+                showNotification('⏳ Please wait');
                 return;
             }
 
@@ -600,8 +602,8 @@
             adSpinner.textContent = '⏳';
             adSpinner.style.animation = 'spin 1s linear infinite';
             adProgressFill.style.width = '0%';
-            adClaimBtn.style.display = 'none';
-            adClaimBtn.className = '';
+            claimBtn.style.display = 'none';
+            claimBtn.className = '';
 
             try {
                 if (adController) {
@@ -639,7 +641,7 @@
         }
 
         // ============================================================
-        // SIMULATED AD
+        // ===== SIMULATED AD =====
         // ============================================================
 
         function showSimulatedAd() {
@@ -666,16 +668,14 @@
         }
 
         // ============================================================
-        // CLAIM AD REWARD - මෙය හරියටම click වෙනවා
+        // ===== CLAIM AD REWARD - FIXED =====
         // ============================================================
 
         function claimAdReward() {
             console.log('🖱️ Claim button clicked!');
-            console.log('📊 Ad completed:', state.adCompleted);
-            console.log('💰 Pending reward:', state.pendingReward);
             
             if (!state.adCompleted) {
-                showNotification('⏳ Please wait for ad to complete');
+                showNotification('⏳ Please wait');
                 return;
             }
 
@@ -684,17 +684,16 @@
             state.totalEarned += reward;
             state.gram += Math.floor(reward * 10);
 
-            console.log('💰 Claimed reward:', reward);
-            console.log('💵 New USDT balance:', state.usdt);
+            console.log('💰 Claimed:', reward);
             
             tg.HapticFeedback?.impactOccurred('success');
             updateUI();
             closeAd();
-            showNotification('✅ +' + reward.toFixed(4) + ' USDT earned from ad!');
+            showNotification('✅ +' + reward.toFixed(4) + ' USDT earned!');
         }
 
         // ============================================================
-        // CLOSE AD
+        // ===== CLOSE AD =====
         // ============================================================
 
         function closeAd() {
@@ -702,8 +701,8 @@
             adOverlay.className = 'ad-overlay';
             state.isAdPlaying = false;
             state.adCompleted = false;
-            adClaimBtn.style.display = 'none';
-            adClaimBtn.className = '';
+            claimBtn.style.display = 'none';
+            claimBtn.className = '';
             
             if (state.adTimer) {
                 clearInterval(state.adTimer);
@@ -714,7 +713,7 @@
         }
 
         // ============================================================
-        // SAVE/LOAD
+        // ===== SAVE/LOAD =====
         // ============================================================
 
         function saveState() {
@@ -751,7 +750,7 @@
         }
 
         // ============================================================
-        // UPDATE UI
+        // ===== UPDATE UI =====
         // ============================================================
 
         function updateUI() {
@@ -782,7 +781,7 @@
         }
 
         // ============================================================
-        // DAILY REWARD
+        // ===== DAILY REWARD =====
         // ============================================================
 
         function checkDailyReset() {
@@ -805,7 +804,7 @@
 
         function claimDaily() {
             if (state.dailyClaimed) {
-                showNotification('✅ Already claimed today!');
+                showNotification('✅ Already claimed!');
                 return;
             }
 
@@ -819,11 +818,11 @@
 
             tg.HapticFeedback?.impactOccurred('success');
             updateUI();
-            showNotification('✅ +' + reward.toFixed(3) + ' USDT claimed! 🔥 ' + state.streak + ' day streak!');
+            showNotification('✅ +' + reward.toFixed(3) + ' USDT! 🔥 ' + state.streak + ' day streak!');
         }
 
         // ============================================================
-        // STREAK
+        // ===== STREAK =====
         // ============================================================
 
         function checkStreak() {
@@ -839,12 +838,12 @@
         }
 
         // ============================================================
-        // FARM
+        // ===== FARM =====
         // ============================================================
 
         function claimFarm() {
             if (state.farmClaimed) {
-                showNotification('✅ Already claimed! Wait for next cycle.');
+                showNotification('✅ Already claimed!');
                 return;
             }
 
@@ -857,7 +856,7 @@
 
             tg.HapticFeedback?.impactOccurred('success');
             updateUI();
-            showNotification('✅ +' + reward.toFixed(4) + ' USDT farm income claimed!');
+            showNotification('✅ +' + reward.toFixed(4) + ' USDT!');
         }
 
         setInterval(function() {
@@ -873,7 +872,7 @@
         }, 60000);
 
         // ============================================================
-        // UNLOCK
+        // ===== UNLOCK =====
         // ============================================================
 
         function unlockFarm() {
@@ -884,7 +883,7 @@
 
             const cost = 5.00;
             if (state.usdt < cost) {
-                showNotification('❌ Need $' + cost + ' USDT to unlock!');
+                showNotification('❌ Need $' + cost + ' USDT');
                 return;
             }
 
@@ -895,15 +894,15 @@
 
             tg.HapticFeedback?.impactOccurred('success');
             updateUI();
-            showNotification('🔓 Farm unlocked! +$0.25/day income!');
+            showNotification('🔓 Farm unlocked! +$0.25/day!');
         }
 
         // ============================================================
-        // TASKS
+        // ===== TASKS =====
         // ============================================================
 
         function showTasks() {
-            showNotification('📋 TASKS:\n📺 Watch Ad → +0.0005 USDT\n👥 Refer 5 friends → +0.01 USDT\n🌾 Farm 10 hours → +0.005 USDT');
+            showNotification('📋 TASKS:\n📺 Watch Ad → +0.0005 USDT');
             
             if (!state.isAdPlaying) {
                 var watchAd = confirm('📺 Watch ad for +0.0005 USDT?');
@@ -913,29 +912,16 @@
             }
         }
 
-        // ============================================================
-        // WALLET
-        // ============================================================
+        function showFarm() {
+            showNotification('🌾 Farm section');
+        }
 
         function showWallet() {
-            showNotification('💳 WALLET\nUSDT: $' + state.usdt.toFixed(4) + '\nGRAM: ' + state.gram + '\nTotal Earned: $' + state.totalEarned.toFixed(4));
+            showNotification('💳 USDT: $' + state.usdt.toFixed(4) + '\n🌾 GRAM: ' + state.gram);
         }
 
         // ============================================================
-        // SECTIONS
-        // ============================================================
-
-        function showSection(section) {
-            var names = {
-                'farm': '🌾 Farm',
-                'tasks': '📋 Tasks',
-                'wallet': '💳 Wallet'
-            };
-            showNotification('📌 ' + (names[section] || section) + ' section');
-        }
-
-        // ============================================================
-        // REFERRAL
+        // ===== REFERRAL =====
         // ============================================================
 
         function shareReferral() {
@@ -945,24 +931,24 @@
             if (navigator.share) {
                 navigator.share({
                     title: '🌾 Join CoinPulse Farm!',
-                    text: 'Earn USDT by farming! Use my referral:',
+                    text: 'Earn USDT by farming!',
                     url: link
                 }).then(function() {
                     state.usdt += 0.005;
                     updateUI();
-                    showNotification('👥 +0.005 USDT referral bonus!');
+                    showNotification('👥 +0.005 USDT!');
                 }).catch(function() {});
             } else {
                 navigator.clipboard?.writeText(link).then(function() {
-                    showNotification('✅ Referral link copied!');
+                    showNotification('✅ Link copied!');
                 }).catch(function() {
-                    prompt('Copy this link:', link);
+                    prompt('Copy link:', link);
                 });
             }
         }
 
         // ============================================================
-        // NOTIFICATION
+        // ===== NOTIFICATION =====
         // ============================================================
 
         function showNotification(message) {
@@ -971,40 +957,45 @@
 
             var notif = document.createElement('div');
             notif.className = 'notification';
-            notif.style.whiteSpace = 'pre-wrap';
-            notif.style.textAlign = 'center';
             notif.textContent = message;
             document.body.appendChild(notif);
             setTimeout(function() {
                 if (notif.parentNode) notif.remove();
-            }, 4000);
+            }, 3500);
         }
 
         // ============================================================
-        // EVENT LISTENERS
+        // ===== EVENT LISTENERS =====
         // ============================================================
 
+        // ✅ Claim Button - අවසාන විසඳුම
+        claimBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('🖱️ Claim clicked via listener');
+            claimAdReward();
+        });
+
+        // ✅ Touch event - මෙයත් එකතු කරමු
+        claimBtn.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            console.log('🖱️ Claim touched');
+            claimAdReward();
+        }, { passive: false });
+
+        // ✅ Close Button
+        closeBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            closeAd();
+        });
+
+        // ✅ Daily Claim
         dailyClaimBtn.addEventListener('click', claimDaily);
         claimFarmBtn.addEventListener('click', claimFarm);
         unlockBtn.addEventListener('click', unlockFarm);
 
-        // ===== CLAIM BUTTON - මෙය හරියටම click වෙනවා =====
-        adClaimBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            console.log('🖱️ Claim button clicked via listener!');
-            claimAdReward();
-        });
-
-        // Touch event එකත් add කරන්න
-        adClaimBtn.addEventListener('touchstart', function(e) {
-            e.preventDefault();
-            console.log('🖱️ Claim button touched!');
-            claimAdReward();
-        }, { passive: false });
-
         // ============================================================
-        // BACKGROUND FARM INCOME
+        // ===== BACKGROUND INCOME =====
         // ============================================================
 
         setInterval(function() {
@@ -1018,7 +1009,7 @@
         }, 1000);
 
         // ============================================================
-        // INIT
+        // ===== INIT =====
         // ============================================================
 
         loadState();
@@ -1040,9 +1031,9 @@
 
         console.log('============================================');
         console.log('🌾 CoinPulse Farm Loaded!');
-        console.log('📺 Adsgram Block ID:', ADSGRAM_BLOCK_ID);
-        console.log('🔘 Claim button will be clickable after ad completes');
+        console.log('📺 Block ID:', ADSGRAM_BLOCK_ID);
+        console.log('🔘 Claim button is CLICKABLE!');
         console.log('============================================');
     </script>
 </body>
-</html>
+</html> 
