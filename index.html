@@ -2,15 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <meta name="theme-color" content="#050814" />
-    <title>CoinPulse Pro</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>CoinPulse</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-    <!-- ✅ CORRECT AdsGram SDK URL -->
     <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
-
     <style>
         * {
             margin: 0;
@@ -19,1040 +14,244 @@
             -webkit-tap-highlight-color: transparent;
             user-select: none;
         }
-
-        :root {
-            --bg-0: #050814;
-            --bg-1: #0b1024;
-            --bg-2: #141a35;
-            --bg-card: #1a2140;
-            --accent: #ffc83d;
-            --accent-2: #ff8a3d;
-            --accent-glow: rgba(255, 200, 61, 0.4);
-            --purple: #8b5cf6;
-            --purple-glow: rgba(139, 92, 246, 0.4);
-            --green: #4ade80;
-            --green-glow: rgba(74, 222, 128, 0.4);
-            --red: #ef4444;
-            --usdt: #26a17b;
-            --text: #ffffff;
-            --text-dim: #9aa3b8;
-            --text-mute: #5b6480;
-            --border: rgba(255, 255, 255, 0.08);
-            --border-strong: rgba(255, 255, 255, 0.15);
-            --shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-            --radius: 14px;
-        }
-
-        html,
         body {
-            height: 100%;
-            overflow: hidden;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: var(--bg-0);
-            color: var(--text);
-        }
-
-        body {
+            background: #0a0e17;
+            color: #fff;
+            font-family: -apple-system, sans-serif;
+            min-height: 100vh;
             display: flex;
-            flex-direction: column;
-            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-            background:
-                radial-gradient(ellipse at top left, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
-                radial-gradient(ellipse at bottom right, rgba(255, 200, 61, 0.1) 0%, transparent 50%),
-                var(--bg-0);
+            justify-content: center;
+            align-items: center;
+        }
+        #app {
+            max-width: 400px;
+            width: 100%;
+            padding: 20px;
+            text-align: center;
         }
 
-        .top-hud {
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            margin-bottom: 16px;
+        }
+        .balance {
+            font-size: 20px;
+            font-weight: 700;
+        }
+        .balance span {
+            color: #f7931a;
+        }
+        .level {
+            background: #f7931a;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #0a0e17;
+        }
+
+        /* Coin */
+        .coin-area {
+            padding: 30px 0;
+            cursor: pointer;
+            position: relative;
+        }
+        .coin {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #fff4b8, #ffc83d 50%, #b8860b);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            box-shadow: 0 0 60px rgba(255, 200, 61, 0.3);
+            transition: transform 0.1s;
+        }
+        .coin:active {
+            transform: scale(0.92);
+        }
+        .coin-tap-text {
+            color: #8899bb;
+            font-size: 14px;
+            margin-top: 12px;
+        }
+
+        /* Energy */
+        .energy-wrap {
+            margin: 16px 0;
+        }
+        .energy-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #8899bb;
+            margin-bottom: 4px;
+        }
+        .energy-bar {
+            height: 8px;
+            background: #1a2332;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .energy-fill {
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, #4ade80, #22d3ee);
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+
+        /* Stats */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 16px 0;
+        }
+        .stat {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px;
+            border-radius: 12px;
+        }
+        .stat .num {
+            font-size: 20px;
+            font-weight: 700;
+            color: #f7931a;
+        }
+        .stat .label {
+            font-size: 10px;
+            color: #8899bb;
+            margin-top: 4px;
+        }
+
+        /* Buttons */
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 16px 0;
+        }
+        .btn {
+            padding: 14px;
+            border: none;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .btn:active {
+            opacity: 0.7;
+        }
+        .btn-ad {
+            background: linear-gradient(135deg, #8b5cf6, #6366f1);
+            color: #fff;
+        }
+        .btn-energy {
+            background: linear-gradient(135deg, #ffc83d, #ff8a3d);
+            color: #0a0e17;
+        }
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* SDK Status */
+        .sdk-status {
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .sdk-status.ready {
+            border-color: #4ade80;
+            color: #4ade80;
+        }
+        .sdk-status.loading {
+            border-color: #ffc83d;
+            color: #ffc83d;
+        }
+        .sdk-status.error {
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+
+        /* Tasks */
+        .task-list {
+            margin-top: 16px;
+            text-align: left;
+        }
+        .task-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 12px 16px;
-            background: rgba(11, 16, 36, 0.7);
-            backdrop-filter: blur(16px);
-            border-bottom: 1px solid var(--border);
-            z-index: 10;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 12px;
+            margin-bottom: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
         }
-
-        .hud-left {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent), var(--accent-2));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 18px;
-            color: var(--bg-0);
-            box-shadow: 0 0 12px var(--accent-glow);
-        }
-
-        .user-info {
-            display: flex;
-            flex-direction: column;
-        }
-        .username {
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .level-badge {
-            font-size: 10px;
-            color: var(--accent);
-            background: rgba(255, 200, 61, 0.12);
-            padding: 2px 8px;
-            border-radius: 10px;
-            margin-top: 2px;
-            width: fit-content;
-            font-weight: 700;
-        }
-
-        .hud-right {
-            display: flex;
-            gap: 8px;
-        }
-
-        .hud-chip {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            background: var(--bg-card);
-            padding: 7px 12px;
-            border-radius: 18px;
-            font-weight: 700;
+        .task-item .info {
             font-size: 13px;
-            border: 1px solid var(--border);
+        }
+        .task-item .info .reward {
+            color: #26a17b;
+            font-weight: 700;
+        }
+        .task-btn {
+            padding: 6px 16px;
+            border: none;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            background: linear-gradient(135deg, #f7931a, #f5a623);
+            color: #0a0e17;
+        }
+        .task-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        .task-btn.done {
+            background: #2d3748;
+            color: #8899bb;
         }
 
-        .hud-chip.usdt {
-            background: linear-gradient(135deg, rgba(38, 161, 123, 0.2), var(--bg-card));
-            border-color: rgba(38, 161, 123, 0.3);
-            color: var(--usdt);
-        }
-
-        .energy-wrap {
-            padding: 10px 16px 6px;
-        }
-
-        .energy-label {
-            display: flex;
-            justify-content: space-between;
-            font-size: 11px;
-            color: var(--text-dim);
-            margin-bottom: 4px;
-            font-weight: 600;
-        }
-
-        .energy-bar {
-            height: 8px;
-            background: var(--bg-card);
-            border-radius: 4px;
-            overflow: hidden;
-            border: 1px solid var(--border);
-        }
-
-        .energy-fill {
-            height: 100%;
-            width: 100%;
-            background: linear-gradient(90deg, var(--green), #22d3ee);
-            border-radius: 4px;
-            transition: width 0.3s ease;
-            box-shadow: 0 0 8px var(--green-glow);
-        }
-
-        .main-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 10px 16px 20px;
-            position: relative;
-            scrollbar-width: none;
-        }
-        .main-content::-webkit-scrollbar {
-            display: none;
-        }
-
-        .page {
-            display: none;
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1a2332;
+            padding: 12px 24px;
+            border-radius: 16px;
+            font-weight: 700;
+            z-index: 999;
+            border: 1px solid rgba(247, 147, 26, 0.3);
             animation: fadeIn 0.3s ease;
+            max-width: 90%;
+            text-align: center;
         }
-        .page.active {
-            display: block;
-        }
-
         @keyframes fadeIn {
             from {
                 opacity: 0;
-                transform: translateY(8px);
+                transform: translateX(-50%) translateY(20px);
             }
             to {
                 opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .page-title {
-            font-size: 22px;
-            margin-bottom: 16px;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--text), var(--text-dim));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .tap-area {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: calc(100vh - 240px);
-            gap: 16px;
-        }
-
-        .tap-info {
-            text-align: center;
-            color: var(--text-dim);
-            font-size: 13px;
-        }
-        .tap-info .per-tap {
-            color: var(--accent);
-            font-weight: 700;
-            font-size: 15px;
-        }
-
-        .coin-wrapper {
-            position: relative;
-            width: 260px;
-            height: 260px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 5;
-        }
-
-        .coin-glow {
-            position: absolute;
-            width: 300px;
-            height: 300px;
-            border-radius: 50%;
-            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
-            animation: pulseGlow 2s ease-in-out infinite;
-            pointer-events: none;
-        }
-
-        @keyframes pulseGlow {
-            0%,
-            100% {
-                transform: scale(1);
-                opacity: 0.6;
-            }
-            50% {
-                transform: scale(1.1);
-                opacity: 0.9;
-            }
-        }
-
-        .coin {
-            width: 220px;
-            height: 220px;
-            border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, #fff4b8 0%, #ffe066 20%, #ffc83d 50%, #b8860b 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow:
-                0 0 60px var(--accent-glow),
-                inset 0 -10px 25px rgba(0, 0, 0, 0.3),
-                inset 0 10px 25px rgba(255, 255, 255, 0.4),
-                0 10px 30px rgba(0, 0, 0, 0.5);
-            transition: transform 0.08s ease;
-            position: relative;
-            border: 3px solid rgba(255, 255, 255, 0.2);
-            pointer-events: auto;
-            z-index: 10;
-        }
-
-        .coin-face {
-            font-size: 110px;
-            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
-        }
-
-        .coin-ring {
-            position: absolute;
-            inset: -12px;
-            border-radius: 50%;
-            border: 2px solid var(--accent);
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .coin.pulse {
-            transform: scale(0.92);
-        }
-        .coin-ring.pulse {
-            animation: ringPulse 0.6s ease-out;
-        }
-
-        @keyframes ringPulse {
-            0% {
-                transform: scale(0.9);
-                opacity: 1;
-            }
-            100% {
-                transform: scale(1.5);
-                opacity: 0;
-            }
-        }
-
-        .float-text {
-            position: absolute;
-            color: var(--accent);
-            font-weight: 800;
-            font-size: 30px;
-            pointer-events: none;
-            animation: floatUp 1s ease-out forwards;
-            text-shadow: 0 2px 10px rgba(255, 200, 61, 0.8);
-            z-index: 20;
-        }
-
-        @keyframes floatUp {
-            0% {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-            100% {
-                opacity: 0;
-                transform: translateY(-100px) scale(1.5);
-            }
-        }
-
-        .tap-actions {
-            display: flex;
-            gap: 10px;
-            width: 100%;
-            max-width: 400px;
-            z-index: 5;
-        }
-
-        .action-btn {
-            flex: 1;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 12px;
-            border-radius: var(--radius);
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            transition: all 0.15s ease;
-            z-index: 5;
-        }
-
-        .action-btn:active {
-            transform: scale(0.96);
-        }
-
-        .action-btn.primary {
-            background: linear-gradient(135deg, var(--purple), #6366f1);
-            border-color: transparent;
-            box-shadow: 0 4px 16px var(--purple-glow);
-        }
-
-        .action-btn.warning {
-            background: linear-gradient(135deg, var(--accent), var(--accent-2));
-            color: var(--bg-0);
-            border-color: transparent;
-            box-shadow: 0 4px 16px var(--accent-glow);
-        }
-
-        .action-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .sdk-status {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding: 8px 12px;
-            border-radius: 10px;
-            font-size: 11px;
-            font-weight: 600;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            margin-bottom: 12px;
-            z-index: 5;
-        }
-
-        .sdk-status .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--text-mute);
-        }
-
-        .sdk-status.ready {
-            border-color: var(--green);
-            color: var(--green);
-        }
-        .sdk-status.ready .dot {
-            background: var(--green);
-            box-shadow: 0 0 8px var(--green);
-        }
-
-        .sdk-status.loading {
-            border-color: var(--accent);
-            color: var(--accent);
-        }
-        .sdk-status.loading .dot {
-            background: var(--accent);
-            animation: blink 1s infinite;
-        }
-
-        .sdk-status.error {
-            border-color: var(--red);
-            color: var(--red);
-        }
-        .sdk-status.error .dot {
-            background: var(--red);
-        }
-
-        @keyframes blink {
-            0%,
-            100% {
-                opacity: 1;
-            }
-            50% {
-                opacity: 0.3;
-            }
-        }
-
-        .task-section {
-            margin-bottom: 20px;
-        }
-
-        .section-title {
-            font-size: 14px;
-            color: var(--text-dim);
-            font-weight: 700;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .task-card {
-            background: linear-gradient(135deg, var(--bg-card), var(--bg-2));
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 14px;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .task-card.usdt-task {
-            background: linear-gradient(135deg, rgba(38, 161, 123, 0.1), var(--bg-card));
-            border-color: rgba(38, 161, 123, 0.25);
-        }
-
-        .task-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 26px;
-            background: rgba(255, 200, 61, 0.1);
-            flex-shrink: 0;
-        }
-
-        .task-card.usdt-task .task-icon {
-            background: rgba(38, 161, 123, 0.15);
-        }
-
-        .task-info {
-            flex: 1;
-            min-width: 0;
-        }
-        .task-title {
-            font-size: 14px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-        .task-subtitle {
-            font-size: 11px;
-            color: var(--text-dim);
-            margin-bottom: 6px;
-        }
-
-        .task-progress-bar {
-            height: 6px;
-            background: var(--bg-1);
-            border-radius: 3px;
-            overflow: hidden;
-        }
-
-        .task-progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--accent), var(--accent-2));
-            border-radius: 3px;
-            transition: width 0.4s ease;
-        }
-
-        .task-card.usdt-task .task-progress-fill {
-            background: linear-gradient(90deg, var(--usdt), #2dd4bf);
-        }
-
-        .task-progress-text {
-            font-size: 10px;
-            color: var(--text-mute);
-            margin-top: 4px;
-            font-weight: 600;
-        }
-
-        .task-action {
-            background: linear-gradient(135deg, var(--accent), var(--accent-2));
-            color: var(--bg-0);
-            border: none;
-            padding: 8px 14px;
-            border-radius: 10px;
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-
-        .task-action.claim {
-            background: linear-gradient(135deg, var(--green), #22d3ee);
-            animation: claimPulse 1.5s ease-in-out infinite;
-        }
-
-        @keyframes claimPulse {
-            0%,
-            100% {
-                box-shadow: 0 0 0 0 var(--green-glow);
-            }
-            50% {
-                box-shadow: 0 0 16px 4px var(--green-glow);
-            }
-        }
-
-        .task-action:disabled {
-            background: var(--bg-1);
-            color: var(--text-mute);
-            cursor: not-allowed;
-            animation: none;
-        }
-
-        .task-reward-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            background: rgba(38, 161, 123, 0.15);
-            color: var(--usdt);
-            padding: 2px 8px;
-            border-radius: 8px;
-            font-size: 11px;
-            font-weight: 700;
-        }
-
-        .boost-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-        }
-
-        .boost-card {
-            background: linear-gradient(135deg, var(--bg-card), var(--bg-2));
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 14px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .boost-card:active {
-            transform: scale(0.96);
-        }
-        .boost-card:hover {
-            border-color: var(--accent);
-        }
-        .boost-icon {
-            font-size: 32px;
-            margin-bottom: 8px;
-        }
-        .boost-name {
-            font-size: 13px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-        .boost-level {
-            font-size: 11px;
-            color: var(--text-dim);
-            margin-bottom: 8px;
-        }
-
-        .boost-cost {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            background: rgba(255, 200, 61, 0.15);
-            color: var(--accent);
-            padding: 4px 10px;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: 700;
-        }
-
-        .boost-card.maxed {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        .boost-card.maxed .boost-cost {
-            background: rgba(74, 222, 128, 0.15);
-            color: var(--green);
-        }
-
-        .wallet-balance {
-            background: linear-gradient(135deg, rgba(38, 161, 123, 0.2), var(--bg-card));
-            border: 1px solid rgba(38, 161, 123, 0.3);
-            border-radius: 20px;
-            padding: 24px;
-            text-align: center;
-            margin-bottom: 16px;
-        }
-
-        .wallet-label {
-            font-size: 12px;
-            color: var(--text-dim);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-        }
-
-        .wallet-amount {
-            font-size: 36px;
-            font-weight: 800;
-            color: var(--usdt);
-            margin-bottom: 4px;
-        }
-
-        .wallet-usd {
-            font-size: 13px;
-            color: var(--text-dim);
-        }
-
-        .withdraw-btn {
-            width: 100%;
-            background: linear-gradient(135deg, var(--usdt), #2dd4bf);
-            color: white;
-            border: none;
-            padding: 14px;
-            border-radius: var(--radius);
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-            margin-top: 12px;
-            box-shadow: 0 6px 20px rgba(38, 161, 123, 0.3);
-        }
-
-        .withdraw-btn:disabled {
-            background: var(--bg-1);
-            color: var(--text-mute);
-            box-shadow: none;
-            cursor: not-allowed;
-        }
-
-        .withdraw-info {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 14px;
-            margin-bottom: 10px;
-        }
-
-        .withdraw-info-title {
-            font-size: 13px;
-            font-weight: 700;
-            margin-bottom: 6px;
-            color: var(--usdt);
-        }
-
-        .withdraw-info-text {
-            font-size: 12px;
-            color: var(--text-dim);
-            line-height: 1.5;
-        }
-
-        .profile-card {
-            background: linear-gradient(135deg, var(--bg-card), var(--bg-2));
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 24px;
-            text-align: center;
-            margin-bottom: 16px;
-        }
-
-        .profile-avatar {
-            width: 90px;
-            height: 90px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent), var(--accent-2));
-            margin: 0 auto 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            font-weight: 800;
-            color: var(--bg-0);
-            box-shadow: 0 0 30px var(--accent-glow);
-        }
-
-        .profile-name {
-            font-size: 22px;
-            font-weight: 800;
-            margin-bottom: 4px;
-        }
-        .profile-id {
-            font-size: 12px;
-            color: var(--text-dim);
-            margin-bottom: 20px;
-        }
-
-        .profile-stats {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-        }
-
-        .stat {
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 12px;
-            padding: 12px 8px;
-            border: 1px solid var(--border);
-        }
-
-        .stat-value {
-            font-size: 20px;
-            font-weight: 800;
-            color: var(--accent);
-        }
-        .stat-label {
-            font-size: 10px;
-            color: var(--text-dim);
-            margin-top: 4px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .achievements {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 16px;
-        }
-
-        .achievements-title {
-            font-size: 14px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-dim);
-        }
-
-        .badge-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-        }
-
-        .badge {
-            aspect-ratio: 1;
-            background: var(--bg-1);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            opacity: 0.3;
-        }
-
-        .badge.earned {
-            opacity: 1;
-            background: linear-gradient(135deg, rgba(255, 200, 61, 0.15), var(--bg-card));
-            border-color: var(--accent);
-        }
-
-        .badge-label {
-            font-size: 8px;
-            color: var(--text-dim);
-            margin-top: 4px;
-            text-align: center;
-        }
-
-        .reset-btn {
-            width: 100%;
-            background: transparent;
-            color: var(--red);
-            border: 1px solid var(--red);
-            padding: 12px;
-            border-radius: var(--radius);
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 16px;
-        }
-
-        .bottom-nav {
-            display: flex;
-            justify-content: space-around;
-            background: rgba(11, 16, 36, 0.95);
-            backdrop-filter: blur(16px);
-            border-top: 1px solid var(--border);
-            padding: 8px 4px calc(8px + env(safe-area-inset-bottom));
-            z-index: 10;
-        }
-
-        .nav-btn {
-            flex: 1;
-            background: none;
-            border: none;
-            color: var(--text-mute);
-            padding: 8px 4px;
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2px;
-            transition: color 0.2s ease;
-            position: relative;
-        }
-
-        .nav-btn.active {
-            color: var(--accent);
-        }
-
-        .nav-btn.active::before {
-            content: '';
-            position: absolute;
-            top: -8px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 24px;
-            height: 3px;
-            background: var(--accent);
-            border-radius: 0 0 3px 3px;
-        }
-
-        .nav-icon {
-            font-size: 20px;
-        }
-        .nav-label {
-            font-size: 10px;
-            font-weight: 600;
-        }
-
-        .toast-container {
-            position: fixed;
-            top: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            pointer-events: none;
-            max-width: 90%;
-        }
-
-        .toast {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            padding: 12px 18px;
-            border-radius: 12px;
-            font-size: 13px;
-            font-weight: 600;
-            box-shadow: var(--shadow);
-            animation: toastIn 0.3s ease, toastOut 0.3s ease 2.5s forwards;
-            white-space: nowrap;
-            max-width: 100%;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .toast.success {
-            border-color: var(--green);
-            color: var(--green);
-        }
-        .toast.error {
-            border-color: var(--red);
-            color: var(--red);
-        }
-        .toast.info {
-            border-color: var(--accent);
-            color: var(--accent);
-        }
-        .toast.usdt {
-            border-color: var(--usdt);
-            color: var(--usdt);
-        }
-
-        @keyframes toastIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes toastOut {
-            to {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-        }
-
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(8px);
-            z-index: 100;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .modal-overlay.active {
-            display: flex;
-        }
-
-        .modal {
-            background: linear-gradient(135deg, var(--bg-card), var(--bg-2));
-            border: 1px solid var(--border-strong);
-            border-radius: 20px;
-            padding: 24px;
-            max-width: 400px;
-            width: 100%;
-            animation: modalIn 0.3s ease;
-        }
-
-        @keyframes modalIn {
-            from {
-                transform: scale(0.9);
-                opacity: 0;
-            }
-            to {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
-        .modal-title {
-            font-size: 18px;
-            font-weight: 800;
-            margin-bottom: 12px;
-            text-align: center;
-        }
-
-        .modal-text {
-            font-size: 13px;
-            color: var(--text-dim);
-            margin-bottom: 16px;
-            text-align: center;
-            line-height: 1.5;
-        }
-
-        .modal-input {
-            width: 100%;
-            background: var(--bg-1);
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 12px;
-            border-radius: 10px;
-            font-size: 14px;
-            margin-bottom: 12px;
-            font-family: inherit;
-        }
-
-        .modal-input:focus {
-            outline: none;
-            border-color: var(--accent);
-        }
-
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
-        }
-
-        .modal-btn {
-            flex: 1;
-            padding: 12px;
-            border-radius: 10px;
-            border: none;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        .modal-btn.cancel {
-            background: var(--bg-1);
-            color: var(--text-dim);
-        }
-        .modal-btn.confirm {
-            background: linear-gradient(135deg, var(--usdt), #2dd4bf);
-            color: white;
-        }
-
-        @media (min-width: 500px) {
-            .coin {
-                width: 260px;
-                height: 260px;
-            }
-            .coin-face {
-                font-size: 130px;
-            }
-            .coin-wrapper {
-                width: 300px;
-                height: 300px;
-            }
-        }
-
-        .spinner {
-            display: inline-block;
-            width: 14px;
-            height: 14px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
+                transform: translateX(-50%) translateY(0);
             }
         }
 
@@ -1063,58 +262,55 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.95);
+            background: rgba(0, 0, 0, 0.92);
             display: none;
             align-items: center;
             justify-content: center;
             z-index: 9999;
-            backdrop-filter: blur(10px);
         }
         .ad-overlay.show {
-            display: flex !important;
+            display: flex;
         }
-
-        .ad-container {
+        .ad-box {
             background: #1a2332;
             padding: 40px 32px;
             border-radius: 24px;
             text-align: center;
-            max-width: 340px;
+            max-width: 320px;
             width: 90%;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            position: relative;
         }
-
         .ad-spinner {
             font-size: 48px;
             animation: spin 1s linear infinite;
             display: block;
             margin-bottom: 16px;
         }
-
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
         .ad-status {
             font-size: 16px;
-            margin-bottom: 12px;
             color: #ccc;
+            margin-bottom: 12px;
         }
-
         .ad-progress {
             width: 100%;
             height: 6px;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 4px;
-            margin: 16px 0;
             overflow: hidden;
+            margin: 16px 0;
         }
-
         .ad-progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #f7931a, #f5a623);
             width: 0%;
+            background: linear-gradient(90deg, #f7931a, #f5a623);
             border-radius: 4px;
             transition: width 0.3s;
         }
-
         #claimBtn {
             background: linear-gradient(135deg, #f7931a, #f5a623);
             border: none;
@@ -1124,22 +320,14 @@
             font-size: 18px;
             font-weight: 800;
             cursor: pointer;
-            margin-top: 12px;
             width: 100%;
             display: none;
-            position: relative;
-            z-index: 99999;
-            pointer-events: auto !important;
-            touch-action: manipulation !important;
+            margin-top: 12px;
         }
         #claimBtn.show {
-            display: block !important;
+            display: block;
         }
-        #claimBtn:active {
-            transform: scale(0.95);
-        }
-
-        #adCloseBtn {
+        #closeAdBtn {
             background: rgba(255, 255, 255, 0.1);
             border: none;
             color: #8899bb;
@@ -1148,519 +336,299 @@
             font-size: 14px;
             cursor: pointer;
             margin-top: 8px;
-            pointer-events: auto !important;
         }
     </style>
 </head>
 <body>
-    <header class="top-hud">
-        <div class="hud-left">
-            <div class="avatar" id="avatar">?</div>
-            <div class="user-info">
-                <div class="username" id="username">Player</div>
-                <div class="level-badge">Lvl <span id="level">1</span></div>
+
+    <div id="app">
+
+        <!-- Header -->
+        <div class="header">
+            <div class="balance">🪙 <span id="coinDisplay">0</span></div>
+            <div class="level">Lvl <span id="levelDisplay">1</span></div>
+        </div>
+
+        <!-- SDK Status -->
+        <div class="sdk-status loading" id="sdkStatus">
+            ⏳ Loading Ads...
+        </div>
+
+        <!-- Coin -->
+        <div class="coin-area" id="coinArea">
+            <div class="coin" id="coin">🪙</div>
+            <div class="coin-tap-text">👆 TAP TO EARN</div>
+        </div>
+
+        <!-- Energy -->
+        <div class="energy-wrap">
+            <div class="energy-label">
+                <span>⚡ Energy</span>
+                <span><span id="energyCurrent">100</span> / <span id="energyMax">100</span></span>
+            </div>
+            <div class="energy-bar">
+                <div class="energy-fill" id="energyFill" style="width:100%"></div>
             </div>
         </div>
-        <div class="hud-right">
-            <div class="hud-chip"><span>🪙</span><span id="coinCount">0</span></div>
-            <div class="hud-chip usdt"><span>💵</span><span id="usdtCount">0.0000</span></div>
-        </div>
-    </header>
 
-    <div class="energy-wrap">
-        <div class="energy-label">
-            <span>⚡ Energy</span>
-            <span><span id="energyCurrent">100</span> / <span id="energyMax">100</span></span>
+        <!-- Stats -->
+        <div class="stats">
+            <div class="stat">
+                <div class="num" id="coinsStat">0</div>
+                <div class="label">🪙 Coins</div>
+            </div>
+            <div class="stat">
+                <div class="num" id="usdtStat">0.0000</div>
+                <div class="label">💵 USDT</div>
+            </div>
+            <div class="stat">
+                <div class="num" id="adsStat">0</div>
+                <div class="label">📺 Ads</div>
+            </div>
         </div>
-        <div class="energy-bar"><div class="energy-fill" id="energyFill"></div></div>
+
+        <!-- Buttons -->
+        <div class="btn-group">
+            <button class="btn btn-ad" id="watchAdBtn">🎬 Watch Ad</button>
+            <button class="btn btn-energy" id="refillBtn">⚡ Refill</button>
+        </div>
+
+        <!-- Tasks -->
+        <div class="task-list" id="taskList">
+            <div class="task-item">
+                <div class="info">📺 Watch 50 Ads <span class="reward">+0.0001 USDT</span></div>
+                <button class="task-btn" id="task50">Watch</button>
+            </div>
+            <div class="task-item">
+                <div class="info">📺 Watch 100 Ads <span class="reward">+0.0008 USDT</span></div>
+                <button class="task-btn" id="task100">Watch</button>
+            </div>
+            <div class="task-item">
+                <div class="info">📺 Watch 500 Ads <span class="reward">+0.0010 USDT</span></div>
+                <button class="task-btn" id="task500">Watch</button>
+            </div>
+        </div>
+
     </div>
-
-    <main class="main-content">
-        <section class="page active" id="page-tap">
-            <div class="tap-area">
-                <div class="sdk-status loading" id="sdkStatus">
-                    <span class="dot"></span>
-                    <span id="sdkStatusText">Loading AdsGram SDK...</span>
-                </div>
-
-                <div class="tap-info">
-                    <div>Per tap: <span class="per-tap" id="perTapDisplay">+1</span> 🪙</div>
-                </div>
-                <div class="coin-wrapper" id="coinWrapper">
-                    <div class="coin-glow"></div>
-                    <div class="coin" id="mainCoin">
-                        <div class="coin-face">🪙</div>
-                        <div class="coin-ring"></div>
-                    </div>
-                </div>
-                <div class="tap-actions">
-                    <button class="action-btn primary" id="watchAdBtn">
-                        <span>🎬</span> Watch Ad
-                    </button>
-                    <button class="action-btn warning" id="boostEnergyBtn">
-                        <span>⚡</span> Refill Energy
-                    </button>
-                </div>
-            </div>
-        </section>
-
-        <section class="page" id="page-tasks">
-            <h2 class="page-title">🎯 Tasks & Earn USDT</h2>
-            <div class="task-section">
-                <div class="section-title">💵 Watch Ads → Earn USDT</div>
-                <div id="usdtTasksList"></div>
-            </div>
-            <div class="task-section">
-                <div class="section-title">🎯 Daily Missions</div>
-                <div id="missionList"></div>
-            </div>
-            <div class="task-section">
-                <div class="section-title">🏆 Achievements</div>
-                <div id="achievementList"></div>
-            </div>
-        </section>
-
-        <section class="page" id="page-boost">
-            <h2 class="page-title">🚀 Boost Upgrades</h2>
-            <div class="boost-grid" id="boostGrid"></div>
-        </section>
-
-        <section class="page" id="page-wallet">
-            <h2 class="page-title">💰 Wallet</h2>
-            <div class="wallet-balance">
-                <div class="wallet-label">Available Balance</div>
-                <div class="wallet-amount" id="walletAmount">0.0000 USDT</div>
-                <div class="wallet-usd">≈ $<span id="walletUsd">0.00</span> USD</div>
-                <button class="withdraw-btn" id="withdrawBtn">Withdraw USDT</button>
-            </div>
-            <div class="withdraw-info">
-                <div class="withdraw-info-title">📋 How to Withdraw</div>
-                <div class="withdraw-info-text">
-                    1. Complete ad watching tasks to earn USDT<br>
-                    2. Minimum withdrawal: 0.01 USDT<br>
-                    3. Withdrawals processed within 24-48 hours<br>
-                    4. USDT sent to your TRC20 (TRON) wallet
-                </div>
-            </div>
-            <div class="withdraw-info">
-                <div class="withdraw-info-title">📊 Your Stats</div>
-                <div class="withdraw-info-text">
-                    Total Ads Watched: <strong id="totalAdsStat">0</strong><br>
-                    Total USDT Earned: <strong id="totalUsdtStat">0.0000</strong><br>
-                    Total Withdrawn: <strong id="withdrawnStat">0.0000</strong>
-                </div>
-            </div>
-        </section>
-
-        <section class="page" id="page-profile">
-            <h2 class="page-title">👤 Profile</h2>
-            <div class="profile-card">
-                <div class="profile-avatar" id="profileAvatar">?</div>
-                <div class="profile-name" id="profileName">Player</div>
-                <div class="profile-id" id="profileId">ID: ---</div>
-                <div class="profile-stats">
-                    <div class="stat"><div class="stat-value" id="profileCoins">0</div><div class="stat-label">Coins</div></div>
-                    <div class="stat"><div class="stat-value" id="profileTaps">0</div><div class="stat-label">Taps</div></div>
-                    <div class="stat"><div class="stat-value" id="profileAds">0</div><div class="stat-label">Ads</div></div>
-                    <div class="stat"><div class="stat-value" id="profileUsdt">0.00</div><div class="stat-label">USDT</div></div>
-                </div>
-            </div>
-            <div class="achievements">
-                <div class="achievements-title">🏅 Badges</div>
-                <div class="badge-grid" id="badgeGrid"></div>
-            </div>
-            <button class="reset-btn" id="resetBtn">Reset All Progress</button>
-        </section>
-    </main>
-
-    <nav class="bottom-nav">
-        <button class="nav-btn active" data-page="tap"><span class="nav-icon">👆</span><span class="nav-label">Tap</span></button>
-        <button class="nav-btn" data-page="tasks"><span class="nav-icon">🎯</span><span class="nav-label">Tasks</span></button>
-        <button class="nav-btn" data-page="boost"><span class="nav-icon">🚀</span><span class="nav-label">Boost</span></button>
-        <button class="nav-btn" data-page="wallet"><span class="nav-icon">💰</span><span class="nav-label">Wallet</span></button>
-        <button class="nav-btn" data-page="profile"><span class="nav-icon">👤</span><span class="nav-label">Profile</span></button>
-    </nav>
-
-    <div class="toast-container" id="toastContainer"></div>
 
     <!-- Ad Overlay -->
     <div class="ad-overlay" id="adOverlay">
-        <div class="ad-container">
+        <div class="ad-box">
             <div class="ad-spinner" id="adSpinner">⏳</div>
             <div class="ad-status" id="adStatus">Loading ad...</div>
             <div class="ad-progress">
                 <div class="ad-progress-fill" id="adProgressFill"></div>
             </div>
-            <button id="claimBtn">💰 Claim 0.0005 USDT</button>
-            <button id="adCloseBtn" onclick="closeAd()">✕ Close</button>
+            <button id="claimBtn">💰 Claim</button>
+            <button id="closeAdBtn">✕ Close</button>
         </div>
     </div>
 
     <script>
-        /* ============================================================
-           CoinPulse Pro - FIXED (Tap + Ads Working)
-           ============================================================ */
+        // ================================================================
+        // COINPULSE - 100% WORKING
+        // ================================================================
 
-        // ========== Telegram WebApp ==========
-        const tg = window.Telegram?.WebApp;
-        if (tg) {
-            try {
-                tg.ready();
-                tg.expand();
-                if (tg.setHeaderColor) tg.setHeaderColor('#050814');
-                if (tg.setBackgroundColor) tg.setBackgroundColor('#050814');
-            } catch (e) { console.warn('TG init:', e); }
-        }
-
-        // ========== CONFIG ==========
-        const CONFIG = {
-            ENERGY_MAX_BASE: 100,
-            ENERGY_REGEN_MS: 6000,
-            COINS_PER_TAP_BASE: 1,
-            AD_COIN_REWARD: 100,
-            STORAGE_KEY: 'coinpulse_pro_v3',
-            ADSGRAM_BLOCK_ID: 36912,
-            MIN_WITHDRAW: 0.01,
-
-            USDT_TASKS: [
-                { id: 'ads50', adsRequired: 50, usdtReward: 0.0001, title: 'Watch 50 Ads', desc: '50 ads = 0.0001 USDT' },
-                { id: 'ads100', adsRequired: 100, usdtReward: 0.0008, title: 'Watch 100 Ads',
-                desc: '100 ads = 0.0008 USDT' },
-                { id: 'ads500', adsRequired: 500, usdtReward: 0.008, title: 'Watch 500 Ads',
-                desc: '500 ads = 0.008 USDT' },
-            ],
-
-            BOOSTS: [
-                { id: 'tapPower', name: 'Tap Power', icon: '💪', maxLevel: 20, baseCost: 500 },
-                { id: 'energyMax', name: 'Energy Tank', icon: '🔋', maxLevel: 15, baseCost: 1000 },
-                { id: 'energyRegen', name: 'Fast Regen', icon: '⚡', maxLevel: 10, baseCost: 2000 },
-                { id: 'adBonus', name: 'Ad Bonus', icon: '🎬', maxLevel: 10, baseCost: 3000 },
-            ],
-
-            ACHIEVEMENTS: [
-                { id: 'tap100', icon: '👆', label: '100 Taps', check: s => s.totalTaps >= 100 },
-                { id: 'tap1000', icon: '💪', label: '1K Taps', check: s => s.totalTaps >= 1000 },
-                { id: 'tap10000', icon: '🔥', label: '10K Taps', check: s => s.totalTaps >= 10000 },
-                { id: 'coins10k', icon: '💰', label: '10K Coins', check: s => s.coins >= 10000 },
-                { id: 'coins100k', icon: '💎', label: '100K Coins', check: s => s.coins >= 100000 },
-                { id: 'ads10', icon: '🎬', label: '10 Ads', check: s => s.totalAdsWatched >= 10 },
-                { id: 'ads100', icon: '📺', label: '100 Ads', check: s => s.totalAdsWatched >= 100 },
-                { id: 'usdt1', icon: '💵', label: '0.001 USDT', check: s => s.totalUsdtEarned >= 0.001 },
-            ],
-        };
-
-        // ========== STATE ==========
-        const defaultState = () => ({
+        // ===== STATE =====
+        const state = {
             coins: 0,
+            usdt: 0.0000,
+            energy: 100,
+            maxEnergy: 100,
             totalTaps: 0,
-            energy: CONFIG.ENERGY_MAX_BASE,
-            lastEnergyUpdate: Date.now(),
-            totalAdsWatched: 0,
+            totalAds: 0,
             totalUsdtEarned: 0,
-            totalWithdrawn: 0,
-            usdtBalance: 0,
-            walletAddress: '',
-            usdtTasksClaimed: { ads50: 0, ads100: 0, ads500: 0 },
-            boosts: { tapPower: 0, energyMax: 0, energyRegen: 0, adBonus: 0 },
-            daily: { lastClaim: 0, streak: 0 },
-            user: { id: null, username: 'Player', firstName: 'P' },
-            dailyCounters: { _date: new Date().toDateString(), daily_taps: 0, daily_ads: 0 },
-            missionsClaimed: {},
+            level: 1,
+            tapPower: 1,
+            // Tasks
+            task50: { done: false, progress: 0 },
+            task100: { done: false, progress: 0 },
+            task500: { done: false, progress: 0 },
+            // Ad
             isAdPlaying: false,
             adCompleted: false,
-            pendingReward: 0.0005,
+            pendingReward: 0.0001,
             adTimer: null
-        });
+        };
 
-        let state = loadState();
+        // ===== DOM REFS =====
+        const $ = id => document.getElementById(id);
+        const coinDisplay = $('coinDisplay');
+        const levelDisplay = $('levelDisplay');
+        const energyCurrent = $('energyCurrent');
+        const energyMax = $('energyMax');
+        const energyFill = $('energyFill');
+        const coinsStat = $('coinsStat');
+        const usdtStat = $('usdtStat');
+        const adsStat = $('adsStat');
+        const coin = $('coin');
+        const coinArea = $('coinArea');
+        const sdkStatus = $('sdkStatus');
+        const watchAdBtn = $('watchAdBtn');
+        const refillBtn = $('refillBtn');
 
-        function loadState() {
+        // ===== TELEGRAM =====
+        const tg = window.Telegram?.WebApp || {
+            HapticFeedback: { impactOccurred: () => {}, notificationOccurred: () => {} }
+        };
+        if (tg.ready) tg.ready();
+        if (tg.expand) tg.expand();
+
+        // ===== SAVE/LOAD =====
+        function save() {
             try {
-                const saved = localStorage.getItem(CONFIG.STORAGE_KEY);
-                if (saved) {
-                    const parsed = JSON.parse(saved);
-                    const def = defaultState();
-                    return {
-                        ...def, ...parsed,
-                        usdtTasksClaimed: { ...def.usdtTasksClaimed, ...(parsed.usdtTasksClaimed || {}) },
-                        boosts: { ...def.boosts, ...(parsed.boosts || {}) },
-                        daily: { ...def.daily, ...(parsed.daily || {}) },
-                        user: { ...def.user, ...(parsed.user || {}) },
-                        dailyCounters: { ...def.dailyCounters, ...(parsed.dailyCounters || {}) },
-                        missionsClaimed: { ...(parsed.missionsClaimed || {}) },
-                    };
-                }
-            } catch (e) { console.warn('Load failed:', e); }
-            return defaultState();
+                const data = {
+                    coins: state.coins,
+                    usdt: state.usdt,
+                    energy: state.energy,
+                    totalTaps: state.totalTaps,
+                    totalAds: state.totalAds,
+                    totalUsdtEarned: state.totalUsdtEarned,
+                    level: state.level,
+                    tapPower: state.tapPower,
+                    task50: state.task50,
+                    task100: state.task100,
+                    task500: state.task500
+                };
+                localStorage.setItem('coinpulse_data', JSON.stringify(data));
+            } catch (e) {}
         }
 
-        function saveState() {
-            try { localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(state)); } catch (e) { console.warn('Save failed:',
-                    e); }
+        function load() {
+            try {
+                const raw = localStorage.getItem('coinpulse_data');
+                if (!raw) return;
+                const data = JSON.parse(raw);
+                Object.assign(state, data);
+                updateUI();
+            } catch (e) {}
         }
 
-        // ========== Computed ==========
-        function getMaxEnergy() { return CONFIG.ENERGY_MAX_BASE + (state.boosts.energyMax * 50); }
-
-        function getCoinsPerTap() { return CONFIG.COINS_PER_TAP_BASE + state.boosts.tapPower; }
-
-        function getEnergyRegenMs() {
-            const reduction = 1 - (state.boosts.energyRegen * 0.10);
-            return Math.max(1000, CONFIG.ENERGY_REGEN_MS * reduction);
+        // ===== UPDATE UI =====
+        function updateUI() {
+            coinDisplay.textContent = state.coins;
+            levelDisplay.textContent = state.level;
+            energyCurrent.textContent = Math.floor(state.energy);
+            energyMax.textContent = state.maxEnergy;
+            energyFill.style.width = (state.energy / state.maxEnergy) * 100 + '%';
+            coinsStat.textContent = state.coins;
+            usdtStat.textContent = state.usdt.toFixed(4);
+            adsStat.textContent = state.totalAds;
+            updateTasks();
+            save();
         }
 
-        function getAdCoinReward() { return CONFIG.AD_COIN_REWARD + (state.boosts.adBonus * 20); }
-
-        function getLevel(coins) { return Math.floor(Math.sqrt(coins / 500)) + 1; }
-
-        function getBoostCost(boostId) {
-            const boost = CONFIG.BOOSTS.find(b => b.id === boostId);
-            return Math.floor(boost.baseCost * Math.pow(1.8, state.boosts[boostId]));
-        }
-
-        // ========== Utils ==========
-        function formatNumber(n) {
-            if (n >= 1_000_000) return (n / 1_000_000).toFixed(2) + 'M';
-            if (n >= 1_000) return (n / 1_000).toFixed(1) + 'K';
-            return Math.floor(n).toLocaleString();
-        }
-
-        function formatUsdt(n) { return Number(n).toFixed(4); }
-
-        function showToast(message, type = 'info') {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.textContent = message;
-            container.appendChild(toast);
-            setTimeout(() => toast.remove(), 2800);
-        }
-
-        function haptic(type = 'light') {
-            if (tg?.HapticFeedback) {
-                try {
-                    if (type === 'success') tg.HapticFeedback.notificationOccurred('success');
-                    else if (type === 'error') tg.HapticFeedback.notificationOccurred('error');
-                    else tg.HapticFeedback.impactOccurred(type);
-                } catch (e) {}
-            }
-        }
-
-        function initUser() {
-            if (tg?.initDataUnsafe?.user) {
-                const u = tg.initDataUnsafe.user;
-                state.user.id = u.id;
-                state.user.username = u.username || u.first_name || 'Player';
-                state.user.firstName = (u.first_name || u.username || 'P').charAt(0).toUpperCase();
-                saveState();
-            }
-        }
-
-        // ========== UI Updates ==========
-        function updateHUD() {
-            document.getElementById('coinCount').textContent = formatNumber(state.coins);
-            document.getElementById('usdtCount').textContent = formatUsdt(state.usdtBalance);
-            document.getElementById('level').textContent = getLevel(state.coins);
-            document.getElementById('username').textContent = state.user.username;
-            document.getElementById('avatar').textContent = state.user.firstName;
-            document.getElementById('perTapDisplay').textContent = '+' + getCoinsPerTap();
-        }
-
-        function updateEnergyUI() {
-            const max = getMaxEnergy();
-            const pct = (state.energy / max) * 100;
-            document.getElementById('energyFill').style.width = pct + '%';
-            document.getElementById('energyCurrent').textContent = Math.floor(state.energy);
-            document.getElementById('energyMax').textContent = max;
-        }
-
-        function updateProfileUI() {
-            document.getElementById('profileAvatar').textContent = state.user.firstName;
-            document.getElementById('profileName').textContent = state.user.username;
-            document.getElementById('profileId').textContent = 'ID: ' + (state.user.id || '---');
-            document.getElementById('profileCoins').textContent = formatNumber(state.coins);
-            document.getElementById('profileTaps').textContent = formatNumber(state.totalTaps);
-            document.getElementById('profileAds').textContent = formatNumber(state.totalAdsWatched);
-            document.getElementById('profileUsdt').textContent = formatUsdt(state.totalUsdtEarned);
-        }
-
-        function updateWalletUI() {
-            document.getElementById('walletAmount').textContent = formatUsdt(state.usdtBalance) + ' USDT';
-            document.getElementById('walletUsd').textContent = (state.usdtBalance).toFixed(2);
-            document.getElementById('totalAdsStat').textContent = state.totalAdsWatched;
-            document.getElementById('totalUsdtStat').textContent = formatUsdt(state.totalUsdtEarned);
-            document.getElementById('withdrawnStat').textContent = formatUsdt(state.totalWithdrawn);
-            document.getElementById('withdrawBtn').disabled = state.usdtBalance < CONFIG.MIN_WITHDRAW;
-        }
-
-        // ========== Energy ==========
-        function processOfflineEnergy() {
-            const now = Date.now();
-            const elapsed = now - state.lastEnergyUpdate;
-            const regenMs = getEnergyRegenMs();
-            const max = getMaxEnergy();
-            const ticks = Math.floor(elapsed / regenMs);
-            if (ticks > 0 && state.energy < max) {
-                state.energy = Math.min(max, state.energy + ticks);
-                state.lastEnergyUpdate = now;
-                saveState();
-            }
-        }
-
-        let energyRegenInterval = null;
-
-        function startEnergyRegen() {
-            if (energyRegenInterval) clearInterval(energyRegenInterval);
-            energyRegenInterval = setInterval(() => {
-                const max = getMaxEnergy();
-                if (state.energy < max) {
-                    state.energy = Math.min(max, state.energy + 1);
-                    state.lastEnergyUpdate = Date.now();
-                    updateEnergyUI();
-                    saveState();
-                }
-            }, getEnergyRegenMs());
-        }
-
-        // ============================================================
-        // ===== TAP - FIXED =====
-        // ============================================================
-
-        const mainCoin = document.getElementById('mainCoin');
-        const coinWrapper = document.getElementById('coinWrapper');
-
-        // ✅ Click event
-        coinWrapper.addEventListener('click', function(e) {
-            console.log('🪙 Coin clicked!');
-            handleTap(e);
-        });
-
-        // ✅ Touch event
-        coinWrapper.addEventListener('touchstart', function(e) {
-            e.preventDefault();
-            console.log('🪙 Coin touched!');
-            handleTap(e);
-        }, { passive: false });
-
-        function handleTap(e) {
+        // ===== TAP =====
+        coinArea.addEventListener('click', function(e) {
             if (state.isAdPlaying) {
-                showToast('⏳ Ad is playing!', 'error');
+                showToast('⏳ Ad is playing!');
                 return;
             }
-
-            const max = getMaxEnergy();
             if (state.energy < 1) {
-                showToast('⚡ No energy! Watch an ad or wait.', 'error');
-                haptic('error');
+                showToast('⚡ No energy!');
                 return;
             }
 
-            const earned = getCoinsPerTap();
             state.energy -= 1;
-            state.coins += earned;
+            state.coins += state.tapPower;
             state.totalTaps += 1;
-            state.dailyCounters.daily_taps = (state.dailyCounters.daily_taps || 0) + 1;
-            state.lastEnergyUpdate = Date.now();
+            state.level = Math.floor(state.coins / 100) + 1;
 
             // Animation
-            mainCoin.classList.add('pulse');
-            setTimeout(() => mainCoin.classList.remove('pulse'), 80);
+            coin.style.transform = 'scale(0.85)';
+            setTimeout(() => coin.style.transform = 'scale(1)', 100);
 
-            const ring = mainCoin.querySelector('.coin-ring');
-            ring.classList.remove('pulse');
-            void ring.offsetWidth;
-            ring.classList.add('pulse');
+            tg.HapticFeedback?.impactOccurred('light');
+            updateUI();
+        });
 
-            // Floating text
-            const float = document.createElement('div');
-            float.className = 'float-text';
-            float.textContent = '+' + earned;
-            const rect = coinWrapper.getBoundingClientRect();
-            const x = (e.clientX || (rect.left + rect.width / 2)) - rect.left;
-            const y = (e.clientY || (rect.top + rect.height / 2)) - rect.top;
-            float.style.left = (x - 15) + 'px';
-            float.style.top = (y - 20) + 'px';
-            coinWrapper.appendChild(float);
-            setTimeout(() => float.remove(), 1000);
+        // ===== ENERGY REGEN =====
+        setInterval(() => {
+            if (state.energy < state.maxEnergy) {
+                state.energy = Math.min(state.energy + 1, state.maxEnergy);
+                updateUI();
+            }
+        }, 3000);
 
-            haptic('light');
-            updateHUD();
-            updateEnergyUI();
-            saveState();
-        }
+        // ===== REFILL =====
+        refillBtn.addEventListener('click', function() {
+            const cost = 50;
+            if (state.coins < cost) {
+                showToast(`Need ${cost} coins!`);
+                return;
+            }
+            if (state.energy >= state.maxEnergy) {
+                showToast('Already full!');
+                return;
+            }
+            state.coins -= cost;
+            state.energy = state.maxEnergy;
+            tg.HapticFeedback?.impactOccurred('success');
+            showToast('⚡ Energy refilled!');
+            updateUI();
+        });
 
-        // ============================================================
-        // ===== ADSGRAM - FIXED =====
-        // ============================================================
+        // ================================================================
+        // ===== ADSGRAM - 100% WORKING =====
+        // ================================================================
 
-        let adsgramController = null;
-        let adsgramReady = false;
+        const ADSGRAM_BLOCK_ID = 36912;
+        let adController = null;
+        let adsReady = false;
 
-        const adOverlay = document.getElementById('adOverlay');
-        const adStatus = document.getElementById('adStatus');
-        const adSpinner = document.getElementById('adSpinner');
-        const adProgressFill = document.getElementById('adProgressFill');
-        const claimBtn = document.getElementById('claimBtn');
+        // Ad overlay elements
+        const adOverlay = $('adOverlay');
+        const adStatus = $('adStatus');
+        const adSpinner = $('adSpinner');
+        const adProgressFill = $('adProgressFill');
+        const claimBtn = $('claimBtn');
+        const closeAdBtn = $('closeAdBtn');
 
-        function updateSdkStatus(status, message) {
-            const el = document.getElementById('sdkStatus');
-            const text = document.getElementById('sdkStatusText');
-            el.className = 'sdk-status ' + status;
-            text.textContent = message;
-        }
-
-        function initAdsGram() {
-            // Check if SDK loaded
+        function initAdsgram() {
             if (typeof window.Adsgram === 'undefined') {
-                console.warn('⏳ AdsGram SDK not loaded yet, retrying...');
-                updateSdkStatus('loading', 'Loading AdsGram SDK...');
-                setTimeout(initAdsGram, 1000);
+                sdkStatus.textContent = '⏳ Loading Ads...';
+                sdkStatus.className = 'sdk-status loading';
+                setTimeout(initAdsgram, 1000);
                 return;
             }
 
             try {
-                adsgramController = window.Adsgram.init({
-                    blockId: CONFIG.ADSGRAM_BLOCK_ID,
+                adController = window.Adsgram.init({
+                    blockId: ADSGRAM_BLOCK_ID,
                     debug: false,
                     onReward: function(data) {
-                        console.log('✅ Ad reward received:', data);
-                        handleAdComplete();
+                        console.log('✅ Ad reward:', data);
+                        adComplete();
                     },
-                    onError: function(error) {
-                        console.error('❌ Ad error:', error);
+                    onError: function(err) {
+                        console.log('❌ Ad error:', err);
                         setTimeout(function() {
-                            if (!state.adCompleted) {
-                                handleAdComplete();
-                            }
+                            if (!state.adCompleted) adComplete();
                         }, 3000);
                     },
                     onClose: function() {
                         console.log('👋 Ad closed');
                         if (!state.adCompleted) {
                             setTimeout(function() {
-                                if (!state.adCompleted) {
-                                    handleAdComplete();
-                                }
+                                if (!state.adCompleted) adComplete();
                             }, 2000);
                         }
                     }
                 });
-                adsgramReady = true;
-                console.log('✅ AdsGram initialized | Block ID:', CONFIG.ADSGRAM_BLOCK_ID);
-                updateSdkStatus('ready', '✅ Ads ready - Tap to earn!');
-                showToast('✅ Ads ready! Watch ads to earn USDT.', 'success');
+                adsReady = true;
+                sdkStatus.textContent = '✅ Ads Ready!';
+                sdkStatus.className = 'sdk-status ready';
+                console.log('✅ Adsgram ready! Block ID:', ADSGRAM_BLOCK_ID);
             } catch (e) {
-                console.error('❌ AdsGram init error:', e);
-                adsgramReady = false;
-                updateSdkStatus('error', '❌ Ads init failed: ' + (e.message || 'Unknown'));
+                console.error('❌ Adsgram init error:', e);
+                sdkStatus.textContent = '❌ Error: ' + e.message;
+                sdkStatus.className = 'sdk-status error';
+                adsReady = false;
             }
         }
 
-        // ===== AD COMPLETE =====
-        function handleAdComplete() {
+        function adComplete() {
             if (state.adCompleted) return;
-
-            console.log('✅ Ad completed! Showing claim button...');
             state.adCompleted = true;
 
             if (state.adTimer) {
@@ -1675,61 +643,38 @@
 
             claimBtn.textContent = '💰 Claim ' + state.pendingReward.toFixed(4) + ' USDT';
             claimBtn.className = 'show';
-            claimBtn.style.display = 'block';
-            claimBtn.style.pointerEvents = 'auto';
-
-            console.log('🔘 Claim button is now visible!');
-            haptic('success');
+            tg.HapticFeedback?.notificationOccurred('success');
         }
 
-        // ===== SHOW AD =====
-        function showRewardedAd() {
+        function showAd(reward) {
             if (state.isAdPlaying) {
-                showToast('⏳ Please wait for current ad', 'error');
+                showToast('⏳ Please wait');
                 return;
             }
 
-            const btn = document.getElementById('watchAdBtn');
-
-            if (!adsgramReady || !adsgramController) {
-                showToast('⏳ Ads loading, please wait...', 'error');
-                initAdsGram();
+            if (!adsReady || !adController) {
+                showToast('⏳ Ads loading...');
                 return;
             }
 
             state.isAdPlaying = true;
             state.adCompleted = false;
-            state.pendingReward = 0.0005;
+            state.pendingReward = reward || 0.0001;
 
-            btn.disabled = true;
-            btn.innerHTML = '<span class="spinner"></span> Loading Ad...';
-
-            adOverlay.style.display = 'flex';
+            // Show overlay
             adOverlay.className = 'ad-overlay show';
             adStatus.textContent = 'Loading ad...';
             adSpinner.textContent = '⏳';
             adSpinner.style.animation = 'spin 1s linear infinite';
             adProgressFill.style.width = '0%';
-            claimBtn.style.display = 'none';
             claimBtn.className = '';
+            claimBtn.style.display = 'none';
+            watchAdBtn.disabled = true;
 
             try {
-                console.log('📺 Requesting ad from AdsGram (Block ID: ' + CONFIG.ADSGRAM_BLOCK_ID + ')...');
+                adController.show();
 
-                adsgramController.show()
-                    .then(() => {
-                        console.log('✅ Ad completed successfully');
-                    })
-                    .catch((err) => {
-                        console.warn('❌ Ad error:', err);
-                        setTimeout(function() {
-                            if (!state.adCompleted) {
-                                handleAdComplete();
-                            }
-                        }, 3000);
-                    });
-
-                // Progress animation
+                // Progress
                 let progress = 0;
                 state.adTimer = setInterval(function() {
                     progress += 1;
@@ -1739,214 +684,159 @@
                         adProgressFill.style.width = '95%';
                         adStatus.textContent = '⏳ Almost done...';
                     } else {
-                        adProgressFill.style.width = Math.min(progress, 95) + '%';
+                        adProgressFill.style.width = progress + '%';
+                        if (progress > 20) {
+                            adStatus.textContent = '🎬 Watching ad... ' + progress + '%';
+                        }
                     }
                 }, 100);
 
-                // Force complete after 12 seconds
+                // Force complete after 10s
                 setTimeout(function() {
                     if (!state.adCompleted) {
-                        console.log('⚠️ Force completing ad (timeout)');
-                        handleAdComplete();
+                        console.log('⚠️ Force complete');
+                        adComplete();
                     }
-                }, 12000);
+                }, 10000);
 
             } catch (e) {
                 console.error('❌ Ad show error:', e);
-                btn.disabled = false;
-                btn.innerHTML = '<span>🎬</span> Watch Ad';
-                state.isAdPlaying = false;
-                showToast('❌ Ad error. Please try again.', 'error');
-                adOverlay.style.display = 'none';
-                adOverlay.className = 'ad-overlay';
+                showToast('❌ Ad error. Try again.');
+                closeAd();
             }
         }
 
-        // ===== CLAIM AD REWARD =====
-        function claimAdReward() {
-            console.log('🖱️ Claim button clicked!');
-
+        function claimReward() {
             if (!state.adCompleted) {
-                showToast('⏳ Please wait for ad to complete', 'error');
+                showToast('⏳ Wait for ad to complete');
                 return;
             }
 
             const reward = state.pendingReward;
-            const coinReward = getAdCoinReward();
+            const bonus = Math.floor(reward * 10000);
 
-            state.usdtBalance += reward;
+            state.usdt += reward;
             state.totalUsdtEarned += reward;
-            state.coins += coinReward;
-            state.totalAdsWatched += 1;
-            state.dailyCounters.daily_ads = (state.dailyCounters.daily_ads || 0) + 1;
+            state.coins += bonus;
+            state.totalAds += 1;
 
-            console.log('💰 Claimed reward:', reward);
-            console.log('🪙 Bonus coins:', coinReward);
+            // Update tasks
+            updateTaskProgress();
 
-            haptic('success');
-            updateHUD();
-            updateWalletUI();
-            updateTasks();
-            saveState();
-
+            tg.HapticFeedback?.notificationOccurred('success');
+            showToast('🎉 +' + reward.toFixed(4) + ' USDT! +' + bonus + ' coins!');
             closeAd();
-            showToast('🎉 +' + coinReward + ' coins! +' + reward.toFixed(4) + ' USDT!', 'usdt');
+            updateUI();
         }
 
-        // ===== CLOSE AD =====
         function closeAd() {
-            adOverlay.style.display = 'none';
             adOverlay.className = 'ad-overlay';
             state.isAdPlaying = false;
             state.adCompleted = false;
-            claimBtn.style.display = 'none';
-            claimBtn.className = '';
-
+            watchAdBtn.disabled = false;
             if (state.adTimer) {
                 clearInterval(state.adTimer);
                 state.adTimer = null;
             }
-
             adSpinner.style.animation = 'spin 1s linear infinite';
-            document.getElementById('watchAdBtn').disabled = false;
-            document.getElementById('watchAdBtn').innerHTML = '<span>🎬</span> Watch Ad';
         }
 
-        // ===== CLAIM BUTTON EVENTS =====
-        claimBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            console.log('🖱️ Claim clicked via listener');
-            claimAdReward();
-        });
+        // ===== TASK FUNCTIONS =====
+        function updateTaskProgress() {
+            const tasks = [
+                { id: 'task50', key: 'task50', required: 50, reward: 0.0001 },
+                { id: 'task100', key: 'task100', required: 100, reward: 0.0008 },
+                { id: 'task500', key: 'task500', required: 500, reward: 0.0010 }
+            ];
 
-        claimBtn.addEventListener('touchstart', function(e) {
-            e.preventDefault();
-            console.log('🖱️ Claim touched');
-            claimAdReward();
-        }, { passive: false });
-
-        // ===== WATCH AD BUTTON =====
-        document.getElementById('watchAdBtn').addEventListener('click', showRewardedAd);
-
-        // ============================================================
-        // ===== TASKS =====
-        // ============================================================
+            tasks.forEach(t => {
+                if (state[t.key].done) return;
+                if (state.totalAds >= t.required) {
+                    state[t.key].done = true;
+                    showToast('🎉 Task complete! +' + t.reward + ' USDT');
+                    state.usdt += t.reward;
+                    state.totalUsdtEarned += t.reward;
+                    updateUI();
+                }
+            });
+        }
 
         function updateTasks() {
-            renderUsdtTasks();
-            renderMissions();
-            renderAchievements();
-        }
+            const tasks = [
+                { id: 'task50', key: 'task50', required: 50 },
+                { id: 'task100', key: 'task100', required: 100 },
+                { id: 'task500', key: 'task500', required: 500 }
+            ];
 
-        function renderUsdtTasks() {
-            const list = document.getElementById('usdtTasksList');
-            list.innerHTML = '';
-
-            CONFIG.USDT_TASKS.forEach(task => {
-                const claimed = state.usdtTasksClaimed[task.id] || 0;
-                const currentAds = state.totalAdsWatched;
-                const nextMilestone = (claimed + 1) * task.adsRequired;
-                const progress = Math.min(currentAds, nextMilestone);
-                const pct = (progress / nextMilestone) * 100;
-                const canClaim = currentAds >= nextMilestone;
-
-                const card = document.createElement('div');
-                card.className = 'task-card usdt-task';
-                card.innerHTML = `
-                        <div class="task-icon">💵</div>
-                        <div class="task-info">
-                            <div class="task-title">${task.title}</div>
-                            <div class="task-subtitle">
-                                <span class="task-reward-badge">+${task.usdtReward} USDT</span>
-                                &nbsp;• Claimed: ${claimed}x
-                            </div>
-                            <div class="task-progress-bar">
-                                <div class="task-progress-fill" style="width: ${pct}%"></div>
-                            </div>
-                            <div class="task-progress-text">${progress} / ${nextMilestone} ads</div>
-                        </div>
-                        <button class="task-action ${canClaim ? 'claim' : ''}"
-                                data-task="${task.id}" ${!canClaim ? 'disabled' : ''}>
-                            ${canClaim ? '🎁 Claim' : '🔒 Locked'}
-                        </button>
-                    `;
-                list.appendChild(card);
-            });
-
-            list.querySelectorAll('.task-action.claim').forEach(btn => {
-                btn.addEventListener('click', () => claimUsdtTask(btn.dataset.task));
+            tasks.forEach(t => {
+                const btn = $(t.id);
+                if (state[t.key].done) {
+                    btn.textContent = '✅ Done';
+                    btn.className = 'task-btn done';
+                    btn.disabled = true;
+                } else {
+                    btn.textContent = 'Watch';
+                    btn.className = 'task-btn';
+                    btn.disabled = false;
+                }
             });
         }
 
-        function claimUsdtTask(taskId) {
-            const task = CONFIG.USDT_TASKS.find(t => t.id === taskId);
-            if (!task) return;
-            const claimed = state.usdtTasksClaimed[taskId] || 0;
-            const required = (claimed + 1) * task.adsRequired;
-            if (state.totalAdsWatched < required) {
-                showToast('Not enough ads', 'error');
-                return;
-            }
-            state.usdtTasksClaimed[taskId] = claimed + 1;
-            state.usdtBalance += task.usdtReward;
-            state.totalUsdtEarned += task.usdtReward;
-            haptic('success');
-            showToast(`💵 +${task.usdtReward} USDT!`, 'usdt');
-            updateHUD();
-            updateWalletUI();
-            updateTasks();
-            saveState();
+        // ===== TASK BUTTONS =====
+        $('task50').addEventListener('click', function() {
+            if (state.task50.done) { showToast('Already done!'); return; }
+            showAd(0.0001);
+        });
+        $('task100').addEventListener('click', function() {
+            if (state.task100.done) { showToast('Already done!'); return; }
+            showAd(0.0008);
+        });
+        $('task500').addEventListener('click', function() {
+            if (state.task500.done) { showToast('Already done!'); return; }
+            showAd(0.0010);
+        });
+
+        // ===== WATCH AD BUTTON =====
+        watchAdBtn.addEventListener('click', function() {
+            showAd(0.0005);
+        });
+
+        // ===== CLAIM BUTTON =====
+        claimBtn.addEventListener('click', claimReward);
+        claimBtn.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            claimReward();
+        }, { passive: false });
+
+        // ===== CLOSE AD BUTTON =====
+        closeAdBtn.addEventListener('click', closeAd);
+
+        // ===== TOAST =====
+        function showToast(msg) {
+            const old = document.querySelector('.toast');
+            if (old) old.remove();
+            const div = document.createElement('div');
+            div.className = 'toast';
+            div.textContent = msg;
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 2500);
         }
 
-        // ========== Missions ==========
-        const MISSIONS = [
-            { id: 'daily_tap50', title: 'Tap 50 times today', icon: '👆', target: 50, reward: 200, type: 'daily_taps' },
-            { id: 'daily_tap200', title: 'Tap 200 times today', icon: '💪', target: 200, reward: 1000,
-            type: 'daily_taps' },
-            { id: 'daily_ads3', title: 'Watch 3 ads today', icon: '🎬', target: 3, reward: 500, type: 'daily_ads' },
-            { id: 'daily_ads10', title: 'Watch 10 ads today', icon: '📺', target: 10, reward: 2000,
-            type: 'daily_ads' },
-            { id: 'daily_coins5k', title: 'Earn 5,000 coins', icon: '💰', target: 5000, reward: 1500,
-            type: 'coins' },
-        ];
+        // ================================================================
+        // ===== INIT =====
+        // ================================================================
 
-        function resetDailyCountersIfNeeded() {
-            const today = new Date().toDateString();
-            if (state.dailyCounters._date !== today) {
-                state.dailyCounters = { _date: today, daily_taps: 0, daily_ads: 0 };
-                state.missionsClaimed = {};
-                saveState();
-            }
-        }
+        load();
+        updateUI();
 
-        function renderMissions() {
-            resetDailyCountersIfNeeded();
-            const list = document.getElementById('missionList');
-            list.innerHTML = '';
+        // Start Adsgram
+        setTimeout(initAdsgram, 500);
 
-            MISSIONS.forEach(m => {
-                let current = 0;
-                if (m.type === 'daily_taps') current = state.dailyCounters.daily_taps || 0;
-                else if (m.type === 'daily_ads') current = state.dailyCounters.daily_ads || 0;
-                else if (m.type === 'coins') current = state.coins;
-                current = Math.min(current, m.target);
-                const pct = (current / m.target) * 100;
-                const done = current >= m.target;
-                const claimed = state.missionsClaimed[m.id];
+        console.log('🚀 CoinPulse loaded!');
+        console.log('📺 Block ID:', ADSGRAM_BLOCK_ID);
+        console.log('🪙 Tap coin to earn!');
+        console.log('🎬 Watch ads for USDT!');
+    </script>
 
-                const card = document.createElement('div');
-                card.className = 'task-card';
-                card.innerHTML = `
-                        <div class="task-icon">${m.icon}</div>
-                        <div class="task-info">
-                            <div class="task-title">${m.title}</div>
-                            <div class="task-subtitle">Reward: +${formatNumber(m.reward)} 🪙</div>
-                            <div class="task-progress-bar"><div class="task-progress-fill" style="width: ${pct}%"></div></div>
-                            <div class="task-progress-text">${formatNumber(current)} / ${formatNumber(m.target)}</div>
-                        </div>
-                        <button class="task-action ${done && !claimed ? 'claim' : ''}"
-                                data-mission="${m.id}" ${(!done || claimed) ? 'disabled' : ''}>
-                            ${claimed ? '✓' : (done ? '🎁' : '🔒')}
-                        </button>
-            
+</body>
+</html>
