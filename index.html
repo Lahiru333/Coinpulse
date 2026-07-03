@@ -269,6 +269,17 @@
             cursor: not-allowed;
         }
         
+        .watch-btn.watching {
+            background: linear-gradient(135deg, #ff4444, #cc0000);
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+        
         .task-card {
             background: rgba(255,255,255,0.08);
             border-radius: 15px;
@@ -323,6 +334,11 @@
             cursor: pointer;
             width: 100%;
             font-size: 14px;
+        }
+        
+        .task-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
         
         .notification {
@@ -400,6 +416,39 @@
             font-size: 13px;
             color: #00ff88;
             font-weight: 600;
+        }
+        
+        .ad-status.loading {
+            background: rgba(255,215,0,0.1);
+            border-color: #ffd700;
+            color: #ffd700;
+        }
+        
+        .ad-status.error {
+            background: rgba(255,68,68,0.1);
+            border-color: #ff4444;
+            color: #ff4444;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .ad-counter {
+            font-size: 14px;
+            color: #ffd700;
+            margin-top: 5px;
         }
     </style>
 </head>
@@ -503,15 +552,16 @@
             <div class="ad-progress">
                 <div class="progress-text">
                     <span id="ads-watched">0 / 5 ads</span>
-                    <span>5 left</span>
+                    <span id="ads-left">5 left</span>
                 </div>
                 <div class="progress-bar">
                     <div class="progress-fill" id="ads-progress" style="width: 0%"></div>
                 </div>
             </div>
-            <button class="watch-btn" onclick="watchAds(5, 0.010)" id="watch-btn-1">
+            <button class="watch-btn" onclick="startWatching(5, 0.010, 'ads-progress', 'ads-watched', 'ads-left')" id="watch-btn-1">
                 ▶️ Watch Ad - +10 Coins
             </button>
+            <div class="ad-counter" id="ad-counter-1"></div>
         </div>
         
         <div class="ad-card">
@@ -525,15 +575,16 @@
             <div class="ad-progress">
                 <div class="progress-text">
                     <span id="ads-watched-2">0 / 15 ads</span>
-                    <span>15 left</span>
+                    <span id="ads-left-2">15 left</span>
                 </div>
                 <div class="progress-bar">
                     <div class="progress-fill" id="ads-progress-2" style="width: 0%"></div>
                 </div>
             </div>
-            <button class="watch-btn" style="background: linear-gradient(135deg, #ff4444, #ff0000);" onclick="watchAds(15, 0.008)" id="watch-btn-2">
+            <button class="watch-btn" style="background: linear-gradient(135deg, #ff4444, #ff0000);" onclick="startWatching(15, 0.008, 'ads-progress-2', 'ads-watched-2', 'ads-left-2')" id="watch-btn-2">
                 ▶️ Watch Ad - +8 Coins
             </button>
+            <div class="ad-counter" id="ad-counter-2"></div>
         </div>
     </div>
     
@@ -724,56 +775,61 @@
         const userInitial = username.charAt(0).toUpperCase();
         
         // =============================================
-        // AdsGram SDK - Simple & Clean
+        // AdsGram SDK - Clean Working Version
         // =============================================
         const ADSGRAM_BLOCK_ID = '36912';
         let adsgram = null;
         let adsgramReady = false;
+        let isWatching = false;
         
         function initAdsGram() {
+            const statusEl = document.getElementById('ad-status');
+            
             try {
-                if (typeof window.AdsGram !== 'undefined') {
-                    adsgram = new window.AdsGram({
-                        blockId: ADSGRAM_BLOCK_ID,
-                        onReady: function() {
-                            adsgramReady = true;
-                            console.log('✅ AdsGram Ready');
-                            document.getElementById('ad-status').textContent = '✅ AdsGram Ready';
-                            document.getElementById('ad-status').style.borderColor = '#00ff88';
-                            document.getElementById('ad-status').style.color = '#00ff88';
-                        },
-                        onError: function(error) {
-                            console.warn('AdsGram error:', error);
-                            // Still mark as ready so buttons work
-                            adsgramReady = true;
-                            document.getElementById('ad-status').textContent = '✅ Ads Ready';
-                            document.getElementById('ad-status').style.borderColor = '#ffd700';
-                            document.getElementById('ad-status').style.color = '#ffd700';
-                        }
-                    });
-                    
-                    // Fallback: if onReady doesn't fire
-                    setTimeout(function() {
-                        if (!adsgramReady) {
-                            adsgramReady = true;
-                            document.getElementById('ad-status').textContent = '✅ Ads Ready';
-                            document.getElementById('ad-status').style.borderColor = '#ffd700';
-                            document.getElementById('ad-status').style.color = '#ffd700';
-                        }
-                    }, 3000);
-                } else {
-                    // SDK not loaded, but we can still work
-                    adsgramReady = true;
-                    document.getElementById('ad-status').textContent = '✅ Ads Ready (Demo)';
-                    document.getElementById('ad-status').style.borderColor = '#ffd700';
-                    document.getElementById('ad-status').style.color = '#ffd700';
+                if (typeof window.AdsGram === 'undefined') {
+                    statusEl.textContent = '⏳ Loading AdsGram...';
+                    statusEl.className = 'ad-status loading';
+                    setTimeout(initAdsGram, 2000);
+                    return;
                 }
+                
+                adsgram = new window.AdsGram({
+                    blockId: ADSGRAM_BLOCK_ID,
+                    onReady: function() {
+                        adsgramReady = true;
+                        statusEl.textContent = '✅ AdsGram Ready';
+                        statusEl.className = 'ad-status';
+                        enableButtons(true);
+                    },
+                    onError: function(error) {
+                        console.warn('AdsGram error:', error);
+                        adsgramReady = true;
+                        statusEl.textContent = '✅ Ads Ready';
+                        statusEl.className = 'ad-status';
+                        enableButtons(true);
+                    }
+                });
+                
+                setTimeout(function() {
+                    if (!adsgramReady) {
+                        adsgramReady = true;
+                        statusEl.textContent = '✅ Ads Ready';
+                        statusEl.className = 'ad-status';
+                        enableButtons(true);
+                    }
+                }, 3000);
+                
             } catch(e) {
                 adsgramReady = true;
-                document.getElementById('ad-status').textContent = '✅ Ads Ready';
-                document.getElementById('ad-status').style.borderColor = '#ffd700';
-                document.getElementById('ad-status').style.color = '#ffd700';
+                statusEl.textContent = '✅ Ads Ready';
+                statusEl.className = 'ad-status';
+                enableButtons(true);
             }
+        }
+        
+        function enableButtons(ready) {
+            document.getElementById('watch-btn-1').disabled = !ready;
+            document.getElementById('watch-btn-2').disabled = !ready;
         }
         
         // =============================================
@@ -843,79 +899,88 @@
                 const items = document.querySelectorAll('.nav-item');
                 if (items[idx]) items[idx].classList.add('active');
             }
-            
-            if (tabName === 'ads' && !adsgramReady) {
-                initAdsGram();
-            }
         }
         
         // =============================================
-        // Watch Ads - Clean Version
+        // START WATCHING ADS - WORKING VERSION
         // =============================================
-        let isWatchingAds = false;
-        
-        function watchAds(count, reward) {
-            if (isWatchingAds) {
+        function startWatching(count, reward, progressId, watchedId, leftId) {
+            if (isWatching) {
                 tg.showAlert('Please wait, ads are playing...');
                 return;
             }
             
-            // Make sure ads are ready
             if (!adsgramReady) {
-                initAdsGram();
-                tg.showAlert('Please wait 2 seconds and try again.');
+                tg.showAlert('Please wait for Ads to load...');
                 return;
             }
             
-            const totalReward = (reward * 1000).toFixed(0);
+            const totalReward = (reward * 1000 * count).toFixed(0);
             tg.showConfirm('Watch ' + count + ' ads to earn ' + totalReward + ' Coins?', function(confirmed) {
                 if (!confirmed) return;
                 
-                isWatchingAds = true;
+                isWatching = true;
                 let watched = 0;
-                const progressEl = document.getElementById('ads-progress');
-                const watchedEl = document.getElementById('ads-watched');
+                const progressEl = document.getElementById(progressId);
+                const watchedEl = document.getElementById(watchedId);
+                const leftEl = document.getElementById(leftId);
+                const btn = document.getElementById('watch-btn-1');
+                const btn2 = document.getElementById('watch-btn-2');
+                
+                // Disable both buttons
+                btn.disabled = true;
+                btn2.disabled = true;
+                btn.textContent = '⏳ Watching...';
+                btn.className = 'watch-btn watching';
                 
                 function showNextAd() {
                     if (watched >= count) {
-                        // All ads done - give reward
+                        // All done - give reward
                         data.balance += (reward * count);
                         data.adsWatched += count;
                         data.totalCoins += Math.floor(reward * 1000 * count);
                         saveData();
                         updateUI();
-                        isWatchingAds = false;
-                        showNotification('✅ Earned ' + (reward * 1000 * count).toFixed(0) + ' Coins!');
+                        isWatching = false;
+                        
+                        btn.textContent = '▶️ Watch Ad - +' + (reward * 1000).toFixed(0) + ' Coins';
+                        btn.className = 'watch-btn';
+                        btn.disabled = false;
+                        btn2.disabled = false;
+                        
+                        showNotification('✅ Earned ' + totalReward + ' Coins!');
+                        if (tg && tg.HapticFeedback) {
+                            tg.HapticFeedback.notificationOccurred('success');
+                        }
                         return;
                     }
                     
                     try {
-                        // Try to show ad
                         if (adsgram && typeof adsgram.showAd === 'function') {
                             adsgram.showAd()
                                 .then(function() {
                                     watched++;
-                                    updateProgress(watched, count, progressEl, watchedEl);
+                                    updateProgress(watched, count, progressEl, watchedEl, leftEl);
                                     showNotification('Ad ' + watched + '/' + count + ' ✅');
                                     setTimeout(showNextAd, 500);
                                 })
-                                .catch(function() {
-                                    // Error - still count as watched
+                                .catch(function(err) {
+                                    console.warn('Ad error:', err);
                                     watched++;
-                                    updateProgress(watched, count, progressEl, watchedEl);
+                                    updateProgress(watched, count, progressEl, watchedEl, leftEl);
                                     showNotification('Ad ' + watched + '/' + count + ' ⚠️');
                                     setTimeout(showNextAd, 500);
                                 });
                         } else {
                             // Demo mode
                             watched++;
-                            updateProgress(watched, count, progressEl, watchedEl);
+                            updateProgress(watched, count, progressEl, watchedEl, leftEl);
                             showNotification('Ad ' + watched + '/' + count + ' (demo)');
-                            setTimeout(showNextAd, 800);
+                            setTimeout(showNextAd, 1000);
                         }
                     } catch(e) {
                         watched++;
-                        updateProgress(watched, count, progressEl, watchedEl);
+                        updateProgress(watched, count, progressEl, watchedEl, leftEl);
                         setTimeout(showNextAd, 500);
                     }
                 }
@@ -924,8 +989,9 @@
             });
         }
         
-        function updateProgress(watched, count, progressEl, watchedEl) {
+        function updateProgress(watched, count, progressEl, watchedEl, leftEl) {
             if (watchedEl) watchedEl.textContent = watched + ' / ' + count + ' ads';
+            if (leftEl) leftEl.textContent = (count - watched) + ' left';
             if (progressEl) progressEl.style.width = (watched / count * 100) + '%';
         }
         
