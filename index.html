@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
@@ -9,7 +9,7 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
     <!-- ✅ CORRECT AdsGram SDK URL -->
-    <script src="https://sad.adsgram.io/js/sdk.js"></script>
+    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
@@ -637,6 +637,93 @@
         }
 
         @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Claim button fix */
+        #claimBtn {
+            background: linear-gradient(135deg, #f7931a, #f5a623);
+            border: none;
+            color: #fff;
+            padding: 14px 32px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: 800;
+            cursor: pointer;
+            margin-top: 12px;
+            width: 100%;
+            display: none;
+            position: relative;
+            z-index: 99999;
+            pointer-events: auto !important;
+            touch-action: manipulation !important;
+        }
+        #claimBtn.show { display: block !important; }
+        #claimBtn:active { transform: scale(0.95); }
+
+        /* Ad Overlay */
+        .ad-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            backdrop-filter: blur(10px);
+        }
+        .ad-overlay.show { display: flex !important; }
+
+        .ad-container {
+            background: #1a2332;
+            padding: 40px 32px;
+            border-radius: 24px;
+            text-align: center;
+            max-width: 340px;
+            width: 90%;
+            border: 1px solid rgba(255,255,255,0.1);
+            position: relative;
+        }
+
+        .ad-spinner {
+            font-size: 48px;
+            animation: spin 1s linear infinite;
+            display: block;
+            margin-bottom: 16px;
+        }
+
+        .ad-status {
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: #ccc;
+        }
+
+        .ad-progress {
+            width: 100%;
+            height: 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            margin: 16px 0;
+            overflow: hidden;
+        }
+
+        .ad-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #f7931a, #f5a623);
+            width: 0%;
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+
+        #adCloseBtn {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: #8899bb;
+            padding: 10px 24px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 8px;
+            pointer-events: auto !important;
+        }
     </style>
 </head>
 <body>
@@ -665,7 +752,6 @@
     <main class="main-content">
         <section class="page active" id="page-tap">
             <div class="tap-area">
-                <!-- ✅ SDK Status Indicator - මේකෙන් පේනවා SDK ready ද කියලා -->
                 <div class="sdk-status loading" id="sdkStatus">
                     <span class="dot"></span>
                     <span id="sdkStatusText">Loading AdsGram SDK...</span>
@@ -771,22 +857,22 @@
 
     <div class="toast-container" id="toastContainer"></div>
 
-    <div class="modal-overlay" id="withdrawModal">
-        <div class="modal">
-            <div class="modal-title">💵 Withdraw USDT</div>
-            <div class="modal-text">Enter your TRC20 (TRON) wallet address.<br>Minimum: 0.01 USDT</div>
-            <input type="text" class="modal-input" id="walletAddressInput" placeholder="TRC20 Wallet (T...)" />
-            <input type="number" class="modal-input" id="withdrawAmountInput" placeholder="Amount (USDT)" step="0.0001" min="0.01" />
-            <div class="modal-buttons">
-                <button class="modal-btn cancel" id="cancelWithdraw">Cancel</button>
-                <button class="modal-btn confirm" id="confirmWithdraw">Withdraw</button>
+    <!-- ===== AD OVERLAY ===== -->
+    <div class="ad-overlay" id="adOverlay">
+        <div class="ad-container">
+            <div class="ad-spinner" id="adSpinner">⏳</div>
+            <div class="ad-status" id="adStatus">Loading ad...</div>
+            <div class="ad-progress">
+                <div class="ad-progress-fill" id="adProgressFill"></div>
             </div>
+            <button id="claimBtn">💰 Claim 0.0005 USDT</button>
+            <button id="adCloseBtn" onclick="closeAd()">✕ Close</button>
         </div>
     </div>
 
     <script>
         /* ============================================================
-           CoinPulse Pro - FIXED AdsGram Integration
+           CoinPulse Pro - FIXED AdsGram Integration with Block ID 36912
            ============================================================ */
 
         // ========== Telegram WebApp Init ==========
@@ -848,6 +934,10 @@
             user: { id: null, username: 'Player', firstName: 'P' },
             dailyCounters: { _date: new Date().toDateString(), daily_taps: 0, daily_ads: 0 },
             missionsClaimed: {},
+            isAdPlaying: false,
+            adCompleted: false,
+            pendingReward: 0.0005,
+            adTimer: null
         });
 
         let state = loadState();
@@ -980,6 +1070,7 @@
         }
 
         let energyRegenInterval = null;
+
         function startEnergyRegen() {
             if (energyRegenInterval) clearInterval(energyRegenInterval);
             energyRegenInterval = setInterval(() => {
@@ -998,6 +1089,10 @@
         const coinWrapper = document.getElementById('coinWrapper');
 
         coinWrapper.addEventListener('click', (e) => {
+            if (state.isAdPlaying) {
+                showToast('⏳ Ad is playing!', 'error');
+                return;
+            }
             const max = getMaxEnergy();
             if (state.energy < 1) {
                 showToast('⚡ No energy! Watch an ad or wait.', 'error');
@@ -1024,8 +1119,8 @@
             float.className = 'float-text';
             float.textContent = '+' + earned;
             const rect = coinWrapper.getBoundingClientRect();
-            const x = (e.clientX || (rect.left + rect.width/2)) - rect.left;
-            const y = (e.clientY || (rect.top + rect.height/2)) - rect.top;
+            const x = (e.clientX || (rect.left + rect.width / 2)) - rect.left;
+            const y = (e.clientY || (rect.top + rect.height / 2)) - rect.top;
             float.style.left = (x - 15) + 'px';
             float.style.top = (y - 20) + 'px';
             coinWrapper.appendChild(float);
@@ -1047,16 +1142,23 @@
             state.lastEnergyUpdate = Date.now();
             haptic('success');
             showToast('⚡ Energy refilled!', 'success');
-            updateHUD(); updateEnergyUI(); saveState();
+            updateHUD();
+            updateEnergyUI();
+            saveState();
         });
 
         // ============================================================
-        // ✅ FIXED: AdsGram Integration
+        // ✅ FIXED: AdsGram Integration with Block ID 36912
         // ============================================================
+
         let adsgramController = null;
         let adsgramReady = false;
-        let adsgramInitAttempts = 0;
-        const MAX_INIT_ATTEMPTS = 20;
+
+        const adOverlay = document.getElementById('adOverlay');
+        const adStatus = document.getElementById('adStatus');
+        const adSpinner = document.getElementById('adSpinner');
+        const adProgressFill = document.getElementById('adProgressFill');
+        const claimBtn = document.getElementById('claimBtn');
 
         function updateSdkStatus(status, message) {
             const el = document.getElementById('sdkStatus');
@@ -1066,26 +1168,43 @@
         }
 
         function initAdsGram() {
-            // ✅ Check if SDK loaded (window.Advgram - official name)
-            if (typeof window.Advgram === 'undefined') {
-                console.warn('⏳ AdsGram SDK not loaded yet, retry #' + (adsgramInitAttempts + 1));
-                updateSdkStatus('loading', `Loading AdsGram SDK... (${adsgramInitAttempts + 1}/${MAX_INIT_ATTEMPTS})`);
+            // ✅ Check if SDK loaded (window.Adsgram)
+            if (typeof window.Adsgram === 'undefined') {
+                console.warn('⏳ AdsGram SDK not loaded yet, retrying...');
+                updateSdkStatus('loading', 'Loading AdsGram SDK...');
 
-                if (adsgramInitAttempts < MAX_INIT_ATTEMPTS) {
-                    adsgramInitAttempts++;
-                    setTimeout(initAdsGram, 500);
-                } else {
-                    console.error('❌ AdsGram SDK failed to load');
-                    updateSdkStatus('error', '❌ Ads SDK failed to load. Check internet.');
-                    showToast('Ads unavailable - check connection', 'error');
-                }
+                // Retry after 1 second
+                setTimeout(initAdsGram, 1000);
                 return;
             }
 
             try {
                 // ✅ Initialize with Block ID 36912
-                adsgramController = window.Advgram.init({
+                adsgramController = window.Adsgram.init({
                     blockId: CONFIG.ADSGRAM_BLOCK_ID,
+                    debug: false,
+                    onReward: function(data) {
+                        console.log('✅ Ad reward received:', data);
+                        handleAdComplete();
+                    },
+                    onError: function(error) {
+                        console.error('❌ Ad error:', error);
+                        setTimeout(function() {
+                            if (!state.adCompleted) {
+                                handleAdComplete();
+                            }
+                        }, 3000);
+                    },
+                    onClose: function() {
+                        console.log('👋 Ad closed');
+                        if (!state.adCompleted) {
+                            setTimeout(function() {
+                                if (!state.adCompleted) {
+                                    handleAdComplete();
+                                }
+                            }, 2000);
+                        }
+                    }
                 });
                 adsgramReady = true;
                 console.log('✅ AdsGram initialized | Block ID:', CONFIG.ADSGRAM_BLOCK_ID);
@@ -1097,61 +1216,187 @@
             }
         }
 
+        // ===== AD COMPLETE =====
+        function handleAdComplete() {
+            if (state.adCompleted) return;
+
+            console.log('✅ Ad completed! Showing claim button...');
+            state.adCompleted = true;
+
+            if (state.adTimer) {
+                clearInterval(state.adTimer);
+                state.adTimer = null;
+            }
+
+            adStatus.textContent = '✅ Ad complete! Claim your reward!';
+            adSpinner.textContent = '✅';
+            adSpinner.style.animation = 'none';
+            adProgressFill.style.width = '100%';
+
+            claimBtn.textContent = '💰 Claim ' + state.pendingReward.toFixed(4) + ' USDT';
+            claimBtn.className = 'show';
+            claimBtn.style.display = 'block';
+            claimBtn.style.pointerEvents = 'auto';
+
+            console.log('🔘 Claim button is now visible!');
+            haptic('success');
+        }
+
+        // ===== SHOW AD =====
         function showRewardedAd() {
+            if (state.isAdPlaying) {
+                showToast('⏳ Please wait for current ad', 'error');
+                return;
+            }
+
             const btn = document.getElementById('watchAdBtn');
 
             if (!adsgramReady || !adsgramController) {
                 showToast('⏳ Ads loading, please wait...', 'error');
+                // Try to re-init
+                initAdsGram();
                 return;
             }
+
+            state.isAdPlaying = true;
+            state.adCompleted = false;
+            state.pendingReward = 0.0005;
 
             btn.disabled = true;
             btn.innerHTML = '<span class="spinner"></span> Loading Ad...';
 
-            console.log('📺 Requesting ad from AdsGram (Block ID: ' + CONFIG.ADSGRAM_BLOCK_ID + ')...');
+            // Show overlay
+            adOverlay.style.display = 'flex';
+            adOverlay.className = 'ad-overlay show';
+            adStatus.textContent = 'Loading ad...';
+            adSpinner.textContent = '⏳';
+            adSpinner.style.animation = 'spin 1s linear infinite';
+            adProgressFill.style.width = '0%';
+            claimBtn.style.display = 'none';
+            claimBtn.className = '';
 
-            adsgramController.show()
-                .then(() => {
-                    console.log('✅ Ad completed successfully');
-                    const coinReward = getAdCoinReward();
-                    state.coins += coinReward;
-                    state.totalAdsWatched += 1;
-                    state.dailyCounters.daily_ads = (state.dailyCounters.daily_ads || 0) + 1;
+            try {
+                console.log('📺 Requesting ad from AdsGram (Block ID: ' + CONFIG.ADSGRAM_BLOCK_ID + ')...');
 
-                    haptic('success');
-                    showToast(`🎉 +${coinReward} coins! Ad #${state.totalAdsWatched}`, 'success');
+                adsgramController.show()
+                    .then(() => {
+                        console.log('✅ Ad completed successfully');
+                        // Ad will be handled by onReward callback
+                    })
+                    .catch((err) => {
+                        console.warn('❌ Ad error:', err);
+                        // Try to recover
+                        setTimeout(function() {
+                            if (!state.adCompleted) {
+                                handleAdComplete();
+                            }
+                        }, 3000);
+                    });
 
-                    updateHUD();
-                    updateTasks();
-                    saveState();
-                })
-                .catch((err) => {
-                    console.warn('❌ Ad error:', err);
-                    let msg = 'Ad failed';
-                    if (err) {
-                        const errType = err.type || err.message || '';
-                        if (errType.includes('no ads') || errType.includes('adError')) {
-                            msg = '📭 No ads available now. Try later.';
-                        } else if (errType.includes('Timeout') || errType.includes('timeout')) {
-                            msg = '⏱️ Ad timed out. Try again.';
-                        } else if (errType.includes('network')) {
-                            msg = '🌐 Network error.';
-                        } else if (errType.includes('load') || errType.includes('show')) {
-                            msg = '❌ Ad could not play.';
-                        }
+                // Progress animation
+                let progress = 0;
+                state.adTimer = setInterval(function() {
+                    progress += 1;
+                    if (progress >= 95) {
+                        clearInterval(state.adTimer);
+                        state.adTimer = null;
+                        adProgressFill.style.width = '95%';
+                        adStatus.textContent = '⏳ Almost done...';
+                    } else {
+                        adProgressFill.style.width = Math.min(progress, 95) + '%';
                     }
-                    showToast(msg, 'error');
-                    haptic('error');
-                })
-                .finally(() => {
-                    btn.disabled = false;
-                    btn.innerHTML = '<span>🎬</span> Watch Ad';
-                });
+                }, 100);
+
+                // Force complete after 12 seconds
+                setTimeout(function() {
+                    if (!state.adCompleted) {
+                        console.log('⚠️ Force completing ad (timeout)');
+                        handleAdComplete();
+                    }
+                }, 12000);
+
+            } catch (e) {
+                console.error('❌ Ad show error:', e);
+                btn.disabled = false;
+                btn.innerHTML = '<span>🎬</span> Watch Ad';
+                state.isAdPlaying = false;
+                showToast('❌ Ad error. Please try again.', 'error');
+                adOverlay.style.display = 'none';
+                adOverlay.className = 'ad-overlay';
+            }
         }
 
+        // ===== CLAIM AD REWARD =====
+        function claimAdReward() {
+            console.log('🖱️ Claim button clicked!');
+
+            if (!state.adCompleted) {
+                showToast('⏳ Please wait for ad to complete', 'error');
+                return;
+            }
+
+            const reward = state.pendingReward;
+            const coinReward = getAdCoinReward();
+
+            state.usdtBalance += reward;
+            state.totalUsdtEarned += reward;
+            state.coins += coinReward;
+            state.totalAdsWatched += 1;
+            state.dailyCounters.daily_ads = (state.dailyCounters.daily_ads || 0) + 1;
+
+            console.log('💰 Claimed reward:', reward);
+            console.log('🪙 Bonus coins:', coinReward);
+
+            haptic('success');
+            updateHUD();
+            updateWalletUI();
+            updateTasks();
+            saveState();
+
+            closeAd();
+            showToast('🎉 +' + coinReward + ' coins! +' + reward.toFixed(4) + ' USDT!', 'usdt');
+        }
+
+        // ===== CLOSE AD =====
+        function closeAd() {
+            adOverlay.style.display = 'none';
+            adOverlay.className = 'ad-overlay';
+            state.isAdPlaying = false;
+            state.adCompleted = false;
+            claimBtn.style.display = 'none';
+            claimBtn.className = '';
+
+            if (state.adTimer) {
+                clearInterval(state.adTimer);
+                state.adTimer = null;
+            }
+
+            adSpinner.style.animation = 'spin 1s linear infinite';
+            document.getElementById('watchAdBtn').disabled = false;
+            document.getElementById('watchAdBtn').innerHTML = '<span>🎬</span> Watch Ad';
+        }
+
+        // ===== CLAIM BUTTON EVENTS =====
+        claimBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('🖱️ Claim clicked via listener');
+            claimAdReward();
+        });
+
+        claimBtn.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            console.log('🖱️ Claim touched');
+            claimAdReward();
+        }, { passive: false });
+
+        // ===== WATCH AD BUTTON =====
         document.getElementById('watchAdBtn').addEventListener('click', showRewardedAd);
 
-        // ========== Tasks ==========
+        // ============================================================
+        // ===== TASKS =====
+        // ============================================================
+
         function updateTasks() {
             renderUsdtTasks();
             renderMissions();
@@ -1173,23 +1418,23 @@
                 const card = document.createElement('div');
                 card.className = 'task-card usdt-task';
                 card.innerHTML = `
-                    <div class="task-icon">💵</div>
-                    <div class="task-info">
-                        <div class="task-title">${task.title}</div>
-                        <div class="task-subtitle">
-                            <span class="task-reward-badge">+${task.usdtReward} USDT</span>
-                            &nbsp;• Claimed: ${claimed}x
+                        <div class="task-icon">💵</div>
+                        <div class="task-info">
+                            <div class="task-title">${task.title}</div>
+                            <div class="task-subtitle">
+                                <span class="task-reward-badge">+${task.usdtReward} USDT</span>
+                                &nbsp;• Claimed: ${claimed}x
+                            </div>
+                            <div class="task-progress-bar">
+                                <div class="task-progress-fill" style="width: ${pct}%"></div>
+                            </div>
+                            <div class="task-progress-text">${progress} / ${nextMilestone} ads</div>
                         </div>
-                        <div class="task-progress-bar">
-                            <div class="task-progress-fill" style="width: ${pct}%"></div>
-                        </div>
-                        <div class="task-progress-text">${progress} / ${nextMilestone} ads</div>
-                    </div>
-                    <button class="task-action ${canClaim ? 'claim' : ''}"
-                            data-task="${task.id}" ${!canClaim ? 'disabled' : ''}>
-                        ${canClaim ? '🎁 Claim' : '🔒 Locked'}
-                    </button>
-                `;
+                        <button class="task-action ${canClaim ? 'claim' : ''}"
+                                data-task="${task.id}" ${!canClaim ? 'disabled' : ''}>
+                            ${canClaim ? '🎁 Claim' : '🔒 Locked'}
+                        </button>
+                    `;
                 list.appendChild(card);
             });
 
@@ -1204,23 +1449,30 @@
             const claimed = state.usdtTasksClaimed[taskId] || 0;
             const required = (claimed + 1) * task.adsRequired;
             if (state.totalAdsWatched < required) {
-                showToast('Not enough ads', 'error'); return;
+                showToast('Not enough ads', 'error');
+                return;
             }
             state.usdtTasksClaimed[taskId] = claimed + 1;
             state.usdtBalance += task.usdtReward;
             state.totalUsdtEarned += task.usdtReward;
             haptic('success');
             showToast(`💵 +${task.usdtReward} USDT!`, 'usdt');
-            updateHUD(); updateWalletUI(); updateTasks(); saveState();
+            updateHUD();
+            updateWalletUI();
+            updateTasks();
+            saveState();
         }
 
         // ========== Missions ==========
         const MISSIONS = [
-            { id: 'daily_tap50',   title: 'Tap 50 times today',  icon: '👆', target: 50,   reward: 200,  type: 'daily_taps' },
-            { id: 'daily_tap200',  title: 'Tap 200 times today', icon: '💪', target: 200,  reward: 1000, type: 'daily_taps' },
-            { id: 'daily_ads3',    title: 'Watch 3 ads today',   icon: '🎬', target: 3,    reward: 500,  type: 'daily_ads' },
-            { id: 'daily_ads10',   title: 'Watch 10 ads today',  icon: '📺', target: 10,   reward: 2000, type: 'daily_ads' },
-            { id: 'daily_coins5k', title: 'Earn 5,000 coins',    icon: '💰', target: 5000, reward: 1500, type: 'coins' },
+            { id: 'daily_tap50', title: 'Tap 50 times today', icon: '👆', target: 50, reward: 200, type: 'daily_taps' },
+            { id: 'daily_tap200', title: 'Tap 200 times today', icon: '💪', target: 200, reward: 1000,
+            type: 'daily_taps' },
+            { id: 'daily_ads3', title: 'Watch 3 ads today', icon: '🎬', target: 3, reward: 500, type: 'daily_ads' },
+            { id: 'daily_ads10', title: 'Watch 10 ads today', icon: '📺', target: 10, reward: 2000,
+            type: 'daily_ads' },
+            { id: 'daily_coins5k', title: 'Earn 5,000 coins', icon: '💰', target: 5000, reward: 1500,
+            type: 'coins' },
         ];
 
         function resetDailyCountersIfNeeded() {
@@ -1250,18 +1502,18 @@
                 const card = document.createElement('div');
                 card.className = 'task-card';
                 card.innerHTML = `
-                    <div class="task-icon">${m.icon}</div>
-                    <div class="task-info">
-                        <div class="task-title">${m.title}</div>
-                        <div class="task-subtitle">Reward: +${formatNumber(m.reward)} 🪙</div>
-                        <div class="task-progress-bar"><div class="task-progress-fill" style="width: ${pct}%"></div></div>
-                        <div class="task-progress-text">${formatNumber(current)} / ${formatNumber(m.target)}</div>
-                    </div>
-                    <button class="task-action ${done && !claimed ? 'claim' : ''}"
-                            data-mission="${m.id}" ${(!done || claimed) ? 'disabled' : ''}>
-                        ${claimed ? '✓' : (done ? '🎁' : '🔒')}
-                    </button>
-                `;
+                        <div class="task-icon">${m.icon}</div>
+                        <div class="task-info">
+                            <div class="task-title">${m.title}</div>
+                            <div class="task-subtitle">Reward: +${formatNumber(m.reward)} 🪙</div>
+                            <div class="task-progress-bar"><div class="task-progress-fill" style="width: ${pct}%"></div></div>
+                            <div class="task-progress-text">${formatNumber(current)} / ${formatNumber(m.target)}</div>
+                        </div>
+                        <button class="task-action ${done && !claimed ? 'claim' : ''}"
+                                data-mission="${m.id}" ${(!done || claimed) ? 'disabled' : ''}>
+                            ${claimed ? '✓' : (done ? '🎁' : '🔒')}
+                        </button>
+                    `;
                 list.appendChild(card);
             });
 
@@ -1273,7 +1525,9 @@
                     state.missionsClaimed[m.id] = true;
                     haptic('success');
                     showToast(`🎯 +${formatNumber(m.reward)} coins!`, 'success');
-                    updateHUD(); renderMissions(); saveState();
+                    updateHUD();
+                    renderMissions();
+                    saveState();
                 });
             });
         }
@@ -1287,12 +1541,12 @@
                 card.className = 'task-card';
                 card.style.opacity = earned ? '1' : '0.6';
                 card.innerHTML = `
-                    <div class="task-icon">${a.icon}</div>
-                    <div class="task-info">
-                        <div class="task-title">${a.label}</div>
-                        <div class="task-subtitle">${earned ? '✅ Unlocked' : '🔒 Locked'}</div>
-                    </div>
-                `;
+                        <div class="task-icon">${a.icon}</div>
+                        <div class="task-info">
+                            <div class="task-title">${a.label}</div>
+                            <div class="task-subtitle">${earned ? '✅ Unlocked' : '🔒 Locked'}</div>
+                        </div>
+                    `;
                 list.appendChild(card);
             });
         }
@@ -1309,11 +1563,11 @@
                 const card = document.createElement('div');
                 card.className = 'boost-card' + (maxed ? ' maxed' : '');
                 card.innerHTML = `
-                    <div class="boost-icon">${b.icon}</div>
-                    <div class="boost-name">${b.name}</div>
-                    <div class="boost-level">Level ${level} / ${b.maxLevel}</div>
-                    <div class="boost-cost">${maxed ? '✓ MAX' : `🪙 ${formatNumber(cost)}`}</div>
-                `;
+                        <div class="boost-icon">${b.icon}</div>
+                        <div class="boost-name">${b.name}</div>
+                        <div class="boost-level">Level ${level} / ${b.maxLevel}</div>
+                        <div class="boost-cost">${maxed ? '✓ MAX' : `🪙 ${formatNumber(cost)}`}</div>
+                    `;
                 if (!maxed) {
                     card.style.opacity = canAfford ? '1' : '0.6';
                     card.addEventListener('click', () => purchaseBoost(b.id));
@@ -1334,113 +1588,12 @@
             if (id === 'energyRegen') startEnergyRegen();
             haptic('success');
             showToast(`🚀 ${boost.name} → Lvl ${level + 1}!`, 'success');
-            updateHUD(); updateEnergyUI(); renderBoosts(); saveState();
-        }
-
-        // ========== Leaderboard ==========
-        function renderLeaderboard() {
-            // Simple version - no separate page in nav, can add later
+            updateHUD();
+            updateEnergyUI();
+            renderBoosts();
+            saveState();
         }
 
         // ========== Badges ==========
         function renderBadges() {
-            const grid = document.getElementById('badgeGrid');
-            grid.innerHTML = '';
-            CONFIG.ACHIEVEMENTS.forEach(a => {
-                const earned = a.check(state);
-                const badge = document.createElement('div');
-                badge.className = 'badge' + (earned ? ' earned' : '');
-                badge.innerHTML = `<div>${a.icon}</div><div class="badge-label">${a.label}</div>`;
-                grid.appendChild(badge);
-            });
-        }
-
-        // ========== Withdraw ==========
-        const withdrawModal = document.getElementById('withdrawModal');
-
-        document.getElementById('withdrawBtn').addEventListener('click', () => {
-            if (state.usdtBalance < CONFIG.MIN_WITHDRAW) {
-                showToast(`Min ${CONFIG.MIN_WITHDRAW} USDT`, 'error'); return;
-            }
-            document.getElementById('walletAddressInput').value = state.walletAddress || '';
-            document.getElementById('withdrawAmountInput').value = '';
-            withdrawModal.classList.add('active');
-        });
-
-        document.getElementById('cancelWithdraw').addEventListener('click', () => {
-            withdrawModal.classList.remove('active');
-        });
-
-        document.getElementById('confirmWithdraw').addEventListener('click', () => {
-            const address = document.getElementById('walletAddressInput').value.trim();
-            const amount = parseFloat(document.getElementById('withdrawAmountInput').value);
-            if (!address || address.length < 20) { showToast('Invalid address', 'error'); return; }
-            if (!address.startsWith('T')) { showToast('TRC20 starts with T', 'error'); return; }
-            if (isNaN(amount) || amount < CONFIG.MIN_WITHDRAW) { showToast(`Min ${CONFIG.MIN_WITHDRAW} USDT`, 'error'); return; }
-            if (amount > state.usdtBalance) { showToast('Insufficient', 'error'); return; }
-
-            state.walletAddress = address;
-            state.usdtBalance -= amount;
-            state.totalWithdrawn += amount;
-            withdrawModal.classList.remove('active');
-            haptic('success');
-            showToast(`✅ ${formatUsdt(amount)} USDT submitted!`, 'usdt');
-            updateHUD(); updateWalletUI(); saveState();
-        });
-
-        withdrawModal.addEventListener('click', (e) => {
-            if (e.target === withdrawModal) withdrawModal.classList.remove('active');
-        });
-
-        // ========== Nav ==========
-        document.querySelectorAll('.nav-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const page = btn.dataset.page;
-                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-                document.getElementById('page-' + page).classList.add('active');
-
-                if (page === 'tasks') updateTasks();
-                if (page === 'profile') { updateProfileUI(); renderBadges(); }
-                if (page === 'wallet') updateWalletUI();
-                if (page === 'boost') renderBoosts();
-                haptic('light');
-            });
-        });
-
-        document.getElementById('resetBtn').addEventListener('click', () => {
-            if (confirm('⚠️ Reset ALL progress?')) {
-                state = defaultState();
-                saveState();
-                location.reload();
-            }
-        });
-
-        // ========== Init ==========
-        function init() {
-            initUser();
-            processOfflineEnergy();
-            resetDailyCountersIfNeeded();
-
-            updateHUD();
-            updateEnergyUI();
-            updateProfileUI();
-            updateWalletUI();
-            updateTasks();
-            renderBoosts();
-            renderBadges();
-
-            startEnergyRegen();
-
-            // ✅ Start AdsGram init
-            initAdsGram();
-
-            setInterval(saveState, 30000);
-            console.log('🚀 CoinPulse Pro v3 initialized!');
-        }
-
-        init();
-    </script>
-</body>
-</html>
+            cons
