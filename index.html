@@ -3,521 +3,540 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Coinpulse - Earn USDT</title>
+    <title>CoinPulse Pro - Ultra Advanced Web3 Mini App</title>
+    
+    <!-- CSS Utilities & Frameworks -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- AdsGram Official Native Asynchronous SDK -->
-    <script src="https://sad.adsgram.ai/js/advadsgram-sdk.js" defer></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); 
-            color: white; 
-            min-height: 100vh;
-            overflow-x: hidden;
-            padding-bottom: 70px;
-        }
-        
-        .app-header { 
-            background: rgba(0,0,0,0.5); 
-            padding: 15px 20px; 
-            position: sticky; 
-            top: 0; 
-            z-index: 100;
-            backdrop-filter: blur(10px);
-        }
-        
-        .user-welcome { 
-            display: flex; 
-            align-items: center; 
-            gap: 12px; 
-            margin-bottom: 20px;
-        }
-        
-        .user-avatar { 
-            width: 50px; 
-            height: 50px; 
-            border-radius: 15px; 
-            background: linear-gradient(135deg, #00ff88, #00cc6a); 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            font-weight: bold;
-            font-size: 24px;
-            color: #000;
-        }
-        
-        .user-info h3 { font-size: 16px; margin-bottom: 3px; }
-        .user-info span { font-size: 12px; opacity: 0.7; }
-        
-        .balance-card {
-            background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,170,0,0.1));
-            border-radius: 20px;
-            padding: 25px;
-            text-align: center;
-            border: 2px solid rgba(255,215,0,0.3);
-            margin-bottom: 20px;
-        }
-        
-        .balance-label { font-size: 14px; opacity: 0.8; margin-bottom: 10px; letter-spacing: 1px; }
-        .balance-amount { font-size: 48px; font-weight: bold; color: #ffd700; margin: 10px 0; }
-        .balance-usd { font-size: 16px; opacity: 0.9; margin-top: 10px; }
-        .balance-details { 
-            display: flex; 
-            justify-content: space-around; 
-            margin-top: 20px; 
-            padding-top: 20px; 
-            border-top: 1px solid rgba(255,255,255,0.2);
-        }
-        .detail-item { text-align: center; }
-        .detail-value { font-size: 18px; font-weight: bold; color: #00ff88; }
-        .detail-label { font-size: 11px; opacity: 0.7; margin-top: 3px; }
-        
-        .quick-actions { 
-            display: grid; 
-            grid-template-columns: repeat(4, 1fr); 
-            gap: 10px; 
-            margin-bottom: 20px;
-        }
-        
-        .action-btn {
-            background: rgba(255,255,255,0.1);
-            border-radius: 15px;
-            padding: 15px 10px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        
-        .action-btn:active { transform: scale(0.95); }
-        .action-btn i { font-size: 24px; margin-bottom: 8px; display: block; }
-        .action-btn span { font-size: 11px; }
-        .action-btn:nth-child(1) { background: rgba(0,255,136,0.2); }
-        .action-btn:nth-child(2) { background: rgba(138,43,226,0.2); }
-        .action-btn:nth-child(3) { background: rgba(30,144,255,0.2); }
-        .action-btn:nth-child(4) { background: rgba(255,215,0,0.2); }
-        
-        .earn-section { margin-bottom: 20px; padding: 0 20px; }
-        .section-title { font-size: 16px; font-weight: bold; margin-bottom: 15px; opacity: 0.9; }
-        
-        .earn-cards { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
-            gap: 12px;
-        }
-        
-        .earn-card {
-            background: rgba(255,255,255,0.08);
-            border-radius: 15px;
-            padding: 20px;
-            text-align: center;
-            border: 1px solid rgba(255,255,255,0.1);
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .earn-card:active { transform: scale(0.98); }
-        .earn-card i { font-size: 32px; margin-bottom: 10px; }
-        .earn-card h3 { font-size: 14px; margin-bottom: 5px; }
-        .earn-card p { font-size: 11px; opacity: 0.7; }
-        .earn-card.watch { background: linear-gradient(135deg, rgba(0,123,255,0.3), rgba(0,123,255,0.1)); }
-        .earn-card.tasks { background: linear-gradient(135deg, rgba(40,167,69,0.3), rgba(40,167,69,0.1)); }
-        .earn-card.refer { background: linear-gradient(135deg, rgba(111,66,193,0.3), rgba(111,66,193,0.1)); }
-        
-        .referral-section {
-            background: rgba(255,255,255,0.05);
-            border-radius: 15px;
-            padding: 20px;
-            margin: 0 20px 20px;
-        }
-        
-        .referral-title { 
-            display: flex; 
-            align-items: center; 
-            gap: 10px; 
-            margin-bottom: 15px;
-            font-size: 14px;
-            font-weight: bold;
-        }
-        
-        .referral-link {
-            background: rgba(0,0,0,0.3);
-            border-radius: 10px;
-            padding: 12px;
-            font-size: 12px;
-            word-break: break-all;
-            margin-bottom: 10px;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        
-        .copy-btn {
-            background: linear-gradient(135deg, #ffd700, #ffaa00);
-            color: #000;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 10px;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-        }
-        
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(0,0,0,0.95);
-            padding: 10px 15px;
-            display: flex;
-            justify-content: space-around;
-            backdrop-filter: blur(10px);
-            border-top: 1px solid rgba(255,255,255,0.1);
-            z-index: 100;
-        }
-        
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-            padding: 5px 15px;
-            cursor: pointer;
-            color: rgba(255,255,255,0.6);
-            transition: all 0.3s;
-        }
-        
-        .nav-item.active { color: #ffd700; }
-        .nav-item i { font-size: 22px; }
-        .nav-item span { font-size: 11px; }
-        
-        .content-section { display: none; padding: 20px; }
-        .content-section.active { display: block; }
-        
-        .ad-card {
-            background: rgba(255,255,255,0.08);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 15px;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        
-        .ad-header { 
-            display: flex; 
-            align-items: center; 
-            gap: 15px; 
-            margin-bottom: 15px;
-        }
-        
-        .ad-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
-            background: linear-gradient(135deg, #ffd700, #ffaa00);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-        }
-        
-        .ad-info h3 { font-size: 16px; margin-bottom: 3px; }
-        .ad-info p { font-size: 12px; opacity: 0.7; }
-        
-        .ad-progress {
-            background: rgba(255,255,255,0.1);
-            border-radius: 10px;
-            padding: 15px;
-            margin: 15px 0;
-        }
-        
-        .progress-text { 
-            display: flex; 
-            justify-content: space-between; 
-            margin-bottom: 10px;
-            font-size: 13px;
-        }
-        
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 10px;
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
             overflow: hidden;
         }
-        
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #00ff88, #00cc6a);
-            transition: width 0.3s;
+        .tab-content {
+            display: none;
+            height: calc(100vh - 170px);
+            overflow-y: auto;
         }
-        
-        .watch-btn {
-            background: linear-gradient(135deg, #ffd700, #ffaa00);
-            color: #000;
-            border: none;
-            padding: 15px;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 10px;
+        .tab-content.active {
+            display: block;
         }
-        
-        .notification {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%) translateY(-100px);
-            background: #fff;
-            color: #000;
-            padding: 15px 30px;
-            border-radius: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            font-weight: 600;
-            opacity: 0;
-            transition: all 0.3s;
-            z-index: 2000;
+        @keyframes floatUp {
+            0% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+            100% { opacity: 0; transform: translateY(-120px) scale(1.4) rotate(10deg); }
         }
-        
-        .notification.show {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
+        .coin-particle {
+            position: absolute;
+            pointer-events: none;
+            animation: floatUp 0.7s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
         }
-        
-        .ad-status {
-            background: rgba(0,255,136,0.1);
-            border: 1px solid #00ff88;
+        /* Custom Scrollbar for Tasks/Upgrades */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.5);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(6, 182, 212, 0.3);
             border-radius: 10px;
-            padding: 12px;
-            margin: 10px 0 20px;
-            text-align: center;
-            font-size: 13px;
-            color: #00ff88;
-            font-weight: 600;
         }
     </style>
 </head>
-<body>
-    <div class="notification" id="notification"></div>
-    
-    <!-- Home Section -->
-    <div id="home" class="content-section active">
-        <div class="app-header">
-            <div class="user-welcome">
-                <div class="user-avatar" id="user-avatar">U</div>
-                <div class="user-info">
-                    <h3 id="username">User</h3>
-                    <span id="user-id">ID: 12345</span>
+<body class="bg-slate-950 text-white min-h-screen flex flex-col justify-between p-4">
+
+    <!-- ==================== TOP PROFILE & METRICS ==================== -->
+    <div class="space-y-3">
+        <div class="flex items-center justify-between bg-slate-900/60 p-3 rounded-2xl border border-slate-800/80 backdrop-blur-xl shadow-2xl">
+            <div class="flex items-center gap-3">
+                <div id="u-avatar" class="w-10 h-10 rounded-full bg-gradient-to-tr from-cyan-500 via-blue-500 to-purple-600 flex items-center justify-center font-black shadow-lg shadow-cyan-500/20 text-white text-base border border-cyan-400/30">
+                    CP
+                </div>
+                <div>
+                    <div class="flex items-center gap-1.5">
+                        <h4 id="u-name" class="text-xs font-bold text-slate-200">Pulse Explorer</h4>
+                        <span class="text-[9px] bg-cyan-500/20 text-cyan-400 px-1.5 py-0.5 rounded-md border border-cyan-500/30 font-extrabold">PRO</span>
+                    </div>
+                    <p id="user-rank" class="text-[10px] text-slate-400 mt-0.5">Rank: Bronze Warrior</p>
                 </div>
             </div>
-            
-            <div class="balance-card">
-                <div class="balance-label">YOUR BALANCE</div>
-                <div class="balance-amount"><span id="balance">0.00</span></div>
-                <div class="balance-usd">≈ $<span id="usd-value">0.00</span> USDT</div>
-                <div class="balance-details">
-                    <div class="detail-item">
-                        <div class="detail-value" id="total-coins">0</div>
-                        <div class="detail-label">Coins</div>
+            <div class="flex items-center gap-2">
+                <div class="bg-slate-950/80 border border-slate-800 px-2.5 py-1 rounded-xl text-center">
+                    <p class="text-[8px] text-slate-400 font-bold uppercase tracking-wider">Profit / Hr</p>
+                    <p id="pph-display" class="text-xs font-extrabold text-emerald-400">+0</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MAIN CONTENT CONTAINERS ==================== -->
+    <main class="flex-grow my-4 relative">
+
+        <!-- 1. HOME / CLICKER TAB -->
+        <div id="tab-home" class="tab-content active flex flex-col justify-between h-full">
+            <!-- Balance View -->
+            <div class="text-center py-2">
+                <p class="text-[11px] tracking-widest text-slate-400 font-bold uppercase flex items-center justify-center gap-1">
+                    <span>⚡ COINPULSE ECOSYSTEM <span>
+                </p>
+                <div class="flex items-center justify-center gap-2 mt-1">
+                    <span id="home-balance" class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-teal-300 to-indigo-400 drop-shadow-[0_0_35px_rgba(6,182,212,0.4)]">
+                        0
+                    </span>
+                </div>
+            </div>
+
+            <!-- Central Core Clicker Button -->
+            <div class="flex justify-center items-center my-auto relative">
+                <div id="click-area" class="w-64 h-64 rounded-full bg-gradient-to-b from-slate-900 via-slate-950 to-black border-[6px] border-cyan-500/20 flex items-center justify-center relative active:scale-95 transition-transform duration-75 shadow-[0_0_80px_rgba(6,182,212,0.15)] active:shadow-[0_0_90px_rgba(6,182,212,0.35)] group overflow-hidden cursor-pointer">
+                    <div class="absolute inset-4 rounded-full bg-gradient-to-tr from-cyan-500/20 via-transparent to-purple-500/10 blur-md"></div>
+                    <div class="w-48 h-48 rounded-full bg-slate-900/40 border border-slate-800 flex items-center justify-center backdrop-blur-sm shadow-inner">
+                        <span class="text-8xl select-none filter drop-shadow-[0_0_25px_rgba(6,182,212,0.5)] transform group-active:scale-110 transition-transform">🪙</span>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-    
-    <!-- Ads Section -->
-    <div id="ads" class="content-section">
-        <div class="app-header">
-            <h2 style="margin-bottom: 10px;">Watch Ads & Earn</h2>
-            <div class="ad-status" id="ad-status">🔄 Connecting to AdsGram Network...</div>
-        </div>
-        
-        <!-- Reward Ad Type 1 -->
-        <div class="ad-card">
-            <div class="ad-header">
-                <div class="ad-icon">📺</div>
-                <div class="ad-info">
-                    <h3>AdsGram Reward</h3>
-                    <p>+10 Coins per ad</p>
-                </div>
-            </div>
-            <div class="ad-progress">
-                <div class="progress-text">
-                    <span id="ads-watched-1">0 / 5 ads</span>
-                    <span id="ads-left-1">5 left</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="ads-progress-1" style="width: 0%"></div>
-                </div>
-            </div>
-            <button class="watch-btn" onclick="triggerRealAd(1, 5, 0.010, 10)" id="watch-btn-1">
-                ▶️ Watch Ad - +10 Coins
-            </button>
-        </div>
-        
-        <!-- Reward Ad Type 2 -->
-        <div class="ad-card">
-            <div class="ad-header">
-                <div class="ad-icon" style="background: linear-gradient(135deg, #ff4444, #ff0000);">🎯</div>
-                <div class="ad-info">
-                    <h3>AdsGram AI</h3>
-                    <p>+8 Coins per ad</p>
-                </div>
-            </div>
-            <div class="ad-progress">
-                <div class="progress-text">
-                    <span id="ads-watched-2">0 / 15 ads</span>
-                    <span id="ads-left-2">15 left</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="ads-progress-2" style="width: 0%"></div>
-                </div>
-            </div>
-            <button class="watch-btn" style="background: linear-gradient(135deg, #ff4444, #ff0000);" onclick="triggerRealAd(2, 15, 0.008, 8)" id="watch-btn-2">
-                ▶️ Watch Ad - +8 Coins
-            </button>
-        </div>
-    </div>
-    
-    <!-- Bottom Navigation -->
-    <div class="bottom-nav">
-        <div class="nav-item active" onclick="switchTab('home')"><i class="fas fa-home"></i><span>Home</span></div>
-        <div class="nav-item" onclick="switchTab('ads')"><i class="fas fa-play-circle"></i><span>Ads</span></div>
-    </div>
 
+            <!-- Energy Component -->
+            <div class="bg-slate-900/50 p-4 rounded-2xl border border-slate-800/60 backdrop-blur-md">
+                <div class="flex justify-between text-xs text-slate-400 mb-2 font-semibold">
+                    <span class="flex items-center gap-1 text-cyan-400">⚡ Energy Battery</span>
+                    <span id="energy-text" class="font-bold text-slate-200">1000 / 1000</span>
+                </div>
+                <div class="w-full bg-slate-950 h-3 rounded-full p-0.5 border border-slate-800 overflow-hidden">
+                    <div id="energy-bar" class="bg-gradient-to-r from-cyan-500 via-teal-400 to-indigo-500 h-full rounded-full transition-all duration-100 shadow-[0_0_15px_rgba(6,182,212,0.6)]" style="width: 100%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. MINE / PASSIVE UPGRADES TAB -->
+        <div id="tab-mine" class="tab-content space-y-4">
+            <div class="bg-slate-900/40 p-4 rounded-2xl border border-slate-800/60 text-center">
+                <h3 class="text-sm font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300">Passive Mining Node</h3>
+                <p class="text-xs text-slate-400 mt-1">Upgrade cards to generate passive income even when you are offline!</p>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-3" id="mine-cards-container">
+                <!-- Cards will be rendered via JS -->
+            </div>
+        </div>
+
+        <!-- 3. TASKS & EARN TAB -->
+        <div id="tab-tasks" class="tab-content space-y-4">
+            <!-- Daily Reward Section -->
+            <div class="bg-gradient-to-br from-slate-900 to-indigo-950/40 p-4 rounded-2xl border border-indigo-500/20">
+                <h3 class="text-sm font-bold text-indigo-300 flex items-center gap-1.5">📅 Daily Streak Rewards</h3>
+                <p class="text-xs text-slate-400 mt-1">Claim your sequential streak bonus every 24 hours.</p>
+                <div class="grid grid-cols-4 gap-1.5 mt-3" id="daily-streaks-grid">
+                    <!-- Dynamic Day Badges -->
+                </div>
+                <button id="claim-daily-btn" class="w-full mt-3 bg-gradient-to-r from-indigo-500 to-cyan-500 p-2.5 rounded-xl text-xs font-black uppercase tracking-wider active:scale-98 transition-transform shadow-md shadow-indigo-500/20">Claim Today's Reward</button>
+            </div>
+
+            <!-- Social and Web3 Tasks -->
+            <div class="space-y-2">
+                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Social Missions</h3>
+                <div class="space-y-2.5" id="tasks-list-container">
+                    <!-- Tasks inside JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. AIRDROP TAB -->
+        <div id="tab-airdrop" class="tab-content flex flex-col justify-center items-center text-center space-y-6 px-4">
+            <div class="w-24 h-24 rounded-full bg-gradient-to-tr from-purple-600 via-indigo-600 to-cyan-500 flex items-center justify-center text-5xl shadow-[0_0_50px_rgba(147,51,234,0.4)] border border-purple-400/30 animate-bounce">
+                💎
+            </div>
+            <div>
+                <h2 class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400">CoinPulse TGE Airdrop</h2>
+                <p class="text-xs text-slate-400 mt-2 max-w-xs mx-auto leading-relaxed">The Token Generation Event (TGE) is scheduled soon. Your snapshot allocation will heavily scale based on your **PPH (Profit per hour)** and completed missions.</p>
+            </div>
+            
+            <div class="w-full bg-slate-900/50 border border-slate-800 p-4 rounded-2xl space-y-3">
+                <div class="flex justify-between items-center text-xs">
+                    <span class="text-slate-400">Wallet Status</span>
+                    <span class="text-amber-400 font-bold flex items-center gap-1">⚠️ Not Connected</span>
+                </div>
+                <button onclick="alert('Web3 Smart Contracts integration will be deployed in the next block update.')" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 p-3 rounded-xl font-bold text-xs uppercase tracking-wider shadow-lg shadow-purple-600/20 active:scale-95 transition-transform">Connect TON Wallet</button>
+            </div>
+
+            <!-- Premium Adsgram Trigger Placed Contextually inside Airdrop Phase -->
+            <div class="w-full bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20 p-4 rounded-2xl">
+                <p class="text-xs text-amber-400 font-semibold">⚡ Emergency Airdrop Power Booster</p>
+                <p class="text-[10px] text-slate-400 mt-1">Watch a premium network sponsor video to instantly claim a massive balance injection.</p>
+                <button id="adsgram-premium-btn" class="w-full mt-3 bg-gradient-to-r from-amber-500 to-orange-600 p-3 rounded-xl font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1 shadow-lg shadow-orange-500/20 active:scale-95 transition-transform">
+                    <span>📺 Launch Adsgram Video</span>
+                    <span class="bg-black/30 px-1.5 py-0.5 rounded text-[9px] text-amber-200">+5,000 Coins</span>
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- ==================== PREMIUM PERSISTENT DYNAMIC NAVIGATION ==================== -->
+    <nav class="bg-slate-900/90 border border-slate-800/80 p-2 rounded-2xl backdrop-blur-2xl grid grid-cols-4 gap-1 shadow-2xl">
+        <button onclick="switchTab('home')" id="nav-home" class="nav-btn flex flex-col items-center justify-center py-2.5 rounded-xl font-bold text-[11px] text-cyan-400 bg-slate-950/80 border border-cyan-500/20 shadow-md">
+            <span class="text-base mb-0.5">🪙</span> Home
+        </button>
+        <button onclick="switchTab('mine')" id="nav-mine" class="nav-btn flex flex-col items-center justify-center py-2.5 rounded-xl font-bold text-[11px] text-slate-400 hover:text-slate-200">
+            <span class="text-base mb-0.5">⛏️</span> Mine
+        </button>
+        <button onclick="switchTab('tasks')" id="nav-tasks" class="nav-btn flex flex-col items-center justify-center py-2.5 rounded-xl font-bold text-[11px] text-slate-400 hover:text-slate-200">
+            <span class="text-base mb-0.5">📋</span> Tasks
+        </button>
+        <button onclick="switchTab('airdrop')" id="nav-airdrop" class="nav-btn flex flex-col items-center justify-center py-2.5 rounded-xl font-bold text-[11px] text-slate-400 hover:text-slate-200">
+            <span class="text-base mb-0.5">💎</span> Airdrop
+        </button>
+    </nav>
+
+    <!-- ==================== LOGIC PLATFORM CONTROLLER ==================== -->
     <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
-        tg.ready();
-        
-        const user = tg.initDataUnsafe.user;
-        const userId = user ? user.id : 'guest';
-        const username = user ? (user.username || user.first_name) : 'Guest';
-        const userInitial = username.charAt(0).toUpperCase();
-        
-        // 100% Real Live AdsGram Production Block ID
-        const ADSGRAM_BLOCK_ID = '36912'; 
-        let AdController = null;
-
-        // Try to initialize authentic AdsGram controller
-        function initializeAdsGram() {
-            if (window.AdsGram) {
-                AdController = window.AdsGram.init({ blockId: ADSGRAM_BLOCK_ID });
-                document.getElementById('ad-status').textContent = "✅ AdsGram SDK Connected (Live Mode)";
-                document.getElementById('ad-status').style.borderColor = "#00ff88";
-                document.getElementById('ad-status').style.color = "#00ff88";
-            } else {
-                document.getElementById('ad-status').textContent = "❌ Network Error: AdsGram Script Blocked";
-                document.getElementById('ad-status').style.borderColor = "#ff4444";
-                document.getElementById('ad-status').style.color = "#ff4444";
-            }
-        }
-
-        // Run checking shortly after load
-        window.addEventListener('DOMContentLoaded', () => {
-            setTimeout(initializeAdsGram, 1000);
-        });
-        
-        // LocalStorage Data
-        let data = {
-            balance: parseFloat(localStorage.getItem(`balance_${userId}`)) || 0,
-            totalCoins: parseInt(localStorage.getItem(`totalCoins_${userId}`)) || 0,
-            adCount1: parseInt(localStorage.getItem(`adCount1_${userId}`)) || 0,
-            adCount2: parseInt(localStorage.getItem(`adCount2_${userId}`)) || 0
+        // --- SECURE STATE ARCHITECTURE ---
+        let state = {
+            balance: Number(localStorage.getItem('cpro_balance')) || 0,
+            energy: Number(localStorage.getItem('cpro_energy')) || 1000,
+            tapMulti: Number(localStorage.getItem('cpro_multi')) || 1,
+            pph: Number(localStorage.getItem('cpro_pph')) || 0,
+            lastUnix: Number(localStorage.getItem('cpro_last_unix')) || Date.now(),
+            streak: Number(localStorage.getItem('cpro_streak')) || 0,
+            lastDailyClaim: Number(localStorage.getItem('cpro_last_claim')) || 0,
+            completedTasks: JSON.parse(localStorage.getItem('cpro_tasks')) || []
         };
-        
-        document.getElementById('username').textContent = username;
-        document.getElementById('user-id').textContent = 'ID: ' + userId;
-        document.getElementById('user-avatar').textContent = userInitial;
-        
-        function updateUI() {
-            document.getElementById('balance').textContent = data.balance.toFixed(2);
-            document.getElementById('usd-value').textContent = data.balance.toFixed(2);
-            document.getElementById('total-coins').textContent = data.totalCoins;
+
+        const maxEnergy = 1000;
+        const ADSGRAM_BLOCK_ID = "36912";
+
+        // --- UPGRADE CARDS DEFINITION DATA (MINE PAGE) ---
+        const upgradeCards = [
+            { id: 'node_1', name: 'Quantum Processor', baseCost: 150, pphReward: 15, currentLvl: 0 },
+            { id: 'node_2', name: 'Liquidity Pools', baseCost: 500, pphReward: 60, currentLvl: 0 },
+            { id: 'node_3', name: 'P2P Trading Desk', baseCost: 2000, pphReward: 280, currentLvl: 0 },
+            { id: 'node_4', name: 'AI Trading Bot', baseCost: 8000, pphReward: 1100, currentLvl: 0 }
+        ];
+
+        // Load card levels from local storage
+        upgradeCards.forEach(card => {
+            card.currentLvl = Number(localStorage.getItem(`cpro_card_${card.id}`)) || 0;
+        });
+
+        // --- MISSIONS & TASKS DATA ---
+        const missionTasks = [
+            { id: 't_tg', label: 'Join CoinPulse Channel', reward: 2000, link: 'https://t.me/crypto' },
+            { id: 't_x', label: 'Follow on Twitter (X)', reward: 1500, link: 'https://x.com' },
+            { id: 't_yt', label: 'Subscribe YouTube Channel', reward: 3000, link: 'https://youtube.com' }
+        ];
+
+        // --- INITIALIZATION ENGINE ---
+        document.addEventListener("DOMContentLoaded", () => {
+            initTelegram();
+            processOfflineEarnings();
+            renderMineCards();
+            renderMissions();
+            renderDailyStreaks();
+            executeUIRefresh();
             
-            document.getElementById('ads-watched-1').textContent = `${data.adCount1} / 5 ads`;
-            document.getElementById('ads-left-1').textContent = `${Math.max(0, 5 - data.adCount1)} left`;
-            document.getElementById('ads-progress-1').style.width = (Math.min(5, data.adCount1) / 5 * 100) + '%';
-            
-            document.getElementById('ads-watched-2').textContent = `${data.adCount2} / 15 ads`;
-            document.getElementById('ads-left-2').textContent = `${Math.max(0, 15 - data.adCount2)} left`;
-            document.getElementById('ads-progress-2').style.width = (Math.min(15, data.adCount2) / 15 * 100) + '%';
+            // Core loops
+            setInterval(energySyncLoop, 1000);
+            setInterval(passiveIncomeLoop, 1000);
+        });
+
+        function initTelegram() {
+            if (window.Telegram && window.Telegram.WebApp) {
+                const tg = window.Telegram.WebApp;
+                tg.ready();
+                tg.expand();
+                if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                    const user = tg.initDataUnsafe.user;
+                    document.getElementById('u-name').innerText = user.first_name;
+                    document.getElementById('u-avatar').innerText = user.first_name[0].toUpperCase();
+                }
+            }
         }
 
-        // PURE REAL AD TRIGGER (NO TEST MODE FALLBACK)
-        function triggerRealAd(adBlockType, maxLimit, rewardUsdt, rewardCoins) {
-            if (adBlockType === 1 && data.adCount1 >= maxLimit) {
-                tg.showAlert('Daily limit reached for this section.');
-                return;
-            }
-            if (adBlockType === 2 && data.adCount2 >= maxLimit) {
-                tg.showAlert('Daily limit reached for this section.');
-                return;
-            }
-
-            // Force check initialization if it wasn't ready
-            if (!AdController && window.AdsGram) {
-                AdController = window.AdsGram.init({ blockId: ADSGRAM_BLOCK_ID });
-            }
-
-            if (!AdController) {
-                tg.showAlert('Error: Unable to connect to AdsGram servers. Please check your internet or VPN settings!');
-                return;
-            }
-
-            showNotification('Opening Real Video Ad...');
-
-            // Execute Live Adsgram call
-            AdController.show().then((result) => {
-                // Verified Watch Reward Event Triggered
-                if (adBlockType === 1) data.adCount1++;
-                if (adBlockType === 2) data.adCount2++;
+        // --- OFFLINE EARNINGS PROCESSOR ---
+        function processOfflineEarnings() {
+            const currentUnix = Date.now();
+            const timeDiffSeconds = Math.floor((currentUnix - state.lastUnix) / 1000);
+            
+            if (timeDiffSeconds > 10 && state.pph > 0) {
+                // Max limit of 3 hours offline earnings to prevent abuse
+                const cappedSeconds = Math.min(timeDiffSeconds, 3 * 60 * 60); 
+                const earned = Math.floor(cappedSeconds * (state.pph / 3600));
                 
-                data.balance += rewardUsdt;
-                data.totalCoins += rewardCoins;
-                
-                saveData();
-                updateUI();
-                showNotification(`✅ Success! +${rewardCoins} Coins credited.`);
-                tg.HapticFeedback.notificationOccurred('success');
-            }).catch((err) => {
-                console.error('AdsGram Error:', err);
-                // Handle different skip results properly
-                if (err && err.description) {
-                    tg.showAlert(`Ad terminated: ${err.description}`);
-                } else {
-                    tg.showAlert('Ad was skipped or could not load. Reward denied.');
+                if (earned > 0) {
+                    state.balance += earned;
+                    setTimeout(() => {
+                        alert(`💰 Welcome Back!\nYou structuralized passive earnings of +${earned.toLocaleString()} Coins while away!`);
+                        saveToStorage();
+                        executeUIRefresh();
+                    }, 1000);
                 }
+            }
+            state.lastUnix = currentUnix;
+            saveToStorage();
+        }
+
+        // --- TAB SWITCHER ARCHITECTURE ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(el => {
+                el.classList.remove('text-cyan-400', 'bg-slate-950/80', 'border', 'border-cyan-500/20', 'shadow-md');
+                el.classList.add('text-slate-400');
+            });
+
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+            const activeNav = document.getElementById(`nav-${tabId}`);
+            activeNav.classList.remove('text-slate-400');
+            activeNav.classList.add('text-cyan-400', 'bg-slate-950/80', 'border', 'border-cyan-500/20', 'shadow-md');
+
+            if (window.Telegram?.WebApp?.HapticFeedback) {
+                window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
+            }
+        }
+
+        // --- UI REFRESH SYNC ---
+        function executeUIRefresh() {
+            document.getElementById('home-balance').innerText = Math.floor(state.balance).toLocaleString();
+            document.getElementById('pph-display').innerText = `+${state.pph.toLocaleString()}/hr`;
+            document.getElementById('energy-text').innerText = `${state.energy} / ${maxEnergy}`;
+            document.getElementById('energy-bar').style.width = `${(state.energy / maxEnergy) * 100}%`;
+            
+            // Adjust ranks dynamically based on milestones
+            let rank = "Bronze Warrior";
+            if(state.balance > 100000) rank = "Diamond Whale 🐋";
+            else if(state.balance > 25000) rank = "Gold Master 👑";
+            else if(state.balance > 5000) rank = "Silver Elite 🛡️";
+            document.getElementById('user-rank').innerText = `Rank: ${rank}`;
+        }
+
+        function saveToStorage() {
+            localStorage.setItem('cpro_balance', state.balance);
+            localStorage.setItem('cpro_energy', state.energy);
+            localStorage.setItem('cpro_multi', state.tapMulti);
+            localStorage.setItem('cpro_pph', state.pph);
+            localStorage.setItem('cpro_last_unix', Date.now());
+            localStorage.setItem('cpro_streak', state.streak);
+            localStorage.setItem('cpro_last_claim', state.lastDailyClaim);
+            localStorage.setItem('cpro_tasks', JSON.stringify(state.completedTasks));
+        }
+
+        // --- TICKER & LOOPS ---
+        function energySyncLoop() {
+            if (state.energy < maxEnergy) {
+                state.energy = Math.min(state.energy + 3, maxEnergy);
+                executeUIRefresh();
+            }
+        }
+
+        function passiveIncomeLoop() {
+            if (state.pph > 0) {
+                const perSecondProfit = state.pph / 3600;
+                state.balance += perSecondProfit;
+                executeUIRefresh();
+            }
+            localStorage.setItem('cpro_last_unix', Date.now());
+        }
+
+        // --- CORE CLICKER MECHANIC ---
+        document.getElementById('click-area').addEventListener('click', (e) => {
+            if (state.energy >= state.tapMulti) {
+                state.balance += state.tapMulti;
+                state.energy -= state.tapMulti;
+
+                if (window.Telegram?.WebApp?.HapticFeedback) {
+                    window.Telegram.WebApp.HapticFeedback.impactOccurred('medium');
+                }
+
+                // Complex Spline Particle Coordinates Generator
+                const rect = e.currentTarget.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                const indicator = document.createElement('span');
+                indicator.innerText = `+${state.tapMulti}`;
+                indicator.style.left = `${x}px`;
+                indicator.style.top = `${y}px`;
+                indicator.className = "coin-particle text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-teal-300 pointer-events-none drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]";
+                
+                e.currentTarget.appendChild(indicator);
+                setTimeout(() => indicator.remove(), 700);
+
+                executeUIRefresh();
+                saveToStorage();
+            }
+        });
+
+        // --- MINE PAGE RENDER ENGINE ---
+        function renderMineCards() {
+            const container = document.getElementById('mine-cards-container');
+            container.innerHTML = '';
+
+            upgradeCards.forEach(card => {
+                const calculatedCost = Math.floor(card.baseCost * Math.pow(1.5, card.currentLvl));
+                const currentPPHGen = card.currentLvl * card.pphReward;
+
+                const cardEl = document.createElement('div');
+                cardEl.className = "bg-slate-900/80 border border-slate-800 p-3.5 rounded-2xl flex flex-col justify-between space-y-3";
+                cardEl.innerHTML = `
+                    <div>
+                        <div class="flex justify-between items-start">
+                            <span class="text-xl">⚙️</span>
+                            <span class="text-[9px] bg-slate-800 px-2 py-0.5 rounded-full font-bold text-slate-400">Lvl ${card.currentLvl}</span>
+                        </div>
+                        <h4 class="text-xs font-bold text-slate-200 mt-2">${card.name}</h4>
+                        <p class="text-[10px] text-emerald-400 mt-1 font-semibold">+${card.pphReward}/hr</p>
+                    </div>
+                    <button onclick="buyCardUpgrade('${card.id}')" class="w-full bg-slate-950 hover:bg-slate-800 border border-slate-700/60 p-2 rounded-xl text-[11px] font-bold flex justify-between items-center px-3 transition-colors">
+                        <span class="text-slate-400">Upgrade</span>
+                        <span class="text-cyan-400 font-extrabold">${calculatedCost.toLocaleString()}</span>
+                    </button>
+                `;
+                container.appendChild(cardEl);
             });
         }
-        
-        function switchTab(tabName) {
-            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById(tabName).classList.add('active');
+
+        window.buyCardUpgrade = function(cardId) {
+            const card = upgradeCards.find(c => c.id === cardId);
+            const cost = Math.floor(card.baseCost * Math.pow(1.5, card.currentLvl));
+
+            if (state.balance >= cost) {
+                state.balance -= cost;
+                card.currentLvl += 1;
+                state.pph += card.pphReward;
+
+                localStorage.setItem(`cpro_card_${card.id}`, card.currentLvl);
+                
+                if (window.Telegram?.WebApp?.HapticFeedback) {
+                    window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+                }
+
+                saveToStorage();
+                renderMineCards();
+                executeUIRefresh();
+            } else {
+                alert("Insufficient CoinPulse balance for mining upgrade!");
+            }
+        };
+
+        // --- TASKS ENGINE & REWARDS ---
+        function renderMissions() {
+            const container = document.getElementById('tasks-list-container');
+            container.innerHTML = '';
+
+            missionTasks.forEach(task => {
+                const isDone = state.completedTasks.includes(task.id);
+                const taskEl = document.createElement('div');
+                taskEl.className = "bg-slate-900/60 border border-slate-800/80 p-3.5 rounded-2xl flex justify-between items-center backdrop-blur-sm";
+                taskEl.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <span class="text-lg">${task.id === 't_tg' ? '📢' : task.id === 't_x' ? '🐦' : '📺'}</span>
+                        <div>
+                            <p class="text-xs font-bold text-slate-200">${task.label}</p>
+                            <p class="text-[10px] text-cyan-400 font-semibold">+${task.reward.toLocaleString()} Coins</p>
+                        </div>
+                    </div>
+                    ${isDone ? 
+                        `<span class="text-xs text-emerald-400 font-extrabold bg-emerald-500/10 px-2.5 py-1 rounded-xl border border-emerald-500/20">✓ Completed</span>` :
+                        `<button onclick="executeMission('${task.id}', '${task.link}', ${task.reward})" class="bg-cyan-600 hover:bg-cyan-700 text-white font-bold text-xs px-3.5 py-1.5 rounded-xl transition-colors shadow-md shadow-cyan-600/10 active:scale-95">Start</button>`
+                    }
+                `;
+                container.appendChild(taskEl);
+            });
+        }
+
+        window.executeMission = function(id, link, reward) {
+            window.open(link, '_blank');
+            // Mock dynamic validation wait structure
+            setTimeout(() => {
+                if(!state.completedTasks.includes(id)) {
+                    state.completedTasks.push(id);
+                    state.balance += reward;
+                    saveToStorage();
+                    renderMissions();
+                    executeUIRefresh();
+                    if (window.Telegram?.WebApp?.HapticFeedback) {
+                        window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+                    }
+                }
+            }, 3000);
+        };
+
+        // --- STREAK MANAGEMENT ---
+        function renderDailyStreaks() {
+            const grid = document.getElementById('daily-streaks-grid');
+            grid.innerHTML = '';
             
-            const navItems = document.querySelectorAll('.nav-item');
-            if (tabName === 'home') navItems[0].classList.add('active');
-            else if (tabName === 'ads') navItems[1].classList.add('active');
+            for(let i=1; i<=4; i++) {
+                const bonus = i * 1000;
+                const isClaimed = state.streak >= i;
+                const badge = document.createElement('div');
+                badge.className = `p-2 rounded-xl border text-center text-[10px] font-bold ${isClaimed ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-slate-950 border-slate-800 text-slate-400'}`;
+                badge.innerHTML = `
+                    <p class="opacity-80">Day ${i}</p>
+                    <p class="mt-0.5">${bonus >= 1000 ? (bonus/1000)+'K' : bonus}</p>
+                `;
+                grid.appendChild(badge);
+            }
         }
-        
-        function saveData() {
-            localStorage.setItem(`balance_${userId}`, data.balance);
-            localStorage.setItem(`totalCoins_${userId}`, data.totalCoins);
-            localStorage.setItem(`adCount1_${userId}`, data.adCount1);
-            localStorage.setItem(`adCount2_${userId}`, data.adCount2);
-        }
-        
-        function showNotification(msg) {
-            const n = document.getElementById('notification');
-            n.textContent = msg;
-            n.classList.add('show');
-            setTimeout(() => n.classList.remove('show'), 2500);
-        }
-        
-        updateUI();
+
+        document.getElementById('claim-daily-btn').addEventListener('click', () => {
+            const now = Date.now();
+            const oneDayMs = 24 * 60 * 60 * 1000;
+
+            if (now - state.lastDailyClaim >= oneDayMs) {
+                if(now - state.lastDailyClaim > (2 * oneDayMs)) {
+                    state.streak = 0; // Reset streak if missed more than 48hrs
+                }
+                
+                state.streak = (state.streak % 7) + 1;
+                const dailyReward = state.streak * 1000;
+                
+                state.balance += dailyReward;
+                state.lastDailyClaim = now;
+                
+                saveToStorage();
+                renderDailyStreaks();
+                executeUIRefresh();
+                
+                if (window.Telegram?.WebApp?.HapticFeedback) {
+                    window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+                }
+                alert(`🎁 Daily Reward Claimed!\n+${dailyReward.toLocaleString()} Coins added to your secure wallet.`);
+            } else {
+                const nextAvailable = new Date(state.lastDailyClaim + oneDayMs);
+                alert(`🔒 Vault Locked!\nYour next check-in reward becomes available at: ${nextAvailable.toLocaleTimeString()}`);
+            }
+        });
+
+        // ==================== ADSGRAM VIDEO ENGINE ====================
+        document.getElementById('adsgram-premium-btn').addEventListener('click', () => {
+            if (window.Adsgram) {
+                const AdController = window.Adsgram.init({ blockId: ADSGRAM_BLOCK_ID });
+                
+                AdController.show()
+                    .then((result) => {
+                        // User parsed the commercial loop safely
+                        state.balance += 5000; 
+                        executeUIRefresh();
+                        saveToStorage();
+                        
+                        if (window.Telegram?.WebApp?.HapticFeedback) {
+                            window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+                        }
+                        alert("🎉 Strategic Success! Sponsored Bonus of +5,000 CoinPulse credited!");
+                    })
+                    .catch((error) => {
+                        console.error("Adsgram dynamic interruption: ", error);
+                        alert("⚠️ Video transmission interrupted. Ensure you view the entire advertisement to claim your allocation.");
+                    });
+            } else {
+                alert("Adsgram Network engine currently offline or initialization delayed. Re-attempt shorty.");
+            }
+        });
     </script>
 </body>
 </html>
