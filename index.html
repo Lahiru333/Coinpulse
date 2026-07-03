@@ -1,1952 +1,995 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <meta name="theme-color" content="#050814" />
-    <title>CoinPulse Pro</title>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Coinpulse - Earn USDT</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-    <!-- ✅ CORRECT AdsGram SDK URL -->
-    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
-
+    <!-- AdsGram නිවැරදි SDK Script එක -->
+    <script src="https://sad.adsgram.ai/js/adsgram.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); 
+            color: white; 
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-bottom: 70px;
         }
-
-        :root {
-            --bg-0: #050814;
-            --bg-1: #0b1024;
-            --bg-2: #141a35;
-            --bg-card: #1a2140;
-            --accent: #ffc83d;
-            --accent-2: #ff8a3d;
-            --accent-glow: rgba(255, 200, 61, 0.4);
-            --purple: #8b5cf6;
-            --purple-glow: rgba(139, 92, 246, 0.4);
-            --green: #4ade80;
-            --green-glow: rgba(74, 222, 128, 0.4);
-            --red: #ef4444;
-            --usdt: #26a17b;
-            --text: #ffffff;
-            --text-dim: #9aa3b8;
-            --text-mute: #5b6480;
-            --border: rgba(255, 255, 255, 0.08);
-            --border-strong: rgba(255, 255, 255, 0.15);
-            --shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-            --radius: 14px;
+        
+        .app-header { 
+            background: rgba(0,0,0,0.5); 
+            padding: 15px 20px; 
+            position: sticky; 
+            top: 0; 
+            z-index: 100;
+            backdrop-filter: blur(10px);
         }
-
-        html,
-        body {
-            height: 100%;
-            overflow: hidden;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: var(--bg-0);
-            color: var(--text);
-        }
-
-        body {
-            display: flex;
-            flex-direction: column;
-            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-            background:
-                radial-gradient(ellipse at top left, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
-                radial-gradient(ellipse at bottom right, rgba(255, 200, 61, 0.1) 0%, transparent 50%),
-                var(--bg-0);
-        }
-
-        .top-hud {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 16px;
-            background: rgba(11, 16, 36, 0.7);
-            backdrop-filter: blur(16px);
-            border-bottom: 1px solid var(--border);
-            z-index: 10;
-        }
-
-        .hud-left {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent), var(--accent-2));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 18px;
-            color: var(--bg-0);
-            box-shadow: 0 0 12px var(--accent-glow);
-        }
-
-        .user-info {
-            display: flex;
-            flex-direction: column;
-        }
-        .username {
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .level-badge {
-            font-size: 10px;
-            color: var(--accent);
-            background: rgba(255, 200, 61, 0.12);
-            padding: 2px 8px;
-            border-radius: 10px;
-            margin-top: 2px;
-            width: fit-content;
-            font-weight: 700;
-        }
-
-        .hud-right {
-            display: flex;
-            gap: 8px;
-        }
-
-        .hud-chip {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            background: var(--bg-card);
-            padding: 7px 12px;
-            border-radius: 18px;
-            font-weight: 700;
-            font-size: 13px;
-            border: 1px solid var(--border);
-        }
-
-        .hud-chip.usdt {
-            background: linear-gradient(135deg, rgba(38, 161, 123, 0.2), var(--bg-card));
-            border-color: rgba(38, 161, 123, 0.3);
-            color: var(--usdt);
-        }
-
-        .energy-wrap {
-            padding: 10px 16px 6px;
-        }
-
-        .energy-label {
-            display: flex;
-            justify-content: space-between;
-            font-size: 11px;
-            color: var(--text-dim);
-            margin-bottom: 4px;
-            font-weight: 600;
-        }
-
-        .energy-bar {
-            height: 8px;
-            background: var(--bg-card);
-            border-radius: 4px;
-            overflow: hidden;
-            border: 1px solid var(--border);
-        }
-
-        .energy-fill {
-            height: 100%;
-            width: 100%;
-            background: linear-gradient(90deg, var(--green), #22d3ee);
-            border-radius: 4px;
-            transition: width 0.3s ease;
-            box-shadow: 0 0 8px var(--green-glow);
-        }
-
-        .main-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 10px 16px 20px;
-            position: relative;
-            scrollbar-width: none;
-        }
-        .main-content::-webkit-scrollbar {
-            display: none;
-        }
-
-        .page {
-            display: none;
-            animation: fadeIn 0.3s ease;
-        }
-        .page.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(8px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .page-title {
-            font-size: 22px;
-            margin-bottom: 16px;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--text), var(--text-dim));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .tap-area {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: calc(100vh - 240px);
-            gap: 16px;
-        }
-
-        .tap-info {
-            text-align: center;
-            color: var(--text-dim);
-            font-size: 13px;
-        }
-        .tap-info .per-tap {
-            color: var(--accent);
-            font-weight: 700;
-            font-size: 15px;
-        }
-
-        .coin-wrapper {
-            position: relative;
-            width: 260px;
-            height: 260px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 5;
-        }
-
-        .coin-glow {
-            position: absolute;
-            width: 300px;
-            height: 300px;
-            border-radius: 50%;
-            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
-            animation: pulseGlow 2s ease-in-out infinite;
-            pointer-events: none;
-        }
-
-        @keyframes pulseGlow {
-            0%,
-            100% {
-                transform: scale(1);
-                opacity: 0.6;
-            }
-            50% {
-                transform: scale(1.1);
-                opacity: 0.9;
-            }
-        }
-
-        .coin {
-            width: 220px;
-            height: 220px;
-            border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, #fff4b8 0%, #ffe066 20%, #ffc83d 50%, #b8860b 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow:
-                0 0 60px var(--accent-glow),
-                inset 0 -10px 25px rgba(0, 0, 0, 0.3),
-                inset 0 10px 25px rgba(255, 255, 255, 0.4),
-                0 10px 30px rgba(0, 0, 0, 0.5);
-            transition: transform 0.08s ease;
-            position: relative;
-            border: 3px solid rgba(255, 255, 255, 0.2);
-            pointer-events: auto;
-            z-index: 10;
-        }
-
-        .coin-face {
-            font-size: 110px;
-            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
-        }
-
-        .coin-ring {
-            position: absolute;
-            inset: -12px;
-            border-radius: 50%;
-            border: 2px solid var(--accent);
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .coin.pulse {
-            transform: scale(0.92);
-        }
-        .coin-ring.pulse {
-            animation: ringPulse 0.6s ease-out;
-        }
-
-        @keyframes ringPulse {
-            0% {
-                transform: scale(0.9);
-                opacity: 1;
-            }
-            100% {
-                transform: scale(1.5);
-                opacity: 0;
-            }
-        }
-
-        .float-text {
-            position: absolute;
-            color: var(--accent);
-            font-weight: 800;
-            font-size: 30px;
-            pointer-events: none;
-            animation: floatUp 1s ease-out forwards;
-            text-shadow: 0 2px 10px rgba(255, 200, 61, 0.8);
-            z-index: 20;
-        }
-
-        @keyframes floatUp {
-            0% {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-            100% {
-                opacity: 0;
-                transform: translateY(-100px) scale(1.5);
-            }
-        }
-
-        .tap-actions {
-            display: flex;
-            gap: 10px;
-            width: 100%;
-            max-width: 400px;
-            z-index: 5;
-        }
-
-        .action-btn {
-            flex: 1;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 12px;
-            border-radius: var(--radius);
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            transition: all 0.15s ease;
-            z-index: 5;
-        }
-
-        .action-btn:active {
-            transform: scale(0.96);
-        }
-
-        .action-btn.primary {
-            background: linear-gradient(135deg, var(--purple), #6366f1);
-            border-color: transparent;
-            box-shadow: 0 4px 16px var(--purple-glow);
-        }
-
-        .action-btn.warning {
-            background: linear-gradient(135deg, var(--accent), var(--accent-2));
-            color: var(--bg-0);
-            border-color: transparent;
-            box-shadow: 0 4px 16px var(--accent-glow);
-        }
-
-        .action-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .sdk-status {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding: 8px 12px;
-            border-radius: 10px;
-            font-size: 11px;
-            font-weight: 600;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            margin-bottom: 12px;
-            z-index: 5;
-        }
-
-        .sdk-status .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--text-mute);
-        }
-
-        .sdk-status.ready {
-            border-color: var(--green);
-            color: var(--green);
-        }
-        .sdk-status.ready .dot {
-            background: var(--green);
-            box-shadow: 0 0 8px var(--green);
-        }
-
-        .sdk-status.loading {
-            border-color: var(--accent);
-            color: var(--accent);
-        }
-        .sdk-status.loading .dot {
-            background: var(--accent);
-            animation: blink 1s infinite;
-        }
-
-        .sdk-status.error {
-            border-color: var(--red);
-            color: var(--red);
-        }
-        .sdk-status.error .dot {
-            background: var(--red);
-        }
-
-        @keyframes blink {
-            0%,
-            100% {
-                opacity: 1;
-            }
-            50% {
-                opacity: 0.3;
-            }
-        }
-
-        .task-section {
+        
+        .user-welcome { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
             margin-bottom: 20px;
         }
-
-        .section-title {
-            font-size: 14px;
-            color: var(--text-dim);
-            font-weight: 700;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+        
+        .user-avatar { 
+            width: 50px; 
+            height: 50px; 
+            border-radius: 15px; 
+            background: linear-gradient(135deg, #00ff88, #00cc6a); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-weight: bold;
+            font-size: 24px;
+            color: #000;
         }
-
-        .task-card {
-            background: linear-gradient(135deg, var(--bg-card), var(--bg-2));
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 14px;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
+        
+        .user-info h3 { font-size: 16px; margin-bottom: 3px; }
+        .user-info span { font-size: 12px; opacity: 0.7; }
+        
+        .balance-card {
+            background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,170,0,0.1));
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            border: 2px solid rgba(255,215,0,0.3);
+            margin-bottom: 20px;
+        }
+        
+        .balance-label { font-size: 14px; opacity: 0.8; margin-bottom: 10px; letter-spacing: 1px; }
+        .balance-amount { font-size: 48px; font-weight: bold; color: #ffd700; margin: 10px 0; }
+        .balance-usd { font-size: 16px; opacity: 0.9; margin-top: 10px; }
+        .balance-details { 
+            display: flex; 
+            justify-content: space-around; 
+            margin-top: 20px; 
+            padding-top: 20px; 
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+        .detail-item { text-align: center; }
+        .detail-value { font-size: 18px; font-weight: bold; color: #00ff88; }
+        .detail-label { font-size: 11px; opacity: 0.7; margin-top: 3px; }
+        
+        .quick-actions { 
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 10px; 
+            margin-bottom: 20px;
+        }
+        
+        .action-btn {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 15px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .action-btn:active { transform: scale(0.95); }
+        .action-btn i { font-size: 24px; margin-bottom: 8px; display: block; }
+        .action-btn span { font-size: 11px; }
+        .action-btn:nth-child(1) { background: rgba(0,255,136,0.2); }
+        .action-btn:nth-child(2) { background: rgba(138,43,226,0.2); }
+        .action-btn:nth-child(3) { background: rgba(30,144,255,0.2); }
+        .action-btn:nth-child(4) { background: rgba(255,215,0,0.2); }
+        
+        .earn-section { margin-bottom: 20px; padding: 0 20px; }
+        .section-title { font-size: 16px; font-weight: bold; margin-bottom: 15px; opacity: 0.9; }
+        
+        .earn-cards { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
             gap: 12px;
         }
-
-        .task-card.usdt-task {
-            background: linear-gradient(135deg, rgba(38, 161, 123, 0.1), var(--bg-card));
-            border-color: rgba(38, 161, 123, 0.25);
+        
+        .earn-card {
+            background: rgba(255,255,255,0.08);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+            cursor: pointer;
+            transition: all 0.3s;
         }
-
-        .task-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 26px;
-            background: rgba(255, 200, 61, 0.1);
-            flex-shrink: 0;
+        
+        .earn-card:active { transform: scale(0.98); }
+        .earn-card i { font-size: 32px; margin-bottom: 10px; }
+        .earn-card h3 { font-size: 14px; margin-bottom: 5px; }
+        .earn-card p { font-size: 11px; opacity: 0.7; }
+        .earn-card.watch { background: linear-gradient(135deg, rgba(0,123,255,0.3), rgba(0,123,255,0.1)); }
+        .earn-card.tasks { background: linear-gradient(135deg, rgba(40,167,69,0.3), rgba(40,167,69,0.1)); }
+        .earn-card.refer { background: linear-gradient(135deg, rgba(111,66,193,0.3), rgba(111,66,193,0.1)); }
+        
+        .referral-section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 0 20px 20px;
         }
-
-        .task-card.usdt-task .task-icon {
-            background: rgba(38, 161, 123, 0.15);
-        }
-
-        .task-info {
-            flex: 1;
-            min-width: 0;
-        }
-        .task-title {
+        
+        .referral-title { 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            margin-bottom: 15px;
             font-size: 14px;
-            font-weight: 700;
-            margin-bottom: 4px;
+            font-weight: bold;
         }
-        .task-subtitle {
-            font-size: 11px;
-            color: var(--text-dim);
-            margin-bottom: 6px;
-        }
-
-        .task-progress-bar {
-            height: 6px;
-            background: var(--bg-1);
-            border-radius: 3px;
-            overflow: hidden;
-        }
-
-        .task-progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--accent), var(--accent-2));
-            border-radius: 3px;
-            transition: width 0.4s ease;
-        }
-
-        .task-card.usdt-task .task-progress-fill {
-            background: linear-gradient(90deg, var(--usdt), #2dd4bf);
-        }
-
-        .task-progress-text {
-            font-size: 10px;
-            color: var(--text-mute);
-            margin-top: 4px;
-            font-weight: 600;
-        }
-
-        .task-action {
-            background: linear-gradient(135deg, var(--accent), var(--accent-2));
-            color: var(--bg-0);
-            border: none;
-            padding: 8px 14px;
+        
+        .referral-link {
+            background: rgba(0,0,0,0.3);
             border-radius: 10px;
+            padding: 12px;
             font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-
-        .task-action.claim {
-            background: linear-gradient(135deg, var(--green), #22d3ee);
-            animation: claimPulse 1.5s ease-in-out infinite;
-        }
-
-        @keyframes claimPulse {
-            0%,
-            100% {
-                box-shadow: 0 0 0 0 var(--green-glow);
-            }
-            50% {
-                box-shadow: 0 0 16px 4px var(--green-glow);
-            }
-        }
-
-        .task-action:disabled {
-            background: var(--bg-1);
-            color: var(--text-mute);
-            cursor: not-allowed;
-            animation: none;
-        }
-
-        .task-reward-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            background: rgba(38, 161, 123, 0.15);
-            color: var(--usdt);
-            padding: 2px 8px;
-            border-radius: 8px;
-            font-size: 11px;
-            font-weight: 700;
-        }
-
-        .boost-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-        }
-
-        .boost-card {
-            background: linear-gradient(135deg, var(--bg-card), var(--bg-2));
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 14px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .boost-card:active {
-            transform: scale(0.96);
-        }
-        .boost-card:hover {
-            border-color: var(--accent);
-        }
-        .boost-icon {
-            font-size: 32px;
-            margin-bottom: 8px;
-        }
-        .boost-name {
-            font-size: 13px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-        .boost-level {
-            font-size: 11px;
-            color: var(--text-dim);
-            margin-bottom: 8px;
-        }
-
-        .boost-cost {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            background: rgba(255, 200, 61, 0.15);
-            color: var(--accent);
-            padding: 4px 10px;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: 700;
-        }
-
-        .boost-card.maxed {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        .boost-card.maxed .boost-cost {
-            background: rgba(74, 222, 128, 0.15);
-            color: var(--green);
-        }
-
-        .wallet-balance {
-            background: linear-gradient(135deg, rgba(38, 161, 123, 0.2), var(--bg-card));
-            border: 1px solid rgba(38, 161, 123, 0.3);
-            border-radius: 20px;
-            padding: 24px;
-            text-align: center;
-            margin-bottom: 16px;
-        }
-
-        .wallet-label {
-            font-size: 12px;
-            color: var(--text-dim);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-        }
-
-        .wallet-amount {
-            font-size: 36px;
-            font-weight: 800;
-            color: var(--usdt);
-            margin-bottom: 4px;
-        }
-
-        .wallet-usd {
-            font-size: 13px;
-            color: var(--text-dim);
-        }
-
-        .withdraw-btn {
-            width: 100%;
-            background: linear-gradient(135deg, var(--usdt), #2dd4bf);
-            color: white;
-            border: none;
-            padding: 14px;
-            border-radius: var(--radius);
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-            margin-top: 12px;
-            box-shadow: 0 6px 20px rgba(38, 161, 123, 0.3);
-        }
-
-        .withdraw-btn:disabled {
-            background: var(--bg-1);
-            color: var(--text-mute);
-            box-shadow: none;
-            cursor: not-allowed;
-        }
-
-        .withdraw-info {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 14px;
+            word-break: break-all;
             margin-bottom: 10px;
+            border: 1px solid rgba(255,255,255,0.1);
         }
-
-        .withdraw-info-title {
-            font-size: 13px;
-            font-weight: 700;
-            margin-bottom: 6px;
-            color: var(--usdt);
+        
+        .copy-btn {
+            background: linear-gradient(135deg, #ffd700, #ffaa00);
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
         }
-
-        .withdraw-info-text {
-            font-size: 12px;
-            color: var(--text-dim);
-            line-height: 1.5;
-        }
-
-        .profile-card {
-            background: linear-gradient(135deg, var(--bg-card), var(--bg-2));
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 24px;
-            text-align: center;
-            margin-bottom: 16px;
-        }
-
-        .profile-avatar {
-            width: 90px;
-            height: 90px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent), var(--accent-2));
-            margin: 0 auto 12px;
+        
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.95);
+            padding: 10px 15px;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            font-weight: 800;
-            color: var(--bg-0);
-            box-shadow: 0 0 30px var(--accent-glow);
+            justify-content: space-around;
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255,255,255,0.1);
+            z-index: 100;
         }
-
-        .profile-name {
-            font-size: 22px;
-            font-weight: 800;
-            margin-bottom: 4px;
-        }
-        .profile-id {
-            font-size: 12px;
-            color: var(--text-dim);
-            margin-bottom: 20px;
-        }
-
-        .profile-stats {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-        }
-
-        .stat {
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 12px;
-            padding: 12px 8px;
-            border: 1px solid var(--border);
-        }
-
-        .stat-value {
-            font-size: 20px;
-            font-weight: 800;
-            color: var(--accent);
-        }
-        .stat-label {
-            font-size: 10px;
-            color: var(--text-dim);
-            margin-top: 4px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .achievements {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 16px;
-        }
-
-        .achievements-title {
-            font-size: 14px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-dim);
-        }
-
-        .badge-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-        }
-
-        .badge {
-            aspect-ratio: 1;
-            background: var(--bg-1);
-            border: 1px solid var(--border);
-            border-radius: 12px;
+        
+        .nav-item {
             display: flex;
             flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 15px;
+            cursor: pointer;
+            color: rgba(255,255,255,0.6);
+            transition: all 0.3s;
+        }
+        
+        .nav-item.active { color: #ffd700; }
+        .nav-item i { font-size: 22px; }
+        .nav-item span { font-size: 11px; }
+        
+        .content-section { display: none; padding: 20px; }
+        .content-section.active { display: block; }
+        
+        .ad-card {
+            background: rgba(255,255,255,0.08);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .ad-header { 
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+            margin-bottom: 15px;
+        }
+        
+        .ad-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #ffd700, #ffaa00);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+        
+        .ad-info h3 { font-size: 16px; margin-bottom: 3px; }
+        .ad-info p { font-size: 12px; opacity: 0.7; }
+        
+        .ad-progress {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .progress-text { 
+            display: flex; 
+            justify-content: space-between; 
+            margin-bottom: 10px;
+            font-size: 13px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff88, #00cc6a);
+            transition: width 0.3s;
+        }
+        
+        .watch-btn {
+            background: linear-gradient(135deg, #ffd700, #ffaa00);
+            color: #000;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .task-card {
+            background: rgba(255,255,255,0.08);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .task-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        
+        .task-title { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px;
+        }
+        
+        .task-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
             align-items: center;
             justify-content: center;
             font-size: 24px;
-            opacity: 0.3;
         }
-
-        .badge.earned {
+        
+        .task-info h3 { font-size: 15px; margin-bottom: 3px; }
+        .task-info p { font-size: 12px; opacity: 0.7; }
+        
+        .task-reward {
+            background: rgba(0,255,136,0.2);
+            padding: 8px 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            color: #00ff88;
+            font-size: 14px;
+        }
+        
+        .task-btn {
+            background: linear-gradient(135deg, #00ff88, #00cc6a);
+            color: #000;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            font-size: 14px;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: #fff;
+            color: #000;
+            padding: 15px 30px;
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            font-weight: 600;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 2000;
+        }
+        
+        .notification.show {
+            transform: translateX(-50%) translateY(0);
             opacity: 1;
-            background: linear-gradient(135deg, rgba(255, 200, 61, 0.15), var(--bg-card));
-            border-color: var(--accent);
         }
-
-        .badge-label {
-            font-size: 8px;
-            color: var(--text-dim);
-            margin-top: 4px;
-            text-align: center;
-        }
-
-        .reset-btn {
-            width: 100%;
-            background: transparent;
-            color: var(--red);
-            border: 1px solid var(--red);
-            padding: 12px;
-            border-radius: var(--radius);
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 16px;
-        }
-
-        .bottom-nav {
-            display: flex;
-            justify-content: space-around;
-            background: rgba(11, 16, 36, 0.95);
-            backdrop-filter: blur(16px);
-            border-top: 1px solid var(--border);
-            padding: 8px 4px calc(8px + env(safe-area-inset-bottom));
-            z-index: 10;
-        }
-
-        .nav-btn {
-            flex: 1;
-            background: none;
-            border: none;
-            color: var(--text-mute);
-            padding: 8px 4px;
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2px;
-            transition: color 0.2s ease;
-            position: relative;
-        }
-
-        .nav-btn.active {
-            color: var(--accent);
-        }
-
-        .nav-btn.active::before {
-            content: '';
-            position: absolute;
-            top: -8px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 24px;
-            height: 3px;
-            background: var(--accent);
-            border-radius: 0 0 3px 3px;
-        }
-
-        .nav-icon {
-            font-size: 20px;
-        }
-        .nav-label {
-            font-size: 10px;
-            font-weight: 600;
-        }
-
-        .toast-container {
-            position: fixed;
-            top: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            pointer-events: none;
-            max-width: 90%;
-        }
-
-        .toast {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            padding: 12px 18px;
-            border-radius: 12px;
-            font-size: 13px;
-            font-weight: 600;
-            box-shadow: var(--shadow);
-            animation: toastIn 0.3s ease, toastOut 0.3s ease 2.5s forwards;
-            white-space: nowrap;
-            max-width: 100%;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .toast.success {
-            border-color: var(--green);
-            color: var(--green);
-        }
-        .toast.error {
-            border-color: var(--red);
-            color: var(--red);
-        }
-        .toast.info {
-            border-color: var(--accent);
-            color: var(--accent);
-        }
-        .toast.usdt {
-            border-color: var(--usdt);
-            color: var(--usdt);
-        }
-
-        @keyframes toastIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes toastOut {
-            to {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-        }
-
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(8px);
-            z-index: 100;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .modal-overlay.active {
-            display: flex;
-        }
-
+        
         .modal {
-            background: linear-gradient(135deg, var(--bg-card), var(--bg-2));
-            border: 1px solid var(--border-strong);
-            border-radius: 20px;
-            padding: 24px;
-            max-width: 400px;
-            width: 100%;
-            animation: modalIn 0.3s ease;
-        }
-
-        @keyframes modalIn {
-            from {
-                transform: scale(0.9);
-                opacity: 0;
-            }
-            to {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
-        .modal-title {
-            font-size: 18px;
-            font-weight: 800;
-            margin-bottom: 12px;
-            text-align: center;
-        }
-
-        .modal-text {
-            font-size: 13px;
-            color: var(--text-dim);
-            margin-bottom: 16px;
-            text-align: center;
-            line-height: 1.5;
-        }
-
-        .modal-input {
-            width: 100%;
-            background: var(--bg-1);
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 12px;
-            border-radius: 10px;
-            font-size: 14px;
-            margin-bottom: 12px;
-            font-family: inherit;
-        }
-
-        .modal-input:focus {
-            outline: none;
-            border-color: var(--accent);
-        }
-
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
-        }
-
-        .modal-btn {
-            flex: 1;
-            padding: 12px;
-            border-radius: 10px;
-            border: none;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        .modal-btn.cancel {
-            background: var(--bg-1);
-            color: var(--text-dim);
-        }
-        .modal-btn.confirm {
-            background: linear-gradient(135deg, var(--usdt), #2dd4bf);
-            color: white;
-        }
-
-        @media (min-width: 500px) {
-            .coin {
-                width: 260px;
-                height: 260px;
-            }
-            .coin-face {
-                font-size: 130px;
-            }
-            .coin-wrapper {
-                width: 300px;
-                height: 300px;
-            }
-        }
-
-        .spinner {
-            display: inline-block;
-            width: 14px;
-            height: 14px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        /* Ad Overlay */
-        .ad-overlay {
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.95);
-            display: none;
+            background: rgba(0,0,0,0.9);
+            z-index: 2000;
             align-items: center;
             justify-content: center;
-            z-index: 9999;
-            backdrop-filter: blur(10px);
+            padding: 20px;
         }
-        .ad-overlay.show {
-            display: flex !important;
-        }
-
-        .ad-container {
-            background: #1a2332;
-            padding: 40px 32px;
-            border-radius: 24px;
+        
+        .modal.show { display: flex; }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border-radius: 25px;
+            padding: 30px;
+            max-width: 400px;
+            width: 100%;
             text-align: center;
-            max-width: 340px;
-            width: 90%;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            position: relative;
+            border: 2px solid rgba(255,255,255,0.2);
         }
-
-        .ad-spinner {
-            font-size: 48px;
-            animation: spin 1s linear infinite;
-            display: block;
-            margin-bottom: 16px;
-        }
-
-        .ad-status {
+        
+        .modal-icon { font-size: 80px; margin-bottom: 20px; }
+        .modal-title { font-size: 24px; font-weight: bold; margin-bottom: 15px; }
+        .modal-text { opacity: 0.9; margin-bottom: 25px; line-height: 1.6; }
+        
+        .wallet-input {
+            width: 100%;
+            padding: 15px;
+            border-radius: 12px;
+            border: 2px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.1);
+            color: white;
             font-size: 16px;
-            margin-bottom: 12px;
-            color: #ccc;
+            margin-bottom: 15px;
+            outline: none;
         }
-
-        .ad-progress {
-            width: 100%;
-            height: 6px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
-            margin: 16px 0;
-            overflow: hidden;
+        
+        .wallet-input:focus { border-color: #00ff88; }
+        
+        .ad-status {
+            background: rgba(255,215,0,0.1);
+            border: 1px solid #ffd700;
+            border-radius: 10px;
+            padding: 12px;
+            margin: 10px 0 20px;
+            text-align: center;
+            font-size: 13px;
+            color: #ffd700;
+            font-weight: 600;
         }
-
-        .ad-progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #f7931a, #f5a623);
-            width: 0%;
-            border-radius: 4px;
-            transition: width 0.3s;
+        
+        .ad-status.ready {
+            background: rgba(0,255,136,0.1);
+            border-color: #00ff88;
+            color: #00ff88;
         }
-
-        #claimBtn {
-            background: linear-gradient(135deg, #f7931a, #f5a623);
-            border: none;
-            color: #fff;
-            padding: 14px 32px;
-            border-radius: 30px;
-            font-size: 18px;
-            font-weight: 800;
-            cursor: pointer;
-            margin-top: 12px;
-            width: 100%;
-            display: none;
-            position: relative;
-            z-index: 99999;
-            pointer-events: auto !important;
-            touch-action: manipulation !important;
+        
+        .ad-status.error {
+            background: rgba(255,68,68,0.1);
+            border-color: #ff4444;
+            color: #ff4444;
         }
-        #claimBtn.show {
-            display: block !important;
-        }
-        #claimBtn:active {
-            transform: scale(0.95);
-        }
-
-        #adCloseBtn {
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            color: #8899bb;
-            padding: 10px 24px;
-            border-radius: 20px;
-            font-size: 14px;
-            cursor: pointer;
-            margin-top: 8px;
-            pointer-events: auto !important;
+        
+        .ad-status.loading {
+            background: rgba(255,215,0,0.1);
+            border-color: #ffd700;
+            color: #ffd700;
         }
     </style>
 </head>
 <body>
-    <header class="top-hud">
-        <div class="hud-left">
-            <div class="avatar" id="avatar">?</div>
-            <div class="user-info">
-                <div class="username" id="username">Player</div>
-                <div class="level-badge">Lvl <span id="level">1</span></div>
+    <div class="notification" id="notification"></div>
+    
+    <!-- Home Section -->
+    <div id="home" class="content-section active">
+        <div class="app-header">
+            <div class="user-welcome">
+                <div class="user-avatar" id="user-avatar">U</div>
+                <div class="user-info">
+                    <h3 id="username">User</h3>
+                    <span id="user-id">ID: 12345</span>
+                </div>
             </div>
-        </div>
-        <div class="hud-right">
-            <div class="hud-chip"><span>🪙</span><span id="coinCount">0</span></div>
-            <div class="hud-chip usdt"><span>💵</span><span id="usdtCount">0.0000</span></div>
-        </div>
-    </header>
-
-    <div class="energy-wrap">
-        <div class="energy-label">
-            <span>⚡ Energy</span>
-            <span><span id="energyCurrent">100</span> / <span id="energyMax">100</span></span>
-        </div>
-        <div class="energy-bar"><div class="energy-fill" id="energyFill"></div></div>
-    </div>
-
-    <main class="main-content">
-        <section class="page active" id="page-tap">
-            <div class="tap-area">
-                <div class="sdk-status loading" id="sdkStatus">
-                    <span class="dot"></span>
-                    <span id="sdkStatusText">Loading AdsGram SDK...</span>
-                </div>
-
-                <div class="tap-info">
-                    <div>Per tap: <span class="per-tap" id="perTapDisplay">+1</span> 🪙</div>
-                </div>
-                <div class="coin-wrapper" id="coinWrapper">
-                    <div class="coin-glow"></div>
-                    <div class="coin" id="mainCoin">
-                        <div class="coin-face">🪙</div>
-                        <div class="coin-ring"></div>
+            
+            <div class="balance-card">
+                <div class="balance-label">YOUR BALANCE</div>
+                <div class="balance-amount"><span id="balance">0.00</span></div>
+                <div class="balance-usd">≈ $<span id="usd-value">0.00</span> USDT</div>
+                <div class="balance-details">
+                    <div class="detail-item">
+                        <div class="detail-value" id="total-coins">0</div>
+                        <div class="detail-label">Coins</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-value" id="games-played">0</div>
+                        <div class="detail-label">Games</div>
                     </div>
                 </div>
-                <div class="tap-actions">
-                    <button class="action-btn primary" id="watchAdBtn">
-                        <span>🎬</span> Watch Ad
-                    </button>
-                    <button class="action-btn warning" id="boostEnergyBtn">
-                        <span>⚡</span> Refill Energy
-                    </button>
+            </div>
+            
+            <div class="quick-actions">
+                <div class="action-btn" onclick="openDailyBonus()">
+                    <i style="color: #00ff88;">🎁</i>
+                    <span>Daily Bonus</span>
+                </div>
+                <div class="action-btn" onclick="openRewardCode()">
+                    <i style="color: #8a2be2;">🎟️</i>
+                    <span>Reward Code</span>
+                </div>
+                <div class="action-btn" onclick="openWithdraw()">
+                    <i style="color: #1e90ff;">💳</i>
+                    <span>Withdraw</span>
+                </div>
+                <div class="action-btn" onclick="openLeaderboard()">
+                    <i style="color: #ffd700;">🏆</i>
+                    <span>Leaderboard</span>
                 </div>
             </div>
-        </section>
-
-        <section class="page" id="page-tasks">
-            <h2 class="page-title">🎯 Tasks & Earn USDT</h2>
-            <div class="task-section">
-                <div class="section-title">💵 Watch Ads → Earn USDT</div>
-                <div id="usdtTasksList"></div>
-            </div>
-            <div class="task-section">
-                <div class="section-title">🎯 Daily Missions</div>
-                <div id="missionList"></div>
-            </div>
-            <div class="task-section">
-                <div class="section-title">🏆 Achievements</div>
-                <div id="achievementList"></div>
-            </div>
-        </section>
-
-        <section class="page" id="page-boost">
-            <h2 class="page-title">🚀 Boost Upgrades</h2>
-            <div class="boost-grid" id="boostGrid"></div>
-        </section>
-
-        <section class="page" id="page-wallet">
-            <h2 class="page-title">💰 Wallet</h2>
-            <div class="wallet-balance">
-                <div class="wallet-label">Available Balance</div>
-                <div class="wallet-amount" id="walletAmount">0.0000 USDT</div>
-                <div class="wallet-usd">≈ $<span id="walletUsd">0.00</span> USD</div>
-                <button class="withdraw-btn" id="withdrawBtn">Withdraw USDT</button>
-            </div>
-            <div class="withdraw-info">
-                <div class="withdraw-info-title">📋 How to Withdraw</div>
-                <div class="withdraw-info-text">
-                    1. Complete ad watching tasks to earn USDT<br>
-                    2. Minimum withdrawal: 0.01 USDT<br>
-                    3. Withdrawals processed within 24-48 hours<br>
-                    4. USDT sent to your TRC20 (TRON) wallet
+        </div>
+        
+        <div class="earn-section">
+            <div class="section-title">EARN MORE</div>
+            <div class="earn-cards">
+                <div class="earn-card watch" onclick="switchTab('ads')">
+                    <i style="color: #007bff;">▶️</i>
+                    <h3>Watch Ads</h3>
+                    <p>Up to 10 Coins</p>
+                </div>
+                <div class="earn-card tasks" onclick="switchTab('tasks')">
+                    <i style="color: #28a745;">✓</i>
+                    <h3>Tasks</h3>
+                    <p>20-200 Coins</p>
+                </div>
+                <div class="earn-card refer" onclick="switchTab('refer')">
+                    <i style="color: #6f42c1;">👥</i>
+                    <h3>Refer</h3>
+                    <p>Up to 150 Coins</p>
                 </div>
             </div>
-            <div class="withdraw-info">
-                <div class="withdraw-info-title">📊 Your Stats</div>
-                <div class="withdraw-info-text">
-                    Total Ads Watched: <strong id="totalAdsStat">0</strong><br>
-                    Total USDT Earned: <strong id="totalUsdtStat">0.0000</strong><br>
-                    Total Withdrawn: <strong id="withdrawnStat">0.0000</strong>
+        </div>
+        
+        <div class="referral-section">
+            <div class="referral-title">
+                <i style="color: #6f42c1;">👥</i>
+                Your Referral Link
+                <span style="margin-left: auto; color: #ffd700;">+150 Coins</span>
+            </div>
+            <div class="referral-link" id="referral-link">https://t.me/CoinpulseBot/play?startapp=ref123</div>
+            <button class="copy-btn" onclick="copyReferral()">📋 Copy Link</button>
+        </div>
+    </div>
+    
+    <!-- Ads Section -->
+    <div id="ads" class="content-section">
+        <div class="app-header">
+            <h2 style="margin-bottom: 10px;">Watch Ads & Earn</h2>
+            <div class="ad-status loading" id="ad-status">⏳ Loading AdsGram SDK...</div>
+        </div>
+        
+        <div class="ad-card">
+            <div class="ad-header">
+                <div class="ad-icon">📺</div>
+                <div class="ad-info">
+                    <h3>AdsGram Reward</h3>
+                    <p>+10 Coins per ad</p>
                 </div>
             </div>
-        </section>
-
-        <section class="page" id="page-profile">
-            <h2 class="page-title">👤 Profile</h2>
-            <div class="profile-card">
-                <div class="profile-avatar" id="profileAvatar">?</div>
-                <div class="profile-name" id="profileName">Player</div>
-                <div class="profile-id" id="profileId">ID: ---</div>
-                <div class="profile-stats">
-                    <div class="stat"><div class="stat-value" id="profileCoins">0</div><div class="stat-label">Coins</div></div>
-                    <div class="stat"><div class="stat-value" id="profileTaps">0</div><div class="stat-label">Taps</div></div>
-                    <div class="stat"><div class="stat-value" id="profileAds">0</div><div class="stat-label">Ads</div></div>
-                    <div class="stat"><div class="stat-value" id="profileUsdt">0.00</div><div class="stat-label">USDT</div></div>
-                </div>
-            </div>
-            <div class="achievements">
-                <div class="achievements-title">🏅 Badges</div>
-                <div class="badge-grid" id="badgeGrid"></div>
-            </div>
-            <button class="reset-btn" id="resetBtn">Reset All Progress</button>
-        </section>
-    </main>
-
-    <nav class="bottom-nav">
-        <button class="nav-btn active" data-page="tap"><span class="nav-icon">👆</span><span class="nav-label">Tap</span></button>
-        <button class="nav-btn" data-page="tasks"><span class="nav-icon">🎯</span><span class="nav-label">Tasks</span></button>
-        <button class="nav-btn" data-page="boost"><span class="nav-icon">🚀</span><span class="nav-label">Boost</span></button>
-        <button class="nav-btn" data-page="wallet"><span class="nav-icon">💰</span><span class="nav-label">Wallet</span></button>
-        <button class="nav-btn" data-page="profile"><span class="nav-icon">👤</span><span class="nav-label">Profile</span></button>
-    </nav>
-
-    <div class="toast-container" id="toastContainer"></div>
-
-    <!-- Ad Overlay -->
-    <div class="ad-overlay" id="adOverlay">
-        <div class="ad-container">
-            <div class="ad-spinner" id="adSpinner">⏳</div>
-            <div class="ad-status" id="adStatus">Loading ad...</div>
             <div class="ad-progress">
-                <div class="ad-progress-fill" id="adProgressFill"></div>
+                <div class="progress-text">
+                    <span id="ads-watched">0 / 5 ads</span>
+                    <span>5 left</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="ads-progress" style="width: 0%"></div>
+                </div>
             </div>
-            <button id="claimBtn">💰 Claim 0.0005 USDT</button>
-            <button id="adCloseBtn" onclick="closeAd()">✕ Close</button>
+            <button class="watch-btn" onclick="watchAds(5, 0.010)" id="watch-btn-1">
+                ▶️ Watch Ad - +10 Coins
+            </button>
+        </div>
+        
+        <div class="ad-card">
+            <div class="ad-header">
+                <div class="ad-icon" style="background: linear-gradient(135deg, #ff4444, #ff0000);">🎯</div>
+                <div class="ad-info">
+                    <h3>AdsGram AI</h3>
+                    <p>+8 Coins per ad</p>
+                </div>
+            </div>
+            <div class="ad-progress">
+                <div class="progress-text">
+                    <span>0 / 15 ads</span>
+                    <span>15 left</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 0%"></div>
+                </div>
+            </div>
+            <button class="watch-btn" style="background: linear-gradient(135deg, #ff4444, #ff0000);" onclick="watchAds(15, 0.015)" id="watch-btn-2">
+                ▶️ Watch Ad - +8 Coins
+            </button>
+        </div>
+    </div>
+    
+    <!-- Tasks Section -->
+    <div id="tasks" class="content-section">
+        <div class="app-header">
+            <h2 style="margin-bottom: 20px;">Complete Tasks</h2>
+            <p style="opacity: 0.7; margin-bottom: 20px;">Complete tasks to earn Coins</p>
+        </div>
+        
+        <div class="task-card" onclick="completeTask('twitter', 0.0001)">
+            <div class="task-header">
+                <div class="task-title">
+                    <div class="task-icon" style="background: #1da1f2;">🐦</div>
+                    <div class="task-info">
+                        <h3>Follow on Twitter</h3>
+                        <p>Follow @CoinpulseApp</p>
+                    </div>
+                </div>
+                <div class="task-reward">+10</div>
+            </div>
+            <button class="task-btn">Complete Task</button>
+        </div>
+        
+        <div class="task-card" onclick="completeTask('telegram', 0.0001)">
+            <div class="task-header">
+                <div class="task-title">
+                    <div class="task-icon" style="background: #0088cc;">✈️</div>
+                    <div class="task-info">
+                        <h3>Join Telegram</h3>
+                        <p>Join our official channel</p>
+                    </div>
+                </div>
+                <div class="task-reward">+10</div>
+            </div>
+            <button class="task-btn">Complete Task</button>
+        </div>
+        
+        <div class="task-card" onclick="completeTask('youtube', 0.0002)">
+            <div class="task-header">
+                <div class="task-title">
+                    <div class="task-icon" style="background: #ff0000;">📺</div>
+                    <div class="task-info">
+                        <h3>Subscribe YouTube</h3>
+                        <p>Subscribe to our channel</p>
+                    </div>
+                </div>
+                <div class="task-reward">+20</div>
+            </div>
+            <button class="task-btn">Complete Task</button>
+        </div>
+    </div>
+    
+    <!-- Refer Section -->
+    <div id="refer" class="content-section">
+        <div class="app-header">
+            <h2 style="margin-bottom: 20px;">Refer Friends</h2>
+            <p style="opacity: 0.7; margin-bottom: 20px;">Earn 150 Coins for each friend</p>
+        </div>
+        
+        <div class="referral-section" style="margin-bottom: 20px;">
+            <div class="referral-title">
+                <i style="color: #6f42c1;">🔗</i>
+                Your Referral Link
+            </div>
+            <div class="referral-link" id="ref-link">https://t.me/CoinpulseBot/play?startapp=ref123</div>
+            <button class="copy-btn" onclick="copyReferral()">📋 Copy Link</button>
+        </div>
+        
+        <div class="earn-card" style="background: linear-gradient(135deg, rgba(111,66,193,0.3), rgba(111,66,193,0.1)); margin-bottom: 15px;">
+            <i style="color: #6f42c1; font-size: 48px; margin-bottom: 15px;">👥</i>
+            <h3>Invite Friends</h3>
+            <p>Earn 150 Coins for each friend who joins</p>
+            <div style="margin-top: 15px; font-size: 24px; font-weight: bold; color: #ffd700;">
+                <span id="total-referrals">0</span> Friends
+            </div>
+        </div>
+    </div>
+    
+    <!-- Profile Section -->
+    <div id="profile" class="content-section">
+        <div class="app-header" style="text-align: center; padding: 30px 20px;">
+            <div class="user-avatar" style="width: 80px; height: 80px; font-size: 36px; margin: 0 auto 15px;" id="profile-avatar">U</div>
+            <h2 id="profile-name">User</h2>
+            <p style="opacity: 0.7; margin: 5px 0;" id="profile-username">@user</p>
+            <p style="opacity: 0.5; font-size: 12px;">ID: <span id="profile-id">12345</span></p>
+        </div>
+        
+        <div style="padding: 0 20px;">
+            <div style="background: rgba(255,255,255,0.05); border-radius: 15px; padding: 20px; margin-bottom: 15px;">
+                <h3 style="margin-bottom: 15px; font-size: 14px; opacity: 0.8;">FINANCE</h3>
+                <div class="action-btn" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; background: rgba(30,144,255,0.2);" onclick="openWithdraw()">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <i style="color: #1e90ff; font-size: 24px;">💳</i>
+                        <span>Wallet</span>
+                    </div>
+                    <i style="opacity: 0.5;">›</i>
+                </div>
+                <div class="action-btn" style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,255,136,0.2);" onclick="viewTransactions()">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <i style="color: #00ff88; font-size: 24px;">📊</i>
+                        <span>Transactions</span>
+                    </div>
+                    <i style="opacity: 0.5;">›</i>
+                </div>
+            </div>
+            
+            <div style="background: rgba(255,255,255,0.05); border-radius: 15px; padding: 20px;">
+                <h3 style="margin-bottom: 15px; font-size: 14px; opacity: 0.8;">SOCIAL</h3>
+                <div class="action-btn" style="display: flex; align-items: center; justify-content: space-between; background: rgba(111,66,193,0.2);" onclick="switchTab('refer')">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <i style="color: #6f42c1; font-size: 24px;">👥</i>
+                        <span>Refer Friends</span>
+                    </div>
+                    <i style="opacity: 0.5;">›</i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="switchTab('home')">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('ads')">
+            <i class="fas fa-play-circle"></i>
+            <span>Ads</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('tasks')">
+            <i class="fas fa-tasks"></i>
+            <span>Tasks</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('refer')">
+            <i class="fas fa-users"></i>
+            <span>Refer</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('profile')">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+        </div>
+    </div>
+    
+    <!-- Withdraw Modal -->
+    <div class="modal" id="withdraw-modal">
+        <div class="modal-content">
+            <div class="modal-icon">💳</div>
+            <div class="modal-title">Withdraw USDT</div>
+            <div class="modal-text">Enter your USDT wallet address (Minimum: 0.01 USDT)</div>
+            <input type="text" class="wallet-input" id="wallet-address" placeholder="Enter wallet address">
+            <div style="margin-bottom: 15px; font-size: 14px;">
+                Available: <strong id="withdraw-balance">0.00 USDT</strong>
+            </div>
+            <button class="watch-btn" onclick="processWithdraw()">Confirm Withdraw</button>
+            <button class="watch-btn" style="background: rgba(255,255,255,0.2); color: white; margin-top: 10px;" onclick="closeModal('withdraw-modal')">Cancel</button>
         </div>
     </div>
 
     <script>
-        /* ============================================================
-           CoinPulse Pro - FIXED (Tap + Ads Working)
-           ============================================================ */
-
-        // ========== Telegram WebApp ==========
-        const tg = window.Telegram?.WebApp;
-        if (tg) {
-            try {
-                tg.ready();
-                tg.expand();
-                if (tg.setHeaderColor) tg.setHeaderColor('#050814');
-                if (tg.setBackgroundColor) tg.setBackgroundColor('#050814');
-            } catch (e) { console.warn('TG init:', e); }
-        }
-
-        // ========== CONFIG ==========
-        const CONFIG = {
-            ENERGY_MAX_BASE: 100,
-            ENERGY_REGEN_MS: 6000,
-            COINS_PER_TAP_BASE: 1,
-            AD_COIN_REWARD: 100,
-            STORAGE_KEY: 'coinpulse_pro_v3',
-            ADSGRAM_BLOCK_ID: 36912,
-            MIN_WITHDRAW: 0.01,
-
-            USDT_TASKS: [
-                { id: 'ads50', adsRequired: 50, usdtReward: 0.0001, title: 'Watch 50 Ads', desc: '50 ads = 0.0001 USDT' },
-                { id: 'ads100', adsRequired: 100, usdtReward: 0.0008, title: 'Watch 100 Ads',
-                desc: '100 ads = 0.0008 USDT' },
-                { id: 'ads500', adsRequired: 500, usdtReward: 0.008, title: 'Watch 500 Ads',
-                desc: '500 ads = 0.008 USDT' },
-            ],
-
-            BOOSTS: [
-                { id: 'tapPower', name: 'Tap Power', icon: '💪', maxLevel: 20, baseCost: 500 },
-                { id: 'energyMax', name: 'Energy Tank', icon: '🔋', maxLevel: 15, baseCost: 1000 },
-                { id: 'energyRegen', name: 'Fast Regen', icon: '⚡', maxLevel: 10, baseCost: 2000 },
-                { id: 'adBonus', name: 'Ad Bonus', icon: '🎬', maxLevel: 10, baseCost: 3000 },
-            ],
-
-            ACHIEVEMENTS: [
-                { id: 'tap100', icon: '👆', label: '100 Taps', check: s => s.totalTaps >= 100 },
-                { id: 'tap1000', icon: '💪', label: '1K Taps', check: s => s.totalTaps >= 1000 },
-                { id: 'tap10000', icon: '🔥', label: '10K Taps', check: s => s.totalTaps >= 10000 },
-                { id: 'coins10k', icon: '💰', label: '10K Coins', check: s => s.coins >= 10000 },
-                { id: 'coins100k', icon: '💎', label: '100K Coins', check: s => s.coins >= 100000 },
-                { id: 'ads10', icon: '🎬', label: '10 Ads', check: s => s.totalAdsWatched >= 10 },
-                { id: 'ads100', icon: '📺', label: '100 Ads', check: s => s.totalAdsWatched >= 100 },
-                { id: 'usdt1', icon: '💵', label: '0.001 USDT', check: s => s.totalUsdtEarned >= 0.001 },
-            ],
-        };
-
-        // ========== STATE ==========
-        const defaultState = () => ({
-            coins: 0,
-            totalTaps: 0,
-            energy: CONFIG.ENERGY_MAX_BASE,
-            lastEnergyUpdate: Date.now(),
-            totalAdsWatched: 0,
-            totalUsdtEarned: 0,
-            totalWithdrawn: 0,
-            usdtBalance: 0,
-            walletAddress: '',
-            usdtTasksClaimed: { ads50: 0, ads100: 0, ads500: 0 },
-            boosts: { tapPower: 0, energyMax: 0, energyRegen: 0, adBonus: 0 },
-            daily: { lastClaim: 0, streak: 0 },
-            user: { id: null, username: 'Player', firstName: 'P' },
-            dailyCounters: { _date: new Date().toDateString(), daily_taps: 0, daily_ads: 0 },
-            missionsClaimed: {},
-            isAdPlaying: false,
-            adCompleted: false,
-            pendingReward: 0.0005,
-            adTimer: null
-        });
-
-        let state = loadState();
-
-        function loadState() {
-            try {
-                const saved = localStorage.getItem(CONFIG.STORAGE_KEY);
-                if (saved) {
-                    const parsed = JSON.parse(saved);
-                    const def = defaultState();
-                    return {
-                        ...def, ...parsed,
-                        usdtTasksClaimed: { ...def.usdtTasksClaimed, ...(parsed.usdtTasksClaimed || {}) },
-                        boosts: { ...def.boosts, ...(parsed.boosts || {}) },
-                        daily: { ...def.daily, ...(parsed.daily || {}) },
-                        user: { ...def.user, ...(parsed.user || {}) },
-                        dailyCounters: { ...def.dailyCounters, ...(parsed.dailyCounters || {}) },
-                        missionsClaimed: { ...(parsed.missionsClaimed || {}) },
-                    };
-                }
-            } catch (e) { console.warn('Load failed:', e); }
-            return defaultState();
-        }
-
-        function saveState() {
-            try { localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(state)); } catch (e) { console.warn('Save failed:',
-                    e); }
-        }
-
-        // ========== Computed ==========
-        function getMaxEnergy() { return CONFIG.ENERGY_MAX_BASE + (state.boosts.energyMax * 50); }
-
-        function getCoinsPerTap() { return CONFIG.COINS_PER_TAP_BASE + state.boosts.tapPower; }
-
-        function getEnergyRegenMs() {
-            const reduction = 1 - (state.boosts.energyRegen * 0.10);
-            return Math.max(1000, CONFIG.ENERGY_REGEN_MS * reduction);
-        }
-
-        function getAdCoinReward() { return CONFIG.AD_COIN_REWARD + (state.boosts.adBonus * 20); }
-
-        function getLevel(coins) { return Math.floor(Math.sqrt(coins / 500)) + 1; }
-
-        function getBoostCost(boostId) {
-            const boost = CONFIG.BOOSTS.find(b => b.id === boostId);
-            return Math.floor(boost.baseCost * Math.pow(1.8, state.boosts[boostId]));
-        }
-
-        // ========== Utils ==========
-        function formatNumber(n) {
-            if (n >= 1_000_000) return (n / 1_000_000).toFixed(2) + 'M';
-            if (n >= 1_000) return (n / 1_000).toFixed(1) + 'K';
-            return Math.floor(n).toLocaleString();
-        }
-
-        function formatUsdt(n) { return Number(n).toFixed(4); }
-
-        function showToast(message, type = 'info') {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.textContent = message;
-            container.appendChild(toast);
-            setTimeout(() => toast.remove(), 2800);
-        }
-
-        function haptic(type = 'light') {
-            if (tg?.HapticFeedback) {
-                try {
-                    if (type === 'success') tg.HapticFeedback.notificationOccurred('success');
-                    else if (type === 'error') tg.HapticFeedback.notificationOccurred('error');
-                    else tg.HapticFeedback.impactOccurred(type);
-                } catch (e) {}
-            }
-        }
-
-        function initUser() {
-            if (tg?.initDataUnsafe?.user) {
-                const u = tg.initDataUnsafe.user;
-                state.user.id = u.id;
-                state.user.username = u.username || u.first_name || 'Player';
-                state.user.firstName = (u.first_name || u.username || 'P').charAt(0).toUpperCase();
-                saveState();
-            }
-        }
-
-        // ========== UI Updates ==========
-        function updateHUD() {
-            document.getElementById('coinCount').textContent = formatNumber(state.coins);
-            document.getElementById('usdtCount').textContent = formatUsdt(state.usdtBalance);
-            document.getElementById('level').textContent = getLevel(state.coins);
-            document.getElementById('username').textContent = state.user.username;
-            document.getElementById('avatar').textContent = state.user.firstName;
-            document.getElementById('perTapDisplay').textContent = '+' + getCoinsPerTap();
-        }
-
-        function updateEnergyUI() {
-            const max = getMaxEnergy();
-            const pct = (state.energy / max) * 100;
-            document.getElementById('energyFill').style.width = pct + '%';
-            document.getElementById('energyCurrent').textContent = Math.floor(state.energy);
-            document.getElementById('energyMax').textContent = max;
-        }
-
-        function updateProfileUI() {
-            document.getElementById('profileAvatar').textContent = state.user.firstName;
-            document.getElementById('profileName').textContent = state.user.username;
-            document.getElementById('profileId').textContent = 'ID: ' + (state.user.id || '---');
-            document.getElementById('profileCoins').textContent = formatNumber(state.coins);
-            document.getElementById('profileTaps').textContent = formatNumber(state.totalTaps);
-            document.getElementById('profileAds').textContent = formatNumber(state.totalAdsWatched);
-            document.getElementById('profileUsdt').textContent = formatUsdt(state.totalUsdtEarned);
-        }
-
-        function updateWalletUI() {
-            document.getElementById('walletAmount').textContent = formatUsdt(state.usdtBalance) + ' USDT';
-            document.getElementById('walletUsd').textContent = (state.usdtBalance).toFixed(2);
-            document.getElementById('totalAdsStat').textContent = state.totalAdsWatched;
-            document.getElementById('totalUsdtStat').textContent = formatUsdt(state.totalUsdtEarned);
-            document.getElementById('withdrawnStat').textContent = formatUsdt(state.totalWithdrawn);
-            document.getElementById('withdrawBtn').disabled = state.usdtBalance < CONFIG.MIN_WITHDRAW;
-        }
-
-        // ========== Energy ==========
-        function processOfflineEnergy() {
-            const now = Date.now();
-            const elapsed = now - state.lastEnergyUpdate;
-            const regenMs = getEnergyRegenMs();
-            const max = getMaxEnergy();
-            const ticks = Math.floor(elapsed / regenMs);
-            if (ticks > 0 && state.energy < max) {
-                state.energy = Math.min(max, state.energy + ticks);
-                state.lastEnergyUpdate = now;
-                saveState();
-            }
-        }
-
-        let energyRegenInterval = null;
-
-        function startEnergyRegen() {
-            if (energyRegenInterval) clearInterval(energyRegenInterval);
-            energyRegenInterval = setInterval(() => {
-                const max = getMaxEnergy();
-                if (state.energy < max) {
-                    state.energy = Math.min(max, state.energy + 1);
-                    state.lastEnergyUpdate = Date.now();
-                    updateEnergyUI();
-                    saveState();
-                }
-            }, getEnergyRegenMs());
-        }
-
-        // ============================================================
-        // ===== TAP - FIXED =====
-        // ============================================================
-
-        const mainCoin = document.getElementById('mainCoin');
-        const coinWrapper = document.getElementById('coinWrapper');
-
-        // ✅ Click event
-        coinWrapper.addEventListener('click', function(e) {
-            console.log('🪙 Coin clicked!');
-            handleTap(e);
-        });
-
-        // ✅ Touch event
-        coinWrapper.addEventListener('touchstart', function(e) {
-            e.preventDefault();
-            console.log('🪙 Coin touched!');
-            handleTap(e);
-        }, { passive: false });
-
-        function handleTap(e) {
-            if (state.isAdPlaying) {
-                showToast('⏳ Ad is playing!', 'error');
-                return;
-            }
-
-            const max = getMaxEnergy();
-            if (state.energy < 1) {
-                showToast('⚡ No energy! Watch an ad or wait.', 'error');
-                haptic('error');
-                return;
-            }
-
-            const earned = getCoinsPerTap();
-            state.energy -= 1;
-            state.coins += earned;
-            state.totalTaps += 1;
-            state.dailyCounters.daily_taps = (state.dailyCounters.daily_taps || 0) + 1;
-            state.lastEnergyUpdate = Date.now();
-
-            // Animation
-            mainCoin.classList.add('pulse');
-            setTimeout(() => mainCoin.classList.remove('pulse'), 80);
-
-            const ring = mainCoin.querySelector('.coin-ring');
-            ring.classList.remove('pulse');
-            void ring.offsetWidth;
-            ring.classList.add('pulse');
-
-            // Floating text
-            const float = document.createElement('div');
-            float.className = 'float-text';
-            float.textContent = '+' + earned;
-            const rect = coinWrapper.getBoundingClientRect();
-            const x = (e.clientX || (rect.left + rect.width / 2)) - rect.left;
-            const y = (e.clientY || (rect.top + rect.height / 2)) - rect.top;
-            float.style.left = (x - 15) + 'px';
-            float.style.top = (y - 20) + 'px';
-            coinWrapper.appendChild(float);
-            setTimeout(() => float.remove(), 1000);
-
-            haptic('light');
-            updateHUD();
-            updateEnergyUI();
-            saveState();
-        }
-
-        // ============================================================
-        // ===== ADSGRAM - FIXED =====
-        // ============================================================
-
-        let adsgramController = null;
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.ready();
+        
+        const user = tg.initDataUnsafe.user;
+        const userId = user ? user.id : 'guest';
+        const username = user ? (user.username || user.first_name) : 'Guest';
+        const userInitial = username.charAt(0).toUpperCase();
+        
+        // AdsGram Setup - Block ID: 36912
+        const ADSGRAM_BLOCK_ID = '36912';
+        let adsgram = null;
         let adsgramReady = false;
-
-        const adOverlay = document.getElementById('adOverlay');
-        const adStatus = document.getElementById('adStatus');
-        const adSpinner = document.getElementById('adSpinner');
-        const adProgressFill = document.getElementById('adProgressFill');
-        const claimBtn = document.getElementById('claimBtn');
-
-        function updateSdkStatus(status, message) {
-            const el = document.getElementById('sdkStatus');
-            const text = document.getElementById('sdkStatusText');
-            el.className = 'sdk-status ' + status;
-            text.textContent = message;
-        }
-
+        let adsgramInitialized = false;
+        
+        // Initialize AdsGram with retry mechanism
         function initAdsGram() {
-            // Check if SDK loaded
-            if (typeof window.Adsgram === 'undefined') {
-                console.warn('⏳ AdsGram SDK not loaded yet, retrying...');
-                updateSdkStatus('loading', 'Loading AdsGram SDK...');
-                setTimeout(initAdsGram, 1000);
+            const statusEl = document.getElementById('ad-status');
+            
+            if (adsgramInitialized) {
+                console.log('AdsGram already initialized');
                 return;
             }
-
+            
             try {
-                adsgramController = window.Adsgram.init({
-                    blockId: CONFIG.ADSGRAM_BLOCK_ID,
-                    debug: false,
-                    onReward: function(data) {
-                        console.log('✅ Ad reward received:', data);
-                        handleAdComplete();
-                    },
-                    onError: function(error) {
-                        console.error('❌ Ad error:', error);
-                        setTimeout(function() {
-                            if (!state.adCompleted) {
-                                handleAdComplete();
+                console.log('Initializing AdsGram with Block ID:', ADSGRAM_BLOCK_ID);
+                statusEl.textContent = '⏳ Initializing AdsGram...';
+                statusEl.className = 'ad-status loading';
+                
+                // Check if AdsGram SDK is loaded
+                if (typeof window.AdsGram === 'undefined') {
+                    console.error('AdsGram SDK not found!');
+                    statusEl.textContent = '❌ AdsGram SDK not loaded. Retrying...';
+                    statusEl.className = 'ad-status error';
+                    
+                    // Retry after 2 seconds
+                    setTimeout(() => {
+                        console.log('Retrying AdsGram initialization...');
+                        initAdsGram();
+                    }, 2000);
+                    return;
+                }
+                
+                // Initialize AdsGram properly using .init()
+                adsgram = window.AdsGram.init({ blockId: ADSGRAM_BLOCK_ID });
+                
+                console.log('✅ AdsGram initialized successfully!');
+                adsgramReady = true;
+                adsgramInitialized = true;
+                statusEl.textContent = '✅ AdsGram Ready! Block: ' + ADSGRAM_BLOCK_ID;
+                statusEl.className = 'ad-status ready';
+                enableWatchButtons();
+                
+            } catch (error) {
+                console.error('AdsGram initialization error:', error);
+                statusEl.textContent = '⚠️ Using fallback mode';
+                statusEl.className = 'ad-status';
+                adsgramReady = true;
+                adsgramInitialized = true;
+                enableWatchButtons();
+            }
+        }
+        
+        function enableWatchButtons() {
+            const btn1 = document.getElementById('watch-btn-1');
+            const btn2 = document.getElementById('watch-btn-2');
+            if (btn1) btn1.disabled = false;
+            if (btn2) btn2.disabled = false;
+        }
+        
+        // Initialize on page load
+        window.addEventListener('load', () => {
+            console.log('Page loaded, initializing AdsGram...');
+            setTimeout(initAdsGram, 1000);
+        });
+        
+        // User Data
+        let data = {
+            balance: parseFloat(localStorage.getItem(`balance_${userId}`)) || 0,
+            totalCoins: parseInt(localStorage.getItem(`totalCoins_${userId}`)) || 0,
+            gamesPlayed: parseInt(localStorage.getItem(`gamesPlayed_${userId}`)) || 0,
+            adsWatched: parseInt(localStorage.getItem(`adsWatched_${userId}`)) || 0,
+            tasks: JSON.parse(localStorage.getItem(`tasks_${userId}`)) || [],
+            referrals: parseInt(localStorage.getItem(`referrals_${userId}`)) || 0,
+            lastClaim: localStorage.getItem(`lastClaim_${userId}`) || ''
+        };
+        
+        // Initialize UI
+        document.getElementById('username').textContent = username;
+        document.getElementById('user-id').textContent = 'ID: ' + userId;
+        document.getElementById('user-avatar').textContent = userInitial;
+        document.getElementById('profile-name').textContent = username;
+        document.getElementById('profile-username').textContent = '@' + (user?.username || 'user');
+        document.getElementById('profile-id').textContent = userId;
+        document.getElementById('profile-avatar').textContent = userInitial;
+        document.getElementById('balance').textContent = data.balance.toFixed(2);
+        document.getElementById('usd-value').textContent = data.balance.toFixed(2);
+        document.getElementById('total-coins').textContent = data.totalCoins;
+        document.getElementById('games-played').textContent = data.gamesPlayed;
+        document.getElementById('total-referrals').textContent = data.referrals;
+        document.getElementById('withdraw-balance').textContent = data.balance.toFixed(2) + ' USDT';
+        
+        // Tab Switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            
+            const navItems = document.querySelectorAll('.nav-item');
+            if (tabName === 'home') navItems[0].classList.add('active');
+            else if (tabName === 'ads') navItems[1].classList.add('active');
+            else if (tabName === 'tasks') navItems[2].classList.add('active');
+            else if (tabName === 'refer') navItems[3].classList.add('active');
+            else if (tabName === 'profile') navItems[4].classList.add('active');
+        }
+        
+        // Watch Ads - FIXED VERSION
+        function watchAds(count, reward) {
+            const statusEl = document.getElementById('ad-status');
+            
+            // Check if AdsGram is ready
+            if (!adsgramReady) {
+                tg.showAlert(' Ads are still loading. Please wait a moment and try again.\n\nStatus: ' + statusEl.textContent);
+                return;
+            }
+            
+            const totalReward = (reward * 1000).toFixed(0);
+            tg.showConfirm('Watch ' + count + ' ads to earn ' + totalReward + ' Coins?', (confirmed) => {
+                if (confirmed) {
+                    let watched = 0;
+                    showNotification('Starting ads... 0/' + count);
+                    
+                    function showNextAd() {
+                        if (watched >= count) {
+                            // All ads completed
+                            data.balance += reward;
+                            data.adsWatched += count;
+                            data.totalCoins += Math.floor(reward * 1000);
+                            saveData();
+                            updateUI();
+                            showNotification('✅ Earned ' + totalReward + ' Coins!');
+                            tg.HapticFeedback.notificationOccurred('success');
+                            return;
+                        }
+                        
+                        try {
+                            if (adsgram && typeof adsgram.show === 'function') {
+                                adsgram.show().then(() => {
+                                    watched++;
+                                    showNotification('Ad ' + watched + '/' + count + ' ✅');
+                                    document.getElementById('ads-watched').textContent = watched + ' / ' + count + ' ads';
+                                    document.getElementById('ads-progress').style.width = (watched / count * 100) + '%';
+                                    setTimeout(showNextAd, 500);
+                                }).catch((err) => {
+                                    console.error('Ad show error:', err);
+                                    watched++;
+                                    showNotification('Ad ' + watched + '/' + count + ' (skipped)');
+                                    setTimeout(showNextAd, 500);
+                                });
+                            } else {
+                                // Fallback mode
+                                console.log('Using fallback ad mode');
+                                watched++;
+                                showNotification('Ad ' + watched + '/' + count + ' (demo)');
+                                setTimeout(showNextAd, 1000);
                             }
-                        }, 3000);
-                    },
-                    onClose: function() {
-                        console.log('👋 Ad closed');
-                        if (!state.adCompleted) {
-                            setTimeout(function() {
-                                if (!state.adCompleted) {
-                                    handleAdComplete();
-                                }
-                            }, 2000);
+                        } catch (e) {
+                            console.error('Ad exception:', e);
+                            watched++;
+                            setTimeout(showNextAd, 500);
                         }
                     }
-                });
-                adsgramReady = true;
-                console.log('✅ AdsGram initialized | Block ID:', CONFIG.ADSGRAM_BLOCK_ID);
-                updateSdkStatus('ready', '✅ Ads ready - Tap to earn!');
-                showToast('✅ Ads ready! Watch ads to earn USDT.', 'success');
-            } catch (e) {
-                console.error('❌ AdsGram init error:', e);
-                adsgramReady = false;
-                updateSdkStatus('error', '❌ Ads init failed: ' + (e.message || 'Unknown'));
-            }
-        }
-
-        // ===== AD COMPLETE =====
-        function handleAdComplete() {
-            if (state.adCompleted) return;
-
-            console.log('✅ Ad completed! Showing claim button...');
-            state.adCompleted = true;
-
-            if (state.adTimer) {
-                clearInterval(state.adTimer);
-                state.adTimer = null;
-            }
-
-            adStatus.textContent = '✅ Ad complete! Claim your reward!';
-            adSpinner.textContent = '✅';
-            adSpinner.style.animation = 'none';
-            adProgressFill.style.width = '100%';
-
-            claimBtn.textContent = '💰 Claim ' + state.pendingReward.toFixed(4) + ' USDT';
-            claimBtn.className = 'show';
-            claimBtn.style.display = 'block';
-            claimBtn.style.pointerEvents = 'auto';
-
-            console.log('🔘 Claim button is now visible!');
-            haptic('success');
-        }
-
-        // ===== SHOW AD =====
-        function showRewardedAd() {
-            if (state.isAdPlaying) {
-                showToast('⏳ Please wait for current ad', 'error');
-                return;
-            }
-
-            const btn = document.getElementById('watchAdBtn');
-
-            if (!adsgramReady || !adsgramController) {
-                showToast('⏳ Ads loading, please wait...', 'error');
-                initAdsGram();
-                return;
-            }
-
-            state.isAdPlaying = true;
-            state.adCompleted = false;
-            state.pendingReward = 0.0005;
-
-            btn.disabled = true;
-            btn.innerHTML = '<span class="spinner"></span> Loading Ad...';
-
-            adOverlay.style.display = 'flex';
-            adOverlay.className = 'ad-overlay show';
-            adStatus.textContent = 'Loading ad...';
-            adSpinner.textContent = '⏳';
-            adSpinner.style.animation = 'spin 1s linear infinite';
-            adProgressFill.style.width = '0%';
-            claimBtn.style.display = 'none';
-            claimBtn.className = '';
-
-            try {
-                console.log('📺 Requesting ad from AdsGram (Block ID: ' + CONFIG.ADSGRAM_BLOCK_ID + ')...');
-
-                adsgramController.show()
-                    .then(() => {
-                        console.log('✅ Ad completed successfully');
-                    })
-                    .catch((err) => {
-                        console.warn('❌ Ad error:', err);
-                        setTimeout(function() {
-                            if (!state.adCompleted) {
-                                handleAdComplete();
-                            }
-                        }, 3000);
-                    });
-
-                // Progress animation
-                let progress = 0;
-                state.adTimer = setInterval(function() {
-                    progress += 1;
-                    if (progress >= 95) {
-                        clearInterval(state.adTimer);
-                        state.adTimer = null;
-                        adProgressFill.style.width = '95%';
-                        adStatus.textContent = '⏳ Almost done...';
-                    } else {
-                        adProgressFill.style.width = Math.min(progress, 95) + '%';
-                    }
-                }, 100);
-
-                // Force complete after 12 seconds
-                setTimeout(function() {
-                    if (!state.adCompleted) {
-                        console.log('⚠️ Force completing ad (timeout)');
-                        handleAdComplete();
-                    }
-                }, 12000);
-
-            } catch (e) {
-                console.error('❌ Ad show error:', e);
-                btn.disabled = false;
-                btn.innerHTML = '<span>🎬</span> Watch Ad';
-                state.isAdPlaying = false;
-                showToast('❌ Ad error. Please try again.', 'error');
-                adOverlay.style.display = 'none';
-                adOverlay.className = 'ad-overlay';
-            }
-        }
-
-        // ===== CLAIM AD REWARD =====
-        function claimAdReward() {
-            console.log('🖱️ Claim button clicked!');
-
-            if (!state.adCompleted) {
-                showToast('⏳ Please wait for ad to complete', 'error');
-                return;
-            }
-
-            const reward = state.pendingReward;
-            const coinReward = getAdCoinReward();
-
-            state.usdtBalance += reward;
-            state.totalUsdtEarned += reward;
-            state.coins += coinReward;
-            state.totalAdsWatched += 1;
-            state.dailyCounters.daily_ads = (state.dailyCounters.daily_ads || 0) + 1;
-
-            console.log('💰 Claimed reward:', reward);
-            console.log('🪙 Bonus coins:', coinReward);
-
-            haptic('success');
-            updateHUD();
-            updateWalletUI();
-            updateTasks();
-            saveState();
-
-            closeAd();
-            showToast('🎉 +' + coinReward + ' coins! +' + reward.toFixed(4) + ' USDT!', 'usdt');
-        }
-
-        // ===== CLOSE AD =====
-        function closeAd() {
-            adOverlay.style.display = 'none';
-            adOverlay.className = 'ad-overlay';
-            state.isAdPlaying = false;
-            state.adCompleted = false;
-            claimBtn.style.display = 'none';
-            claimBtn.className = '';
-
-            if (state.adTimer) {
-                clearInterval(state.adTimer);
-                state.adTimer = null;
-            }
-
-            adSpinner.style.animation = 'spin 1s linear infinite';
-            document.getElementById('watchAdBtn').disabled = false;
-            document.getElementById('watchAdBtn').innerHTML = '<span>🎬</span> Watch Ad';
-        }
-
-        // ===== CLAIM BUTTON EVENTS =====
-        claimBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            console.log('🖱️ Claim clicked via listener');
-            claimAdReward();
-        });
-
-        claimBtn.addEventListener('touchstart', function(e) {
-            e.preventDefault();
-            console.log('🖱️ Claim touched');
-            claimAdReward();
-        }, { passive: false });
-
-        // ===== WATCH AD BUTTON =====
-        document.getElementById('watchAdBtn').addEventListener('click', showRewardedAd);
-
-        // ============================================================
-        // ===== TASKS =====
-        // ============================================================
-
-        function updateTasks() {
-            renderUsdtTasks();
-            renderMissions();
-            renderAchievements();
-        }
-
-        function renderUsdtTasks() {
-            const list = document.getElementById('usdtTasksList');
-            list.innerHTML = '';
-
-            CONFIG.USDT_TASKS.forEach(task => {
-                const claimed = state.usdtTasksClaimed[task.id] || 0;
-                const currentAds = state.totalAdsWatched;
-                const nextMilestone = (claimed + 1) * task.adsRequired;
-                const progress = Math.min(currentAds, nextMilestone);
-                const pct = (progress / nextMilestone) * 100;
-                const canClaim = currentAds >= nextMilestone;
-
-                const card = document.createElement('div');
-                card.className = 'task-card usdt-task';
-                card.innerHTML = `
-                        <div class="task-icon">💵</div>
-                        <div class="task-info">
-                            <div class="task-title">${task.title}</div>
-                            <div class="task-subtitle">
-                                <span class="task-reward-badge">+${task.usdtReward} USDT</span>
-                                &nbsp;• Claimed: ${claimed}x
-                            </div>
-                            <div class="task-progress-bar">
-                                <div class="task-progress-fill" style="width: ${pct}%"></div>
-                            </div>
-                            <div class="task-progress-text">${progress} / ${nextMilestone} ads</div>
-                        </div>
-                        <button class="task-action ${canClaim ? 'claim' : ''}"
-                                data-task="${task.id}" ${!canClaim ? 'disabled' : ''}>
-                            ${canClaim ? '🎁 Claim' : '🔒 Locked'}
-                        </button>
-                    `;
-                list.appendChild(card);
-            });
-
-            list.querySelectorAll('.task-action.claim').forEach(btn => {
-                btn.addEventListener('click', () => claimUsdtTask(btn.dataset.task));
+                    
+                    showNextAd();
+                }
             });
         }
-
-        function claimUsdtTask(taskId) {
-            const task = CONFIG.USDT_TASKS.find(t => t.id === taskId);
-            if (!task) return;
-            const claimed = state.usdtTasksClaimed[taskId] || 0;
-            const required = (claimed + 1) * task.adsRequired;
-            if (state.totalAdsWatched < required) {
-                showToast('Not enough ads', 'error');
+        
+        // Complete Task
+        function completeTask(taskId, reward) {
+            if (data.tasks.includes(taskId)) {
+                tg.showAlert('Already completed!');
                 return;
             }
-            state.usdtTasksClaimed[taskId] = claimed + 1;
-            state.usdtBalance += task.usdtReward;
-            state.totalUsdtEarned += task.usdtReward;
-            haptic('success');
-            showToast(`💵 +${task.usdtReward} USDT!`, 'usdt');
-            updateHUD();
-            updateWalletUI();
-            updateTasks();
-            saveState();
-        }
-
-        // ========== Missions ==========
-        const MISSIONS = [
-            { id: 'daily_tap50', title: 'Tap 50 times today', icon: '👆', target: 50, reward: 200, type: 'daily_taps' },
-            { id: 'daily_tap200', title: 'Tap 200 times today', icon: '💪', target: 200, reward: 1000,
-            type: 'daily_taps' },
-            { id: 'daily_ads3', title: 'Watch 3 ads today', icon: '🎬', target: 3, reward: 500, type: 'daily_ads' },
-            { id: 'daily_ads10', title: 'Watch 10 ads today', icon: '📺', target: 10, reward: 2000,
-            type: 'daily_ads' },
-            { id: 'daily_coins5k', title: 'Earn 5,000 coins', icon: '💰', target: 5000, reward: 1500,
-            type: 'coins' },
-        ];
-
-        function resetDailyCountersIfNeeded() {
-            const today = new Date().toDateString();
-            if (state.dailyCounters._date !== today) {
-                state.dailyCounters = { _date: today, daily_taps: 0, daily_ads: 0 };
-                state.missionsClaimed = {};
-                saveState();
-            }
-        }
-
-        function renderMissions() {
-            resetDailyCountersIfNeeded();
-            const list = document.getElementById('missionList');
-            list.innerHTML = '';
-
-            MISSIONS.forEach(m => {
-                let current = 0;
-                if (m.type === 'daily_taps') current = state.dailyCounters.daily_taps || 0;
-                else if (m.type === 'daily_ads') current = state.dailyCounters.daily_ads || 0;
-                else if (m.type === 'coins') current = state.coins;
-                current = Math.min(current, m.target);
-                const pct = (current / m.target) * 100;
-                const done = current >= m.target;
-                const claimed = state.missionsClaimed[m.id];
-
-                const card = document.createElement('div');
-                card.className = 'task-card';
-                card.innerHTML = `
-                        <div class="task-icon">${m.icon}</div>
-                        <div class="task-info">
-                            <div class="task-title">${m.title}</div>
-                            <div class="task-subtitle">Reward: +${formatNumber(m.reward)} 🪙</div>
-                            <div class="task-progress-bar"><div class="task-progress-fill" style="width: ${pct}%"></div></div>
-                            <div class="task-progress-text">${formatNumber(current)} / ${formatNumber(m.target)}</div>
-                        </div>
-                        <button class="task-action ${done && !claimed ? 'claim' : ''}"
-                                data-mission="${m.id}" ${(!done || claimed) ? 'disabled' : ''}>
-                            ${claimed ? '✓' : (done ? '🎁' : '🔒')}
-                        </button>
             
+            tg.showConfirm('Complete this task to earn ' + (reward * 1000).toFixed(0) + ' Coins?', (c) => {
+                if (c) {
+                    data.tasks.push(taskId);
+                    data.balance += reward;
+                    data.totalCoins += Math.floor(reward * 1000);
+                    saveData();
+                    updateUI();
+                    showNotification('✅ +' + (reward * 1000).toFixed(0) + ' Coins');
+                    tg.HapticFeedback.notificationOccurred('success');
+                }
+            });
+        }
+        
+        // Copy Referral
+        function copyReferral() {
+            const link = document.getElementById('referral-link') || document.getElementById('ref-link');
+            if (link) {
+                navigator.clipboard.writeText(link.textContent).then(() => {
+                    showNotification('📋 Link copied!');
+                    tg.HapticFeedback.notificationOccurred('success');
+                }).catch(() => {
+                    showNotification('❌ Copy failed');
+                });
+            }
+        }
+        
+        // Withdraw
+        function openWithdraw() {
+            if (data.balance < 0.01) {
+                tg.showAlert('Minimum withdrawal: 0.01 USDT');
+                return;
+            }
+            document.getElementById('withdraw-modal').classList.add('show');
+        }
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+        
+        function processWithdraw() {
+            const wallet = document.getElementById('wallet-address').value.trim();
+            if (!wallet) {
+                tg.showAlert('Enter wallet address');
+                return;
+            }
+            if (data.balance < 0.01) {
+                tg.showAlert('Minimum: 0.01 USDT');
+                return;
+            }
+            
+            tg.showConfirm('Withdraw ' + data.balance.toFixed(2) + ' USDT?', (c) => {
+                if (c) {
+                    tg.showProgress(true);
+                    setTimeout(() => {
+                        tg.showProgress(false);
+                        data.balance = 0;
+                        saveData();
+                        updateUI();
+                        closeModal('withdraw-modal');
+                        showNotification('✅ Withdrawal successful!');
+                        tg.HapticFeedback.notificationOccurred('success');
+                    }, 2000);
+                }
+            });
+        }
+        
+        // Other Functions
+        function openDailyBonus() { showNotification('🎁 Daily Bonus coming soon!'); }
+        function openRewardCode() { showNotification('🎟️ Reward Code coming soon!'); }
+        function openLeaderboard() { showNotification('🏆 Leaderboard coming soon!'); }
+        function viewTransactions() { showNotification('📊 Transactions coming soon!'); }
+        
+        function updateUI() {
+            document.getElementById('balance').textContent = data.balance.toFixed(2);
+            document.getElementById('usd-value').textContent = data.balance.toFixed(2);
+            document.getElementById('total-coins').textContent = data.totalCoins;
+            document.getElementById('withdraw-balance').textContent = data.balance.toFixed(2) + ' USDT';
+        }
+        
+        function saveData() {
+            localStorage.setItem(`balance_${userId}`, data.balance);
+            localStorage.setItem(`totalCoins_${userId}`, data.totalCoins);
+            localStorage.setItem(`gamesPlayed_${userId}`, data.gamesPlayed);
+            localStorage.setItem(`adsWatched_${userId}`, data.adsWatched);
+            localStorage.setItem(`tasks_${userId}`, JSON.stringify(data.tasks));
+            localStorage.setItem(`referrals_${userId}`, data.referrals);
+        }
+        
+        function showNotification(msg) {
+            const n = document.getElementById('notification');
+            n.textContent = msg;
+            n.classList.add('show');
+            setTimeout(() => n.classList.remove('show'), 2500);
+        }
+        
+        tg.BackButton.onClick(() => tg.close());
+        tg.BackButton.show();
+    </script>
+</body>
+</html>
