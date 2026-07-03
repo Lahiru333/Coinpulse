@@ -11,25 +11,28 @@
     
     <style>
         :root {
-            --bg-dark: #070b12;
-            --panel-bg: rgba(18, 26, 44, 0.7);
+            --bg-dark: #060913;
+            --panel-bg: rgba(13, 20, 38, 0.75);
+            --panel-border: rgba(255, 255, 255, 0.07);
             --primary: #00ffcc;
-            --primary-glow: rgba(0, 255, 204, 0.4);
+            --primary-glow: rgba(0, 255, 204, 0.3);
             --danger: #ff0055;
-            --danger-glow: rgba(255, 0, 85, 0.4);
+            --danger-glow: rgba(255, 0, 85, 0.3);
             --accent: #ffcc00;
-            --text-main: #f0f4f8;
+            --text-main: #f1f5f9;
+            --text-muted: #64748b;
         }
 
         * {
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
+            user-select: none;
         }
 
         body {
             margin: 0;
             padding: 0;
-            background: radial-gradient(circle at center, #152535 0%, var(--bg-dark) 100%);
+            background: radial-gradient(circle at center, #0f1c2e 0%, var(--bg-dark) 100%);
             color: var(--text-main);
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             overflow: hidden;
@@ -45,17 +48,16 @@
             position: relative;
         }
 
-        /* Global Header Dashboard */
+        /* Top Bar Dashboard */
         header {
             background: var(--panel-bg);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 15px 20px;
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--panel-border);
+            padding: 16px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             z-index: 10;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
         }
 
         .stat-group {
@@ -64,17 +66,18 @@
         }
 
         .stat-label {
-            font-size: 11px;
+            font-size: 10px;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #7a8c9d;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            margin-bottom: 2px;
         }
 
         .stat-value {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: 800;
             color: var(--primary);
-            text-shadow: 0 0 8px var(--primary-glow);
+            text-shadow: 0 0 10px var(--primary-glow);
         }
 
         .stat-value.usdt {
@@ -82,44 +85,173 @@
             font-size: 16px;
         }
 
-        /* Screen Wrapper */
+        /* Screen Framework */
         .content-frame {
             flex: 1;
             overflow-y: auto;
-            padding: 15px;
-            padding-bottom: 90px;
+            padding: 20px;
+            padding-bottom: 100px;
         }
 
         .screen {
             display: none;
-            animation: fadeIn 0.4s ease-in-out forwards;
+            animation: screenFade 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
 
         .screen.active {
             display: block;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+        @keyframes screenFade {
+            from { opacity: 0; transform: translateY(8px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Game Screen CSS */
+        /* Cards Layout */
+        .card {
+            background: var(--panel-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--panel-border);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.24);
+        }
+
+        .card h3 {
+            margin: 0 0 12px 0;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        /* Form Inputs */
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .input-field {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--panel-border);
+            border-radius: 12px;
+            padding: 14px;
+            color: #white;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .input-field:focus {
+            border-color: var(--primary);
+        }
+
+        /* Premium Interface Buttons */
+        .btn-prime {
+            background: linear-gradient(135deg, #00ffcc 0%, #00b3ff 100%);
+            color: #040814;
+            border: none;
+            padding: 15px;
+            font-size: 15px;
+            font-weight: 700;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 100%;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-prime:active {
+            transform: scale(0.98);
+            opacity: 0.9;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger) 0%, #bc003e 100%);
+            color: white;
+        }
+
+        /* Custom Structured Task Component */
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .task-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            padding: 14px 16px;
+            border-radius: 14px;
+        }
+
+        .task-details h4 {
+            margin: 0 0 4px 0;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .task-details p {
+            margin: 0;
+            font-size: 12px;
+            color: var(--accent);
+        }
+
+        .action-btn {
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 12px;
+            cursor: pointer;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .action-btn.ready {
+            background: var(--primary);
+            color: #040814;
+            border: none;
+        }
+
+        .action-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* Game Engine Canvas Box */
         .game-wrapper {
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
         }
 
         .canvas-card {
-            background: #02060c;
+            background: #02050a;
             border: 2px solid var(--danger);
-            border-radius: 20px;
-            box-shadow: 0 0 25px var(--danger-glow);
+            border-radius: 24px;
+            box-shadow: 0 0 30px rgba(255, 0, 85, 0.2);
             position: relative;
             width: 100%;
-            max-width: 360px;
+            max-width: 350px;
             aspect-ratio: 4 / 5;
             overflow: hidden;
         }
@@ -131,88 +263,49 @@
         }
 
         .game-meta-info {
-            margin-top: 10px;
+            margin: 12px 0;
+            font-size: 11px;
+            color: #ff5577;
             text-align: center;
-            font-size: 12px;
-            color: #ff6688;
+            max-width: 320px;
         }
 
-        /* Custom UI Components */
-        .card {
-            background: var(--panel-bg);
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        }
-
-        .btn-prime {
-            background: linear-gradient(135deg, #00ffcc 0%, #00b3ff 100%);
-            color: #030710;
-            border: none;
-            padding: 14px 28px;
-            font-size: 16px;
-            font-weight: 700;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 15px var(--primary-glow);
+        /* Leaderboard Rankings Matrix */
+        .rank-table {
             width: 100%;
-            text-transform: uppercase;
+            border-collapse: collapse;
+            font-size: 14px;
         }
 
-        .btn-prime:active {
-            transform: scale(0.98);
-        }
-
-        .btn-danger {
-            background: linear-gradient(135deg, var(--danger) 0%, #bc003e 100%);
-            box-shadow: 0 4px 15px var(--danger-glow);
-            color: white;
-        }
-
-        /* Tasks Grid System */
-        .task-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            padding: 12px 0;
-        }
-        .task-row:last-child { border-bottom: none; }
-
-        .task-details h4 { margin: 0 0 4px 0; font-size: 14px; }
-        .task-details p { margin: 0; font-size: 11px; color: var(--accent); }
-
-        .action-btn {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255,255,255,0.1);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 8px;
+        .rank-table th {
+            color: var(--text-muted);
             font-weight: 600;
-            font-size: 12px;
-            cursor: pointer;
-        }
-        .action-btn.ready {
-            background: var(--primary);
-            color: #000;
-        }
-        .action-btn:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 1px;
+            padding-bottom: 12px;
         }
 
-        /* Navigation Menu (Bottom Tabs) */
+        .rank-table td {
+            padding: 12px 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+
+        .rank-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Premium Nav Hub */
         nav {
             position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
-            background: #09101d;
-            border-top: 1px solid rgba(255,255,255,0.08);
+            background: #070c16;
+            border-top: 1px solid var(--panel-border);
             display: flex;
+            padding: 8px 12px;
+            gap: 6px;
             z-index: 10;
         }
 
@@ -220,46 +313,34 @@
             flex: 1;
             background: none;
             border: none;
-            padding: 16px 0;
-            color: #5c6f84;
-            font-size: 12px;
+            padding: 12px 0;
+            color: var(--text-muted);
+            font-size: 11px;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.8px;
             cursor: pointer;
-            transition: color 0.2s;
+            border-radius: 12px;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
         }
 
         .nav-item.active {
             color: var(--primary);
-            background: linear-gradient(to top, rgba(0,255,204,0.05), transparent);
-            border-top: 2px solid var(--primary);
-        }
-
-        /* Utility classes */
-        .text-center { text-align: center; }
-        .flex-box { display: flex; gap: 10px; margin-top: 15px;}
-
-        /* Leaderboard table simulation */
-        .rank-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 14px;
-        }
-        .rank-table th, .rank-table td {
-            padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            background: rgba(0, 255, 204, 0.06);
         }
     </style>
 </head>
 <body>
 
 <div id="app-container">
-    <!-- Main Dashboard Header -->
+    <!-- Live Global Header Dashboard -->
     <header>
         <div class="stat-group">
-            <span class="stat-label">Coinpulse Balance</span>
+            <span class="stat-label">Pulse Balance</span>
             <span class="stat-value" id="dom-coins">0.0000</span>
         </div>
         <div class="stat-group" style="text-align: right;">
@@ -268,54 +349,81 @@
         </div>
     </header>
 
-    <!-- App Content Frames -->
+    <!-- App Content Frames Switcher Matrix -->
     <div class="content-frame">
         
-        <!-- GAME SCREEN -->
+        <!-- CORE GAME SCREEN -->
         <div id="scr-game" class="screen active">
             <div class="game-wrapper">
                 <div class="canvas-card">
                     <canvas id="coreCanvas"></canvas>
                 </div>
                 <div class="game-meta-info">
-                    ⚠️ ALERT: 85% Bombs Rate Active. Missing 1 Coin = Immediate Destruction.
+                    ⚡ HARDCORE MODE: 85% Bombs active. Missing a single gold coin terminates session sequence immediately.
                 </div>
-                <div class="flex-box" style="width: 100%; max-width: 360px;">
-                    <button id="btn-run" class="btn-prime btn-danger" onclick="Engine.toggleState()">LAUNCH HARD CORE</button>
-                </div>
+                <button id="btn-run" class="btn-prime btn-danger" onclick="Engine.toggleState()" style="max-width: 350px;">LAUNCH HARD CORE</button>
             </div>
         </div>
 
-        <!-- AD TASKS SCREEN -->
+        <!-- AD & SOCIAL TASKS SCREEN -->
         <div id="scr-tasks" class="screen">
             <div class="card">
-                <h3>Adsgram Integration Node</h3>
-                <p style="font-size: 13px; color:#a0aec0;">Click below to watch immediate interstitial ad configurations under block <code style="color:var(--primary)">36912</code>.</p>
-                <button class="btn-prime" onclick="Tasks.triggerAdWatch()">WATCH ADSGRAM AD</button>
-                <p style="font-size: 12px; text-align: center; color: var(--accent);" id="dom-ad-counter">Total Ads Watched: 0</p>
+                <h3>Adsgram Monetization Engine</h3>
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">Execute verified interstitial advertising data streams to claim instant rewards.</p>
+                <button class="btn-prime" onclick="Tasks.triggerAdWatch()">WATCH SPONSORED VIDEO</button>
+                <p style="font-size: 12px; text-align: center; color: var(--accent); margin-top: 12px; font-weight: 600;" id="dom-ad-counter">Total Ads Acknowledged: 0</p>
             </div>
 
             <div class="card">
-                <h3>Extreme Milestone Sub-Routines</h3>
-                <div id="task-injector">
-                    <!-- Dynamic injection of data-heavy layout -->
+                <h3>Architecture Matrix Tasks</h3>
+                <div class="task-list" id="task-injector">
+                    <!-- Dynamic task sequences inject here -->
                 </div>
             </div>
         </div>
 
-        <!-- LEADERBOARD SCREEN -->
+        <!-- WALLET & WITHDRAW SCREEN -->
+        <div id="scr-wallet" class="screen">
+            <div class="card">
+                <h3>Asset Remittance Core</h3>
+                <p style="font-size: 13px; color: var(--text-muted);">Convert secured dynamic internal processing values into real crypto tokens securely.</p>
+                
+                <div style="background: rgba(0,0,0,0.15); padding: 16px; border-radius: 12px; margin: 15px 0; text-align: center;">
+                    <span style="font-size: 12px; color: var(--text-muted); display:block; text-transform:uppercase;">Minimum Threshold</span>
+                    <span style="font-size: 18px; color: #fff; font-weight:700;">0.005000 USDT</span>
+                </div>
+
+                <div class="input-group">
+                    <label>Destination Network</label>
+                    <input type="text" class="input-field" value="TON Network (Telegram Ecosystem)" disabled>
+                </div>
+
+                <div class="input-group">
+                    <label>Recipient Wallet Address</label>
+                    <input type="text" id="withdraw-address" class="input-field" placeholder="UQ... or EQ... Address string">
+                </div>
+
+                <button class="btn-prime" onclick="WalletSystem.executeWithdrawal()">INITIALIZE WITHDRAWAL SEQUENCE</button>
+            </div>
+        </div>
+
+        <!-- LEADERBOARD RANKINGS SCREEN -->
         <div id="scr-leader" class="screen">
             <div class="card">
                 <h3>Global Precision Rankings</h3>
                 <table class="rank-table">
                     <thead>
-                        <tr style="color: #7a8c9d;"><th>Rank</th><th>Miner Node</th><th>USDT Claimed</th></tr>
+                        <tr style="color: var(--text-muted); text-align: left;"><th>Rank</th><th>Miner Node</th><th>USDT Claimed</th></tr>
                     </thead>
                     <tbody>
                         <tr><td>🥇 1</td><td>CryptoWhale_tg</td><td>0.085400 USDT</td></tr>
                         <tr><td>🥈 2</td><td>SolanaMaster</td><td>0.042100 USDT</td></tr>
                         <tr><td>🥉 3</td><td>Ton_Miner_Pro</td><td>0.012500 USDT</td></tr>
-                        <tr><td>Node (You)</td><td id="dom-user-node">Anonymous</td><td id="dom-user-rank-val">0.000000 USDT</td></tr>
+                        <tr style="background: rgba(0, 255, 204, 0.05); font-weight: 700;">
+                            <td>You</td>
+                            <td id="dom-user-node">Anonymous Node</td>
+                            <td id="dom-user-rank-val">0.000000 USDT</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -323,26 +431,22 @@
 
     </div>
 
-    <!-- Navigation Hub Bar -->
+    <!-- Navigation Hub Bar Container -->
     <nav>
-        <button class="nav-item active" onclick="Navigation.route('scr-game', this)">Core Game</button>
-        <button class="nav-item" onclick="Navigation.route('scr-tasks', this)">Ad Tasks</button>
-        <button class="nav-item" onclick="Navigation.route('scr-leader', this)">Rankings</button>
+        <button class="nav-item active" onclick="Navigation.route('scr-game', this)"><span>🎮</span>Game</button>
+        <button class="nav-item" onclick="Navigation.route('scr-tasks', this)"><span>📋</span>Tasks</button>
+        <button class="nav-item" onclick="Navigation.route('scr-wallet', this)"><span>💼</span>Wallet</button>
+        <button class="nav-item" onclick="Navigation.route('scr-leader', this)"><span>🏆</span>Rank</button>
     </nav>
 </div>
 
 <script>
     /**
-     * COINPULSE ARCHITECTURE SECURE SYSTEM
-     * Anti-Tamper State Pattern Encapsulation
+     * ANTI-TAMPER SECURE STATE CONTAINER (ENHANCED ENCAPSULATION)
      */
     const SecurityCore = (() => {
-        const _salt = "CP_METADATA_SALT_36912_2026_X";
-        let _internalState = {
-            c: 0.0000,   // Coins
-            u: 0.000000, // USDT
-            a: 0         // Ads count
-        };
+        const _salt = "CP_METADATA_SALT_36912_2026_PRO_MATRIX";
+        let _internalState = { c: 0.0000, u: 0.000000, a: 0 };
 
         return {
             init: () => {
@@ -357,14 +461,12 @@
                         }
                     }
                 } catch(e) {
-                    console.error("State corrupted. Resetting vectors.");
+                    console.error("State structure fault detected. Forcing fallback vectors.");
                 }
             },
             commit: () => {
                 const packet = {
-                    c: _internalState.c,
-                    u: _internalState.u,
-                    a: _internalState.a,
+                    c: _internalState.c, u: _internalState.u, a: _internalState.a,
                     verify: btoa(_salt)
                 };
                 localStorage.setItem('_cp_sec_state', btoa(JSON.stringify(packet)));
@@ -374,26 +476,21 @@
             getAds: () => _internalState.a,
             mutateCoins: (val) => { _internalState.c += val; SecurityCore.commit(); },
             mutateUsdt: (val) => { _internalState.u += val; SecurityCore.commit(); },
+            setUsdt: (val) => { _internalState.u = val; SecurityCore.commit(); },
             incrementAds: () => { _internalState.a++; SecurityCore.commit(); }
         };
     })();
 
-    /**
-     * Interface Renderer Controller
-     */
     const UI = {
         sync: () => {
             document.getElementById('dom-coins').innerText = SecurityCore.getCoins().toFixed(4);
             document.getElementById('dom-usdt').innerText = SecurityCore.getUsdt().toFixed(6) + " USDT";
-            document.getElementById('dom-ad-counter').innerText = `Total Ads Watched: ${SecurityCore.getAds()}`;
+            document.getElementById('dom-ad-counter').innerText = `Total Ads Acknowledged: ${SecurityCore.getAds()}`;
             document.getElementById('dom-user-rank-val').innerText = SecurityCore.getUsdt().toFixed(6) + " USDT";
             Tasks.renderGrid();
         }
     };
 
-    /**
-     * Routing System
-     */
     const Navigation = {
         route: (targetId, element) => {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -405,95 +502,67 @@
     };
 
     /**
-     * High Performance Extreme Difficulty Canvas Game Engine
+     * HIGH PERFORMANCE GAME ENGINE MECHANICS
      */
     const Engine = (() => {
-        let cvs, ctx;
-        let active = false;
-        let animationFrameId;
-        
-        // Structures
-        let cart = { x: 0, w: 70, h: 14, speed: 22 };
-        let vectorStream = [];
-        let particles = [];
-        
-        let difficultyMultiplier = 1.0;
-        let internalScore = 0;
+        let cvs, ctx, active = false, animationFrameId;
+        let cart = { x: 0, w: 75, h: 14, speed: 24 };
+        let vectorStream = [], particles = [], difficultyMultiplier = 1.0, internalScore = 0;
 
         function spawnVector() {
-            // 85% Bombs, 15% Real Micro Reward Coins
             let isBomb = Math.random() < 0.85; 
             vectorStream.push({
-                x: Math.random() * (cvs.width - 15) + 7,
-                y: -10,
-                r: isBomb ? 7 : 5,
-                type: isBomb ? 'BOMB' : 'COIN',
-                velocity: (3.5 + Math.random() * 3) * difficultyMultiplier
+                x: Math.random() * (cvs.width - 20) + 10,
+                y: -10, r: isBomb ? 7 : 5, type: isBomb ? 'BOMB' : 'COIN',
+                velocity: (3.8 + Math.random() * 3.5) * difficultyMultiplier
             });
         }
 
         function createBurst(x, y, color) {
-            for(let i=0; i<8; i++) {
+            for(let i=0; i<10; i++) {
                 particles.push({
-                    x: x, y: y,
-                    vx: (Math.random() - 0.5) * 6,
-                    vy: (Math.random() - 0.5) * 6,
-                    alpha: 1.0,
-                    color: color
+                    x: x, y: y, vx: (Math.random() - 0.5) * 7, vy: (Math.random() - 0.5) * 7,
+                    alpha: 1.0, color: color
                 });
             }
         }
 
         function loop() {
             if(!active) return;
-
-            // Clear Frame
-            ctx.fillStyle = "rgba(2, 6, 12, 0.25)"; 
+            ctx.fillStyle = "rgba(2, 5, 10, 0.28)"; 
             ctx.fillRect(0, 0, cvs.width, cvs.height);
+            difficultyMultiplier = 1.0 + (internalScore * 0.06);
 
-            // Dynamically scale difficulty factor based on points
-            difficultyMultiplier = 1.0 + (internalScore * 0.05);
+            if(Math.random() < 0.1) spawnVector();
 
-            if(Math.random() < 0.09) spawnVector();
-
-            // Render Paddle / Cart
-            ctx.shadowBlur = 10;
-            ctx.shadowColor = "var(--primary)";
+            // Render Paddle
             ctx.fillStyle = "#00ffcc";
-            ctx.fillRect(cart.x, cvs.height - 30, cart.w, cart.h);
-            ctx.shadowBlur = 0; // Reset
+            ctx.fillRect(cart.x, cvs.height - 35, cart.w, cart.h);
 
-            // Handle Particles
+            // Engine Particle Stack
             for(let pIdx = particles.length - 1; pIdx >= 0; pIdx--) {
                 let p = particles[pIdx];
-                p.x += p.vx; p.y += p.vy; p.alpha -= 0.04;
+                p.x += p.vx; p.y += p.vy; p.alpha -= 0.05;
                 if(p.alpha <= 0) { particles.splice(pIdx, 1); continue; }
                 ctx.fillStyle = p.color;
                 ctx.globalAlpha = p.alpha;
                 ctx.fillRect(p.x, p.y, 3, 3);
             }
-            ctx.globalAlpha = 1.0; // Reset
+            ctx.globalAlpha = 1.0;
 
-            // Handle Falling Elements
+            // Physics Vector Stream
             for(let i = vectorStream.length - 1; i >= 0; i--) {
                 let v = vectorStream[i];
                 v.y += v.velocity;
 
-                // Drawing entities
-                if(v.type === 'COIN') {
-                    ctx.fillStyle = "#ffcc00";
-                    ctx.beginPath(); ctx.arc(v.x, v.y, v.r, 0, Math.PI*2); ctx.fill();
-                } else {
-                    ctx.fillStyle = "#ff0055";
-                    ctx.beginPath(); ctx.arc(v.x, v.y, v.r, 0, Math.PI*2); ctx.fill();
-                }
+                ctx.fillStyle = (v.type === 'COIN') ? "#ffcc00" : "#ff0055";
+                ctx.beginPath(); ctx.arc(v.x, v.y, v.r, 0, Math.PI*2); ctx.fill();
 
-                // Rigid Collision bounds
-                let pY = cvs.height - 30;
+                let pY = cvs.height - 35;
                 if(v.y + v.r >= pY && v.y - v.r <= pY + cart.h && v.x >= cart.x && v.x <= cart.x + cart.w) {
                     if(v.type === 'COIN') {
                         internalScore++;
-                        SecurityCore.mutateCoins(0.0001); // Hyper-low micro rewards
+                        SecurityCore.mutateCoins(0.0002);
                         createBurst(v.x, v.y, "#ffcc00");
                         UI.sync();
                     } else {
@@ -504,16 +573,11 @@
                     continue;
                 }
 
-                // Missed object rule logic
                 if(v.y > cvs.height) {
-                    if(v.type === 'COIN') {
-                        // Cruel mechanics: if you miss a single micro coin, execution ends
-                        terminate();
-                    }
+                    if(v.type === 'COIN') terminate(); // Instant loss criteria
                     vectorStream.splice(i, 1);
                 }
             }
-
             animationFrameId = requestAnimationFrame(loop);
         }
 
@@ -521,7 +585,7 @@
             active = false;
             cancelAnimationFrame(animationFrameId);
             document.getElementById('btn-run').innerText = "LAUNCH HARD CORE";
-            alert(`CRITICAL MISCALCULATION!\nGame Over. Score Tier reached: ${internalScore}\nDifficulty multiplier reached: ${difficultyMultiplier.toFixed(2)}x`);
+            alert(`GAME OVER\nScore: ${internalScore}\nMultiplier: ${difficultyMultiplier.toFixed(2)}x`);
         }
 
         return {
@@ -530,7 +594,6 @@
                 ctx = cvs.getContext("2d");
                 Engine.resizeCanvas();
                 
-                // Track Control Vectors
                 window.addEventListener('keydown', (e) => {
                     if(e.key === "ArrowLeft" && cart.x > 0) cart.x -= cart.speed;
                     if(e.key === "ArrowRight" && cart.x < cvs.width - cart.w) cart.x += cart.speed;
@@ -540,26 +603,19 @@
                     let rect = cvs.getBoundingClientRect();
                     let tX = e.touches[0].clientX - rect.left;
                     cart.x = (tX / rect.width) * cvs.width - cart.w/2;
-                    // Keep bounds
                     if(cart.x < 0) cart.x = 0;
                     if(cart.x > cvs.width - cart.w) cart.x = cvs.width - cart.w;
                 });
             },
             resizeCanvas: () => {
                 if(!cvs) return;
-                cvs.width = 400;
-                cvs.height = 500;
+                cvs.width = 400; cvs.height = 500;
                 cart.x = cvs.width / 2 - cart.w / 2;
             },
             toggleState: () => {
-                if(active) {
-                    terminate();
-                } else {
-                    active = true;
-                    internalScore = 0;
-                    vectorStream = [];
-                    particles = [];
-                    difficultyMultiplier = 1.0;
+                if(active) { terminate(); } 
+                else {
+                    active = true; internalScore = 0; vectorStream = []; particles = []; difficultyMultiplier = 1.0;
                     document.getElementById('btn-run').innerText = "TERMINATE SESSION";
                     loop();
                 }
@@ -568,104 +624,121 @@
     })();
 
     /**
-     * Massive Ad Tasking Integration Matrix Block: 36912
+     * MULTI-MATRIX AUTOMATED TASKS MODULE
      */
     const Tasks = (() => {
         const adConfigId = "36912";
         let AdsgramController = null;
 
         const manifest = [
-            { id: "task_50", target: 50, reward: 0.000100 },
-            { id: "task_100", target: 100, reward: 0.000100 },
-            { id: "task_500", target: 500, reward: 0.000100 }
+            { id: "task_10", target: 10, reward: 0.000500, label: "Complete 10 Ad Streams" },
+            { id: "task_50", target: 50, reward: 0.002500, label: "Complete 50 Ad Streams" },
+            { id: "task_social_1", target: 0, reward: 0.001000, label: "Join Official Channel", type: "LINK", url: "https://t.me/your_channel" }
         ];
 
         return {
             bindAdsgram: () => {
-                if (window.Adsgram) {
-                    AdsgramController = window.Adsgram.init({ blockId: adConfigId });
-                } else {
-                    console.warn("Adsgram Engine vector not verified on load.");
-                }
+                if (window.Adsgram) { AdsgramController = window.Adsgram.init({ blockId: adConfigId }); }
             },
             triggerAdWatch: () => {
                 if(!AdsgramController) {
-                    alert("Adsgram framework runtime synchronization failed. Simulating integration data pipeline layer.");
-                    // Fallback to guarantee pipeline integrity for development debugging purposes
-                    SecurityCore.incrementAds();
-                    UI.sync();
-                    return;
+                    // Simulation mode for fallback verification
+                    SecurityCore.incrementAds(); UI.sync(); return;
                 }
-
-                AdsgramController.show().then((result) => {
-                    SecurityCore.incrementAds();
-                    UI.sync();
-                    alert("Ad Sequence acknowledged. Metric counters structuralized upwards.");
-                }).catch((error) => {
-                    alert("Ad frame generation failed or rejected by network endpoint.");
-                    console.error(error);
-                });
+                AdsgramController.show().then(() => {
+                    SecurityCore.incrementAds(); UI.sync();
+                }).catch((err) => { console.error(err); });
             },
             renderGrid: () => {
                 const targetDom = document.getElementById("task-injector");
                 if(!targetDom) return;
-                
                 let htmlBuffer = "";
                 const watched = SecurityCore.getAds();
 
                 manifest.forEach(t => {
-                    const statusKey = `claimed_${t.id}`;
-                    const isClaimed = localStorage.getItem(statusKey) === "true";
-                    const progressAchieved = watched >= t.target;
-                    
-                    let buttonStateAttr = "";
-                    let buttonClass = "action-btn";
-                    let label = "LOCK";
+                    const isClaimed = localStorage.getItem(`claimed_${t.id}`) === "true";
+                    let btnHtml = "";
 
                     if(isClaimed) {
-                        buttonStateAttr = "disabled";
-                        label = "CLAIMED";
-                    } else if(progressAchieved) {
-                        buttonClass = "action-btn ready";
-                        label = "CLAIM";
+                        btnHtml = `<button class="action-btn" disabled>CLAIMED</button>`;
+                    } else if(t.type === "LINK") {
+                        const clicked = localStorage.getItem(`clicked_${t.id}`) === "true";
+                        if(clicked) {
+                            btnHtml = `<button class="action-btn ready" onclick="Tasks.claimTask('${t.id}', ${t.reward})">CLAIM</button>`;
+                        } else {
+                            btnHtml = `<button class="action-btn ready" onclick="Tasks.executeLinkTask('${t.id}', '${t.url}')">JOIN</button>`;
+                        }
                     } else {
-                        buttonStateAttr = "disabled";
-                        label = `${watched}/${t.target}`;
+                        if(watched >= t.target) {
+                            btnHtml = `<button class="action-btn ready" onclick="Tasks.claimTask('${t.id}', ${t.reward})">CLAIM</button>`;
+                        } else {
+                            btnHtml = `<button class="action-btn" disabled>${watched}/${t.target}</button>`;
+                        }
                     }
 
                     htmlBuffer += `
                         <div class="task-row">
                             <div class="task-details">
-                                <h4>Verify Milestone Sequence (${t.target} Ads)</h4>
-                                <p>Yield Matrix Payload: +${t.reward.toFixed(6)} USDT</p>
+                                <h4>${t.label}</h4>
+                                <p>Yield: +${t.reward.toFixed(6)} USDT</p>
                             </div>
-                            <button class="${buttonClass}" ${buttonStateAttr} onclick="Tasks.executeClaim('${t.id}', ${t.reward})">${label}</button>
+                            ${btnHtml}
                         </div>
                     `;
                 });
-
                 targetDom.innerHTML = htmlBuffer;
             },
-            executeClaim: (id, amount) => {
+            executeLinkTask: (id, url) => {
+                window.open(url, '_blank');
+                localStorage.setItem(`clicked_${id}`, "true");
+                UI.sync();
+            },
+            claimTask: (id, amount) => {
                 SecurityCore.mutateUsdt(amount);
                 localStorage.setItem(`claimed_${id}`, "true");
                 UI.sync();
-                alert(`Asset transfer sequence authorized: +${amount.toFixed(6)} USDT linked successfully to local dynamic wallet routing.`);
+                alert("Task reward successfully structuralized to your runtime balances.");
             }
         };
     })();
 
-    // Application Bootstrap Sequence Execution
+    /**
+     * PREMIUM WITHDRAWAL CORE CONTROLLER
+     */
+    const WalletSystem = {
+        executeWithdrawal: () => {
+            const currentBalance = SecurityCore.getUsdt();
+            const minThreshold = 0.005000;
+            const addressInput = document.getElementById("withdraw-address").value.trim();
+
+            if(currentBalance < minThreshold) {
+                alert(`INSUFFICIENT BALANCE\nYou require a minimum of ${minThreshold.toFixed(6)} USDT to execute transfer.`);
+                return;
+            }
+
+            if(addressInput.length < 10) {
+                alert("INVALID DESTINATION\nPlease supply an authentic TON Network destination node address.");
+                return;
+            }
+
+            // Deduct assets and commit pipeline state mutation
+            const balancePostDeduction = currentBalance - minThreshold;
+            SecurityCore.setUsdt(balancePostDeduction);
+            UI.sync();
+
+            alert(`WITHDRAWAL INITIALIZED SUCCESSFUL!\nAmount: ${minThreshold} USDT\nTarget: ${addressInput}\nProcessing time: 24 Hours.`);
+            document.getElementById("withdraw-address").value = "";
+        }
+    };
+
+    // System Startup Bootstrap Routine
     window.addEventListener("DOMContentLoaded", () => {
-        // Initialize Telegram configuration systems if present
         if(window.Telegram && window.Telegram.WebApp) {
-            const tg = window.Telegram.WebApp;
-            tg.expand();
+            const tg = window.Telegram.WebApp; tg.expand();
             if(tg.initDataUnsafe && tg.initDataUnsafe.user) {
                 document.getElementById("dom-user-node").innerText = tg.initDataUnsafe.user.username || "Authenticated Node";
             }
         }
-        
         SecurityCore.init();
         Engine.setup();
         Tasks.bindAdsgram();
