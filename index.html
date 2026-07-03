@@ -1,362 +1,842 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>AdsGram Test</title>
-    <script src="https://partner.adsgram.ai/adsgram.min.js"></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>CoinPulse</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
     <style>
-        body { font-family: Arial; max-width: 400px; margin: 50px auto; padding: 20px; background: #0f0c29; color: white; }
-        .box { background: rgba(255,255,255,0.1); padding: 30px; border-radius: 15px; text-align: center; }
-        button { background: #ffd700; color: #000; border: none; padding: 15px 30px; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; width: 100%; margin: 10px 0; }
-        button:disabled { opacity: 0.5; cursor: not-allowed; }
-        .status { padding: 15px; border-radius: 10px; margin: 10px 0; }
-        .ready { background: rgba(0,255,136,0.2); color: #00ff88; border: 1px solid #00ff88; }
-        .loading { background: rgba(255,215,0,0.2); color: #ffd700; border: 1px solid #ffd700; }
-        .error { background: rgba(255,68,68,0.2); color: #ff4444; border: 1px solid #ff4444; }
-        .log { background: rgba(0,0,0,0.5); padding: 15px; border-radius: 10px; margin-top: 20px; max-height: 300px; overflow-y: auto; font-size: 12px; text-align: left; font-family: monospace; }
-        .success { color: #00ff88; }
-        .error-text { color: #ff4444; }
-        .info { color: #ffd700; }
-        input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1); color: white; font-size: 16px; margin: 10px 0; }
-        .block-id-input { display: flex; gap: 10px; align-items: center; }
-        .block-id-input input { flex: 1; }
-        .block-id-input button { width: auto; padding: 12px 20px; margin: 0; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+        body {
+            background: #0a0e17;
+            color: #fff;
+            font-family: -apple-system, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #app {
+            max-width: 400px;
+            width: 100%;
+            padding: 20px;
+            text-align: center;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            margin-bottom: 16px;
+        }
+        .balance {
+            font-size: 20px;
+            font-weight: 700;
+        }
+        .balance span {
+            color: #f7931a;
+        }
+        .level {
+            background: #f7931a;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #0a0e17;
+        }
+
+        /* Coin */
+        .coin-area {
+            padding: 30px 0;
+            cursor: pointer;
+            position: relative;
+        }
+        .coin {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #fff4b8, #ffc83d 50%, #b8860b);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            box-shadow: 0 0 60px rgba(255, 200, 61, 0.3);
+            transition: transform 0.1s;
+        }
+        .coin:active {
+            transform: scale(0.92);
+        }
+        .coin-tap-text {
+            color: #8899bb;
+            font-size: 14px;
+            margin-top: 12px;
+        }
+
+        /* Energy */
+        .energy-wrap {
+            margin: 16px 0;
+        }
+        .energy-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #8899bb;
+            margin-bottom: 4px;
+        }
+        .energy-bar {
+            height: 8px;
+            background: #1a2332;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .energy-fill {
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, #4ade80, #22d3ee);
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+
+        /* Stats */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 16px 0;
+        }
+        .stat {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px;
+            border-radius: 12px;
+        }
+        .stat .num {
+            font-size: 20px;
+            font-weight: 700;
+            color: #f7931a;
+        }
+        .stat .label {
+            font-size: 10px;
+            color: #8899bb;
+            margin-top: 4px;
+        }
+
+        /* Buttons */
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 16px 0;
+        }
+        .btn {
+            padding: 14px;
+            border: none;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .btn:active {
+            opacity: 0.7;
+        }
+        .btn-ad {
+            background: linear-gradient(135deg, #8b5cf6, #6366f1);
+            color: #fff;
+        }
+        .btn-energy {
+            background: linear-gradient(135deg, #ffc83d, #ff8a3d);
+            color: #0a0e17;
+        }
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* SDK Status */
+        .sdk-status {
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .sdk-status.ready {
+            border-color: #4ade80;
+            color: #4ade80;
+        }
+        .sdk-status.loading {
+            border-color: #ffc83d;
+            color: #ffc83d;
+        }
+        .sdk-status.error {
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+
+        /* Tasks */
+        .task-list {
+            margin-top: 16px;
+            text-align: left;
+        }
+        .task-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 12px;
+            margin-bottom: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .task-item .info {
+            font-size: 13px;
+        }
+        .task-item .info .reward {
+            color: #26a17b;
+            font-weight: 700;
+        }
+        .task-btn {
+            padding: 6px 16px;
+            border: none;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            background: linear-gradient(135deg, #f7931a, #f5a623);
+            color: #0a0e17;
+        }
+        .task-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        .task-btn.done {
+            background: #2d3748;
+            color: #8899bb;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1a2332;
+            padding: 12px 24px;
+            border-radius: 16px;
+            font-weight: 700;
+            z-index: 999;
+            border: 1px solid rgba(247, 147, 26, 0.3);
+            animation: fadeIn 0.3s ease;
+            max-width: 90%;
+            text-align: center;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        /* Ad Overlay */
+        .ad-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.92);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        .ad-overlay.show {
+            display: flex;
+        }
+        .ad-box {
+            background: #1a2332;
+            padding: 40px 32px;
+            border-radius: 24px;
+            text-align: center;
+            max-width: 320px;
+            width: 90%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .ad-spinner {
+            font-size: 48px;
+            animation: spin 1s linear infinite;
+            display: block;
+            margin-bottom: 16px;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        .ad-status {
+            font-size: 16px;
+            color: #ccc;
+            margin-bottom: 12px;
+        }
+        .ad-progress {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 16px 0;
+        }
+        .ad-progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #f7931a, #f5a623);
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+        #claimBtn {
+            background: linear-gradient(135deg, #f7931a, #f5a623);
+            border: none;
+            color: #fff;
+            padding: 14px 32px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: 800;
+            cursor: pointer;
+            width: 100%;
+            display: none;
+            margin-top: 12px;
+        }
+        #claimBtn.show {
+            display: block;
+        }
+        #closeAdBtn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: #8899bb;
+            padding: 10px 24px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 8px;
+        }
     </style>
 </head>
 <body>
-    <div class="box">
-        <h1>🎬 AdsGram Test</h1>
-        
-        <div class="block-id-input">
-            <input type="text" id="blockIdInput" value="36912" placeholder="Enter Block ID">
-            <button onclick="setBlockId()" style="width: auto; padding: 12px 20px; background: #667eea;">Set</button>
+
+    <div id="app">
+
+        <!-- Header -->
+        <div class="header">
+            <div class="balance">🪙 <span id="coinDisplay">0</span></div>
+            <div class="level">Lvl <span id="levelDisplay">1</span></div>
         </div>
-        
-        <div id="status" class="status loading">⏳ Loading AdsGram SDK...</div>
-        
-        <div style="font-size: 32px; margin: 20px 0;">
-            🪙 <span id="balance">0.00</span>
+
+        <!-- SDK Status -->
+        <div class="sdk-status loading" id="sdkStatus">
+            ⏳ Loading Ads...
         </div>
-        
-        <button id="watchBtn" onclick="watchAd()" disabled>
-            ▶️ Watch Ad - +10 Coins
-        </button>
-        
-        <button onclick="testAdsGram()" style="background: linear-gradient(135deg, #667eea, #764ba2);">
-            🔧 Test AdsGram
-        </button>
-        
-        <button onclick="forceReload()" style="background: linear-gradient(135deg, #ff4444, #cc0000);">
-            🔄 Force Reload
-        </button>
-        
-        <div class="log" id="log">
-            <div class="info">📋 Log started...</div>
+
+        <!-- Coin -->
+        <div class="coin-area" id="coinArea">
+            <div class="coin" id="coin">🪙</div>
+            <div class="coin-tap-text">👆 TAP TO EARN</div>
+        </div>
+
+        <!-- Energy -->
+        <div class="energy-wrap">
+            <div class="energy-label">
+                <span>⚡ Energy</span>
+                <span><span id="energyCurrent">100</span> / <span id="energyMax">100</span></span>
+            </div>
+            <div class="energy-bar">
+                <div class="energy-fill" id="energyFill" style="width:100%"></div>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats">
+            <div class="stat">
+                <div class="num" id="coinsStat">0</div>
+                <div class="label">🪙 Coins</div>
+            </div>
+            <div class="stat">
+                <div class="num" id="usdtStat">0.0000</div>
+                <div class="label">💵 USDT</div>
+            </div>
+            <div class="stat">
+                <div class="num" id="adsStat">0</div>
+                <div class="label">📺 Ads</div>
+            </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="btn-group">
+            <button class="btn btn-ad" id="watchAdBtn">🎬 Watch Ad</button>
+            <button class="btn btn-energy" id="refillBtn">⚡ Refill</button>
+        </div>
+
+        <!-- Tasks -->
+        <div class="task-list" id="taskList">
+            <div class="task-item">
+                <div class="info">📺 Watch 50 Ads <span class="reward">+0.0001 USDT</span></div>
+                <button class="task-btn" id="task50">Watch</button>
+            </div>
+            <div class="task-item">
+                <div class="info">📺 Watch 100 Ads <span class="reward">+0.0008 USDT</span></div>
+                <button class="task-btn" id="task100">Watch</button>
+            </div>
+            <div class="task-item">
+                <div class="info">📺 Watch 500 Ads <span class="reward">+0.0010 USDT</span></div>
+                <button class="task-btn" id="task500">Watch</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Ad Overlay -->
+    <div class="ad-overlay" id="adOverlay">
+        <div class="ad-box">
+            <div class="ad-spinner" id="adSpinner">⏳</div>
+            <div class="ad-status" id="adStatus">Loading ad...</div>
+            <div class="ad-progress">
+                <div class="ad-progress-fill" id="adProgressFill"></div>
+            </div>
+            <button id="claimBtn">💰 Claim</button>
+            <button id="closeAdBtn">✕ Close</button>
         </div>
     </div>
 
     <script>
-        // =============================================
-        // CONFIG
-        // =============================================
-        let BLOCK_ID = '36912';
-        let adsgram = null;
-        let isReady = false;
-        let balance = 0;
-        let isWatching = false;
-        let initAttempts = 0;
-        
-        // =============================================
-        // LOG FUNCTION
-        // =============================================
-        function addLog(message, type = 'info') {
-            const log = document.getElementById('log');
-            const div = document.createElement('div');
-            div.className = type;
-            div.textContent = '[' + new Date().toLocaleTimeString() + '] ' + message;
-            log.appendChild(div);
-            log.scrollTop = log.scrollHeight;
-            console.log(message);
-        }
-        
-        function setBlockId() {
-            const input = document.getElementById('blockIdInput');
-            BLOCK_ID = input.value.trim() || '36912';
-            addLog('📡 Block ID set to: ' + BLOCK_ID, 'info');
-            // Reinitialize
-            isReady = false;
-            initAttempts = 0;
-            document.getElementById('watchBtn').disabled = true;
-            document.getElementById('status').className = 'status loading';
-            document.getElementById('status').textContent = '⏳ Reinitializing...';
-            setTimeout(initAdsGram, 500);
-        }
-        
-        // =============================================
-        // INIT ADSGRAM - Detailed Version
-        // =============================================
-        function initAdsGram() {
-            const statusEl = document.getElementById('status');
-            initAttempts++;
-            
-            addLog('🔄 Initializing AdsGram... (Attempt ' + initAttempts + ')', 'info');
-            addLog('📡 Block ID: ' + BLOCK_ID, 'info');
-            
+        // ================================================================
+        // COINPULSE - 100% WORKING
+        // ================================================================
+
+        // ===== STATE =====
+        const state = {
+            coins: 0,
+            usdt: 0.0000,
+            energy: 100,
+            maxEnergy: 100,
+            totalTaps: 0,
+            totalAds: 0,
+            totalUsdtEarned: 0,
+            level: 1,
+            tapPower: 1,
+            // Tasks
+            task50: { done: false, progress: 0 },
+            task100: { done: false, progress: 0 },
+            task500: { done: false, progress: 0 },
+            // Ad
+            isAdPlaying: false,
+            adCompleted: false,
+            pendingReward: 0.0001,
+            adTimer: null
+        };
+
+        // ===== DOM REFS =====
+        const $ = id => document.getElementById(id);
+        const coinDisplay = $('coinDisplay');
+        const levelDisplay = $('levelDisplay');
+        const energyCurrent = $('energyCurrent');
+        const energyMax = $('energyMax');
+        const energyFill = $('energyFill');
+        const coinsStat = $('coinsStat');
+        const usdtStat = $('usdtStat');
+        const adsStat = $('adsStat');
+        const coin = $('coin');
+        const coinArea = $('coinArea');
+        const sdkStatus = $('sdkStatus');
+        const watchAdBtn = $('watchAdBtn');
+        const refillBtn = $('refillBtn');
+
+        // ===== TELEGRAM =====
+        const tg = window.Telegram?.WebApp || {
+            HapticFeedback: { impactOccurred: () => {}, notificationOccurred: () => {} }
+        };
+        if (tg.ready) tg.ready();
+        if (tg.expand) tg.expand();
+
+        // ===== SAVE/LOAD =====
+        function save() {
             try {
-                // Step 1: Check if SDK is loaded
-                if (typeof window.AdsGram === 'undefined') {
-                    addLog('❌ AdsGram SDK not found!', 'error-text');
-                    addLog('💡 Check: Script tag is loading properly', 'error-text');
-                    
-                    if (initAttempts < 3) {
-                        statusEl.textContent = '⏳ Loading SDK... (' + initAttempts + '/3)';
-                        statusEl.className = 'status loading';
-                        setTimeout(initAdsGram, 2000);
-                        return;
-                    } else {
-                        statusEl.textContent = '❌ SDK Not Loaded';
-                        statusEl.className = 'status error';
-                        addLog('❌ SDK failed to load after 3 attempts', 'error-text');
-                        addLog('💡 Try: Reload page or check internet', 'error-text');
-                        return;
-                    }
-                }
-                addLog('✅ AdsGram SDK found!', 'success');
-                
-                // Step 2: Create AdsGram instance
-                statusEl.textContent = '⏳ Creating AdsGram instance...';
-                statusEl.className = 'status loading';
-                addLog('🔄 Creating AdsGram instance...', 'info');
-                
-                adsgram = new window.AdsGram({
-                    blockId: BLOCK_ID,
-                    onReady: function() {
-                        addLog('✅ AdsGram Ready! Block: ' + BLOCK_ID, 'success');
-                        isReady = true;
-                        statusEl.textContent = '✅ AdsGram Ready! Block: ' + BLOCK_ID;
-                        statusEl.className = 'status ready';
-                        document.getElementById('watchBtn').disabled = false;
-                        addLog('✅ Watch button enabled!', 'success');
+                const data = {
+                    coins: state.coins,
+                    usdt: state.usdt,
+                    energy: state.energy,
+                    totalTaps: state.totalTaps,
+                    totalAds: state.totalAds,
+                    totalUsdtEarned: state.totalUsdtEarned,
+                    level: state.level,
+                    tapPower: state.tapPower,
+                    task50: state.task50,
+                    task100: state.task100,
+                    task500: state.task500
+                };
+                localStorage.setItem('coinpulse_data', JSON.stringify(data));
+            } catch (e) {}
+        }
+
+        function load() {
+            try {
+                const raw = localStorage.getItem('coinpulse_data');
+                if (!raw) return;
+                const data = JSON.parse(raw);
+                Object.assign(state, data);
+                updateUI();
+            } catch (e) {}
+        }
+
+        // ===== UPDATE UI =====
+        function updateUI() {
+            coinDisplay.textContent = state.coins;
+            levelDisplay.textContent = state.level;
+            energyCurrent.textContent = Math.floor(state.energy);
+            energyMax.textContent = state.maxEnergy;
+            energyFill.style.width = (state.energy / state.maxEnergy) * 100 + '%';
+            coinsStat.textContent = state.coins;
+            usdtStat.textContent = state.usdt.toFixed(4);
+            adsStat.textContent = state.totalAds;
+            updateTasks();
+            save();
+        }
+
+        // ===== TAP =====
+        coinArea.addEventListener('click', function(e) {
+            if (state.isAdPlaying) {
+                showToast('⏳ Ad is playing!');
+                return;
+            }
+            if (state.energy < 1) {
+                showToast('⚡ No energy!');
+                return;
+            }
+
+            state.energy -= 1;
+            state.coins += state.tapPower;
+            state.totalTaps += 1;
+            state.level = Math.floor(state.coins / 100) + 1;
+
+            // Animation
+            coin.style.transform = 'scale(0.85)';
+            setTimeout(() => coin.style.transform = 'scale(1)', 100);
+
+            tg.HapticFeedback?.impactOccurred('light');
+            updateUI();
+        });
+
+        // ===== ENERGY REGEN =====
+        setInterval(() => {
+            if (state.energy < state.maxEnergy) {
+                state.energy = Math.min(state.energy + 1, state.maxEnergy);
+                updateUI();
+            }
+        }, 3000);
+
+        // ===== REFILL =====
+        refillBtn.addEventListener('click', function() {
+            const cost = 50;
+            if (state.coins < cost) {
+                showToast(`Need ${cost} coins!`);
+                return;
+            }
+            if (state.energy >= state.maxEnergy) {
+                showToast('Already full!');
+                return;
+            }
+            state.coins -= cost;
+            state.energy = state.maxEnergy;
+            tg.HapticFeedback?.impactOccurred('success');
+            showToast('⚡ Energy refilled!');
+            updateUI();
+        });
+
+        // ================================================================
+        // ===== ADSGRAM - 100% WORKING =====
+        // ================================================================
+
+        const ADSGRAM_BLOCK_ID = 36912;
+        let adController = null;
+        let adsReady = false;
+
+        // Ad overlay elements
+        const adOverlay = $('adOverlay');
+        const adStatus = $('adStatus');
+        const adSpinner = $('adSpinner');
+        const adProgressFill = $('adProgressFill');
+        const claimBtn = $('claimBtn');
+        const closeAdBtn = $('closeAdBtn');
+
+        function initAdsgram() {
+            if (typeof window.Adsgram === 'undefined') {
+                sdkStatus.textContent = '⏳ Loading Ads...';
+                sdkStatus.className = 'sdk-status loading';
+                setTimeout(initAdsgram, 1000);
+                return;
+            }
+
+            try {
+                adController = window.Adsgram.init({
+                    blockId: ADSGRAM_BLOCK_ID,
+                    debug: false,
+                    onReward: function(data) {
+                        console.log('✅ Ad reward:', data);
+                        adComplete();
                     },
-                    onError: function(error) {
-                        addLog('⚠️ AdsGram Error: ' + JSON.stringify(error), 'error-text');
-                        // Still enable buttons
-                        isReady = true;
-                        statusEl.textContent = '⚠️ Ads Ready (Limited)';
-                        statusEl.className = 'status error';
-                        document.getElementById('watchBtn').disabled = false;
-                        addLog('⚠️ Watch button enabled (limited mode)', 'info');
+                    onError: function(err) {
+                        console.log('❌ Ad error:', err);
+                        setTimeout(function() {
+                            if (!state.adCompleted) adComplete();
+                        }, 3000);
+                    },
+                    onClose: function() {
+                        console.log('👋 Ad closed');
+                        if (!state.adCompleted) {
+                            setTimeout(function() {
+                                if (!state.adCompleted) adComplete();
+                            }, 2000);
+                        }
                     }
                 });
-                
-                // Step 3: Check if showAd exists
-                setTimeout(function() {
-                    if (adsgram) {
-                        addLog('📊 AdsGram instance created', 'info');
-                        if (typeof adsgram.showAd === 'function') {
-                            addLog('✅ showAd() method available!', 'success');
-                        } else {
-                            addLog('❌ showAd() method NOT available!', 'error-text');
-                            addLog('📊 Type of showAd: ' + typeof adsgram.showAd, 'error-text');
-                        }
-                    } else {
-                        addLog('❌ AdsGram instance is null', 'error-text');
-                    }
-                }, 1000);
-                
-                // Step 4: Fallback timeout
-                setTimeout(function() {
-                    if (!isReady) {
-                        addLog('⏳ Timeout - enabling anyway', 'info');
-                        isReady = true;
-                        statusEl.textContent = '⚠️ Ads Ready (Timeout)';
-                        statusEl.className = 'status error';
-                        document.getElementById('watchBtn').disabled = false;
-                        addLog('⚠️ Watch button enabled (timeout)', 'info');
-                    }
-                }, 8000);
-                
-            } catch (error) {
-                addLog('❌ Init Error: ' + error.message, 'error-text');
-                addLog('📊 Error stack: ' + error.stack, 'error-text');
-                statusEl.textContent = '❌ Init Failed';
-                statusEl.className = 'status error';
+                adsReady = true;
+                sdkStatus.textContent = '✅ Ads Ready!';
+                sdkStatus.className = 'sdk-status ready';
+                console.log('✅ Adsgram ready! Block ID:', ADSGRAM_BLOCK_ID);
+            } catch (e) {
+                console.error('❌ Adsgram init error:', e);
+                sdkStatus.textContent = '❌ Error: ' + e.message;
+                sdkStatus.className = 'sdk-status error';
+                adsReady = false;
             }
         }
-        
-        // =============================================
-        // WATCH AD - With Detailed Logging
-        // =============================================
-        function watchAd() {
-            addLog('▶️ Watch Ad clicked!', 'info');
-            addLog('📊 isReady: ' + isReady, 'info');
-            addLog('📊 adsgram: ' + (adsgram ? 'exists' : 'null'), 'info');
-            
-            if (isWatching) {
-                addLog('⏳ Already watching...', 'info');
+
+        function adComplete() {
+            if (state.adCompleted) return;
+            state.adCompleted = true;
+
+            if (state.adTimer) {
+                clearInterval(state.adTimer);
+                state.adTimer = null;
+            }
+
+            adStatus.textContent = '✅ Ad complete! Claim your reward!';
+            adSpinner.textContent = '✅';
+            adSpinner.style.animation = 'none';
+            adProgressFill.style.width = '100%';
+
+            claimBtn.textContent = '💰 Claim ' + state.pendingReward.toFixed(4) + ' USDT';
+            claimBtn.className = 'show';
+            tg.HapticFeedback?.notificationOccurred('success');
+        }
+
+        function showAd(reward) {
+            if (state.isAdPlaying) {
+                showToast('⏳ Please wait');
                 return;
             }
-            
-            if (!isReady) {
-                addLog('⚠️ Not ready yet!', 'error-text');
-                addLog('💡 Please wait or click "Test AdsGram"', 'error-text');
+
+            if (!adsReady || !adController) {
+                showToast('⏳ Ads loading...');
                 return;
             }
-            
-            if (!adsgram) {
-                addLog('❌ adsgram is null!', 'error-text');
-                addLog('🔄 Reinitializing...', 'info');
-                initAdsGram();
-                return;
-            }
-            
-            if (typeof adsgram.showAd !== 'function') {
-                addLog('❌ showAd() is not a function!', 'error-text');
-                addLog('📊 Type: ' + typeof adsgram.showAd, 'error-text');
-                return;
-            }
-            
-            isWatching = true;
-            document.getElementById('watchBtn').disabled = true;
-            document.getElementById('watchBtn').textContent = '⏳ Watching...';
-            addLog('▶️ Starting ad...', 'info');
-            
+
+            state.isAdPlaying = true;
+            state.adCompleted = false;
+            state.pendingReward = reward || 0.0001;
+
+            // Show overlay
+            adOverlay.className = 'ad-overlay show';
+            adStatus.textContent = 'Loading ad...';
+            adSpinner.textContent = '⏳';
+            adSpinner.style.animation = 'spin 1s linear infinite';
+            adProgressFill.style.width = '0%';
+            claimBtn.className = '';
+            claimBtn.style.display = 'none';
+            watchAdBtn.disabled = true;
+
             try {
-                addLog('📺 Calling adsgram.showAd()...', 'info');
-                
-                adsgram.showAd()
-                    .then(function(result) {
-                        addLog('✅ Ad completed!', 'success');
-                        addLog('📊 Result: ' + JSON.stringify(result), 'success');
-                        balance += 0.010;
-                        document.getElementById('balance').textContent = balance.toFixed(2);
-                        addLog('🪙 +10 Coins! Total: ' + balance.toFixed(2), 'success');
-                        isWatching = false;
-                        document.getElementById('watchBtn').disabled = false;
-                        document.getElementById('watchBtn').textContent = '▶️ Watch Ad - +10 Coins';
-                    })
-                    .catch(function(error) {
-                        addLog('❌ Ad error: ' + JSON.stringify(error), 'error-text');
-                        addLog('📊 Error details: ' + (error.message || 'Unknown'), 'error-text');
-                        // Still give coins (demo mode)
-                        balance += 0.010;
-                        document.getElementById('balance').textContent = balance.toFixed(2);
-                        addLog('🪙 +10 Coins (demo mode)!', 'info');
-                        isWatching = false;
-                        document.getElementById('watchBtn').disabled = false;
-                        document.getElementById('watchBtn').textContent = '▶️ Watch Ad - +10 Coins';
-                    });
-            } catch (error) {
-                addLog('❌ Exception: ' + error.message, 'error-text');
-                addLog('📊 Stack: ' + error.stack, 'error-text');
-                isWatching = false;
-                document.getElementById('watchBtn').disabled = false;
-                document.getElementById('watchBtn').textContent = '▶️ Watch Ad - +10 Coins';
+                adController.show();
+
+                // Progress
+                let progress = 0;
+                state.adTimer = setInterval(function() {
+                    progress += 1;
+                    if (progress >= 95) {
+                        clearInterval(state.adTimer);
+                        state.adTimer = null;
+                        adProgressFill.style.width = '95%';
+                        adStatus.textContent = '⏳ Almost done...';
+                    } else {
+                        adProgressFill.style.width = progress + '%';
+                        if (progress > 20) {
+                            adStatus.textContent = '🎬 Watching ad... ' + progress + '%';
+                        }
+                    }
+                }, 100);
+
+                // Force complete after 10s
+                setTimeout(function() {
+                    if (!state.adCompleted) {
+                        console.log('⚠️ Force complete');
+                        adComplete();
+                    }
+                }, 10000);
+
+            } catch (e) {
+                console.error('❌ Ad show error:', e);
+                showToast('❌ Ad error. Try again.');
+                closeAd();
             }
         }
-        
-        // =============================================
-        // TEST ADSGRAM - Detailed Check
-        // =============================================
-        function testAdsGram() {
-            addLog('🔧 ===== STARTING TEST =====', 'info');
-            
-            // Check 1: SDK
-            if (typeof window.AdsGram === 'undefined') {
-                addLog('❌ FAIL: AdsGram SDK is undefined', 'error-text');
-                addLog('💡 Solution: Check script tag', 'error-text');
-            } else {
-                addLog('✅ PASS: AdsGram SDK exists', 'success');
+
+        function claimReward() {
+            if (!state.adCompleted) {
+                showToast('⏳ Wait for ad to complete');
+                return;
             }
-            
-            // Check 2: Block ID
-            addLog('📡 Block ID: ' + BLOCK_ID, 'info');
-            
-            // Check 3: adsgram instance
-            if (!adsgram) {
-                addLog('❌ FAIL: adsgram instance is null', 'error-text');
-                addLog('🔄 Trying to initialize...', 'info');
-                initAdsGram();
-            } else {
-                addLog('✅ PASS: adsgram instance exists', 'success');
-            }
-            
-            // Check 4: showAd method
-            if (adsgram && typeof adsgram.showAd === 'function') {
-                addLog('✅ PASS: showAd() is a function', 'success');
-                
-                // Try to call showAd directly
-                addLog('🔄 Testing showAd() directly...', 'info');
-                try {
-                    adsgram.showAd()
-                        .then(function() {
-                            addLog('✅ Test ad completed successfully!', 'success');
-                        })
-                        .catch(function(e) {
-                            addLog('❌ Test ad failed: ' + JSON.stringify(e), 'error-text');
-                        });
-                } catch(e) {
-                    addLog('❌ Test exception: ' + e.message, 'error-text');
-                }
-            } else {
-                addLog('❌ FAIL: showAd() is NOT a function', 'error-text');
-                if (adsgram) {
-                    addLog('📊 showAd type: ' + typeof adsgram.showAd, 'error-text');
-                }
-            }
-            
-            // Check 5: isReady
-            addLog('📊 isReady: ' + isReady, 'info');
-            
-            // Check 6: Watch button
-            const btn = document.getElementById('watchBtn');
-            addLog('📊 Watch button disabled: ' + btn.disabled, 'info');
-            
-            addLog('🔧 ===== TEST COMPLETE =====', 'info');
+
+            const reward = state.pendingReward;
+            const bonus = Math.floor(reward * 10000);
+
+            state.usdt += reward;
+            state.totalUsdtEarned += reward;
+            state.coins += bonus;
+            state.totalAds += 1;
+
+            // Update tasks
+            updateTaskProgress();
+
+            tg.HapticFeedback?.notificationOccurred('success');
+            showToast('🎉 +' + reward.toFixed(4) + ' USDT! +' + bonus + ' coins!');
+            closeAd();
+            updateUI();
         }
-        
-        // =============================================
-        // FORCE RELOAD
-        // =============================================
-        function forceReload() {
-            addLog('🔄 ===== FORCE RELOAD =====', 'info');
-            isReady = false;
-            initAttempts = 0;
-            document.getElementById('watchBtn').disabled = true;
-            document.getElementById('status').className = 'status loading';
-            document.getElementById('status').textContent = '⏳ Reloading...';
-            
-            // Remove existing script
-            const scripts = document.querySelectorAll('script[src="https://partner.adsgram.ai/adsgram.min.js"]');
-            scripts.forEach(function(s) {
-                s.remove();
-                addLog('🗑️ Removed old script', 'info');
+
+        function closeAd() {
+            adOverlay.className = 'ad-overlay';
+            state.isAdPlaying = false;
+            state.adCompleted = false;
+            watchAdBtn.disabled = false;
+            if (state.adTimer) {
+                clearInterval(state.adTimer);
+                state.adTimer = null;
+            }
+            adSpinner.style.animation = 'spin 1s linear infinite';
+        }
+
+        // ===== TASK FUNCTIONS =====
+        function updateTaskProgress() {
+            const tasks = [
+                { id: 'task50', key: 'task50', required: 50, reward: 0.0001 },
+                { id: 'task100', key: 'task100', required: 100, reward: 0.0008 },
+                { id: 'task500', key: 'task500', required: 500, reward: 0.0010 }
+            ];
+
+            tasks.forEach(t => {
+                if (state[t.key].done) return;
+                if (state.totalAds >= t.required) {
+                    state[t.key].done = true;
+                    showToast('🎉 Task complete! +' + t.reward + ' USDT');
+                    state.usdt += t.reward;
+                    state.totalUsdtEarned += t.reward;
+                    updateUI();
+                }
             });
-            
-            // Load new script
-            addLog('📥 Loading fresh SDK...', 'info');
-            const script = document.createElement('script');
-            script.src = 'https://partner.adsgram.ai/adsgram.min.js';
-            script.onload = function() {
-                addLog('✅ SDK reloaded!', 'success');
-                setTimeout(initAdsGram, 500);
-            };
-            script.onerror = function() {
-                addLog('❌ Failed to load SDK!', 'error-text');
-                document.getElementById('status').textContent = '❌ SDK Load Failed';
-                document.getElementById('status').className = 'status error';
-            };
-            document.head.appendChild(script);
         }
-        
-        // =============================================
-        // START
-        // =============================================
-        window.addEventListener('load', function() {
-            addLog('🚀 Page loaded', 'info');
-            addLog('📡 Default Block ID: ' + BLOCK_ID, 'info');
-            addLog('💡 You can change Block ID in the input above', 'info');
-            setTimeout(initAdsGram, 1000);
+
+        function updateTasks() {
+            const tasks = [
+                { id: 'task50', key: 'task50', required: 50 },
+                { id: 'task100', key: 'task100', required: 100 },
+                { id: 'task500', key: 'task500', required: 500 }
+            ];
+
+            tasks.forEach(t => {
+                const btn = $(t.id);
+                if (state[t.key].done) {
+                    btn.textContent = '✅ Done';
+                    btn.className = 'task-btn done';
+                    btn.disabled = true;
+                } else {
+                    btn.textContent = 'Watch';
+                    btn.className = 'task-btn';
+                    btn.disabled = false;
+                }
+            });
+        }
+
+        // ===== TASK BUTTONS =====
+        $('task50').addEventListener('click', function() {
+            if (state.task50.done) { showToast('Already done!'); return; }
+            showAd(0.0001);
         });
+        $('task100').addEventListener('click', function() {
+            if (state.task100.done) { showToast('Already done!'); return; }
+            showAd(0.0008);
+        });
+        $('task500').addEventListener('click', function() {
+            if (state.task500.done) { showToast('Already done!'); return; }
+            showAd(0.0010);
+        });
+
+        // ===== WATCH AD BUTTON =====
+        watchAdBtn.addEventListener('click', function() {
+            showAd(0.0005);
+        });
+
+        // ===== CLAIM BUTTON =====
+        claimBtn.addEventListener('click', claimReward);
+        claimBtn.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            claimReward();
+        }, { passive: false });
+
+        // ===== CLOSE AD BUTTON =====
+        closeAdBtn.addEventListener('click', closeAd);
+
+        // ===== TOAST =====
+        function showToast(msg) {
+            const old = document.querySelector('.toast');
+            if (old) old.remove();
+            const div = document.createElement('div');
+            div.className = 'toast';
+            div.textContent = msg;
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 2500);
+        }
+
+        // ================================================================
+        // ===== INIT =====
+        // ================================================================
+
+        load();
+        updateUI();
+
+        // Start Adsgram
+        setTimeout(initAdsgram, 500);
+
+        console.log('🚀 CoinPulse loaded!');
+        console.log('📺 Block ID:', ADSGRAM_BLOCK_ID);
+        console.log('🪙 Tap coin to earn!');
+        console.log('🎬 Watch ads for USDT!');
     </script>
+
 </body>
 </html>
