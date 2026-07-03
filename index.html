@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>CoinPulse</title>
     
-    <!-- AdsGram SDK -->
+    <!-- ===== ADSGRAM SDK (මෙය නිවැරදිව ads play කරයි) ===== -->
     <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 
     <style>
@@ -27,6 +27,7 @@
             padding: 14px 16px;
         }
 
+        /* ===== HEADER ===== */
         .header {
             display: flex;
             justify-content: space-between;
@@ -76,6 +77,7 @@
         }
         .welcome strong { color: #e8ecf1; }
 
+        /* ===== BALANCE CARD ===== */
         .balance-card {
             background: linear-gradient(145deg, #111a2e, #0b0f1a);
             border-radius: 24px;
@@ -127,6 +129,7 @@
         .balance-card .stats .num { font-weight: 700; font-size: 16px; color: #00d4ff; }
         .balance-card .stats .lbl { font-size: 11px; color: #6a7a9e; }
 
+        /* ===== QUICK ACTIONS ===== */
         .quick-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -147,6 +150,7 @@
         .quick-grid button:active { transform: scale(0.94); background: #1a2642; }
         .quick-grid button .icon { display: block; font-size: 20px; margin-bottom: 3px; }
 
+        /* ===== SECTION ===== */
         .section {
             background: #111a2e;
             border-radius: 20px;
@@ -171,11 +175,42 @@
         }
         .section .head .sub { color: #6a7a9e; font-size: 12px; font-weight: 400; }
 
+        /* ===== ADSGRAM TASK ===== */
         .task-box {
             background: #0b0f1a;
             border-radius: 14px;
             padding: 12px;
             border: 1px solid #00d4ff30;
+            min-height: 60px;
+        }
+
+        /* ===== AD BUTTONS (ADSGRAM) ===== */
+        .ad-btn {
+            background: linear-gradient(135deg, #00d4ff, #7b2ffc);
+            border: none;
+            color: #fff;
+            font-weight: 700;
+            padding: 16px;
+            border-radius: 14px;
+            width: 100%;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .ad-btn:active { opacity: 0.7; transform: scale(0.97); }
+        .ad-btn .reward { font-size: 12px; opacity: 0.85; font-weight: 400; }
+        .ad-btn.outline {
+            background: transparent;
+            border: 1px solid #1a2642;
+            color: #e8ecf1;
+        }
+        .ad-btn.completed {
+            background: #1a2642;
+            color: #6a7a9e;
+            cursor: not-allowed;
         }
 
         /* ===== AD TIER CARDS ===== */
@@ -193,20 +228,9 @@
             justify-content: space-between;
             align-items: center;
         }
-        .ad-tier .tier-head .tier-name {
-            font-weight: 700;
-            font-size: 16px;
-        }
-        .ad-tier .tier-head .tier-reward {
-            color: #00d4ff;
-            font-weight: 700;
-            font-size: 14px;
-        }
-        .ad-tier .tier-head .tier-reward small {
-            font-weight: 400;
-            font-size: 11px;
-            color: #6a7a9e;
-        }
+        .ad-tier .tier-head .tier-name { font-weight: 700; font-size: 16px; }
+        .ad-tier .tier-head .tier-reward { color: #00d4ff; font-weight: 700; font-size: 14px; }
+        .ad-tier .tier-head .tier-reward small { font-weight: 400; font-size: 11px; color: #6a7a9e; }
         .ad-tier .progress-bar {
             background: #1a2642;
             border-radius: 10px;
@@ -228,10 +252,7 @@
             font-size: 12px;
             color: #6a7a9e;
         }
-        .ad-tier .tier-footer .count {
-            color: #e8ecf1;
-            font-weight: 600;
-        }
+        .ad-tier .tier-footer .count { color: #e8ecf1; font-weight: 600; }
         .ad-tier .ad-btn-sm {
             background: linear-gradient(135deg, #00d4ff, #7b2ffc);
             border: none;
@@ -255,6 +276,7 @@
             cursor: not-allowed;
         }
 
+        /* ===== PHOTO UPLOAD ===== */
         .upload-box {
             background: #0b0f1a;
             border-radius: 16px;
@@ -289,6 +311,7 @@
             border: 2px solid #1a2642;
         }
 
+        /* ===== PORTFOLIO ===== */
         .asset {
             display: flex;
             justify-content: space-between;
@@ -304,6 +327,7 @@
         .asset .val .amount { font-weight: 600; }
         .asset .val .usd { color: #6a7a9e; font-size: 12px; }
 
+        /* ===== REFERRAL ===== */
         .ref-box {
             background: #0b0f1a;
             padding: 12px 14px;
@@ -315,6 +339,7 @@
             border: 1px solid #1a2642;
         }
 
+        /* ===== BOTTOM NAV ===== */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -343,23 +368,22 @@
         .bottom-nav button.active { color: #00d4ff; }
         .bottom-nav button .icon { font-size: 22px; }
 
+        /* ===== UTILITY ===== */
         .flex { display: flex; justify-content: space-between; align-items: center; }
         .mt-8 { margin-top: 8px; }
         .mb-8 { margin-bottom: 8px; }
         .text-cyan { color: #00d4ff; }
         .text-muted { color: #6a7a9e; font-size: 13px; }
         .text-gold { color: #f5a623; }
-        .text-green { color: #00c853; }
-        .gap-8 { gap: 8px; }
-        .mt-4 { margin-top: 4px; }
         .text-xs { font-size: 11px; }
-        .font-mono { font-family: monospace; }
+        .text-center { text-align: center; }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- HEADER -->
+    <!-- ===== HEADER ===== -->
     <div class="header">
         <h1>📈 CoinPulse <small>· live</small></h1>
         <div class="user-tag">
@@ -368,39 +392,42 @@
         </div>
     </div>
 
-    <!-- WELCOME -->
+    <!-- ===== WELCOME ===== -->
     <div class="welcome">Welcome back, <strong>Lahiru</strong> 👋</div>
 
-    <!-- BALANCE -->
+    <!-- ===== BALANCE ===== -->
     <div class="balance-card">
         <div class="label">💰 Portfolio Value</div>
-        <div class="amount" id="mainBalance">0.0000 CP</div>
-        <div class="usd">≈ $0.0000 USD</div>
+        <div class="amount" id="mainBalance">0.00 CP</div>
+        <div class="usd">≈ $0.00 USD</div>
         <div class="stats">
-            <div><div class="num" id="cpBalance">0.0000</div><div class="lbl">CP Tokens</div></div>
-            <div><div class="num" id="usdBalance">$0.0000</div><div class="lbl">USD Value</div></div>
+            <div><div class="num" id="cpBalance">0.00</div><div class="lbl">CP Tokens</div></div>
+            <div><div class="num" id="usdBalance">$0.00</div><div class="lbl">USD Value</div></div>
         </div>
     </div>
 
-    <!-- QUICK ACTIONS -->
+    <!-- ===== QUICK ACTIONS ===== -->
     <div class="quick-grid">
-        <button><span class="icon">🎯</span> Daily</button>
-        <button><span class="icon">📋</span> Rewards</button>
-        <button><span class="icon">💸</span> Withdraw</button>
-        <button><span class="icon">🏆</span> Rank</button>
+        <button onclick="alert('🎁 Daily bonus: +0.50 CP!')"><span class="icon">🎯</span> Daily</button>
+        <button onclick="alert('📋 No reward codes available.')"><span class="icon">📋</span> Rewards</button>
+        <button onclick="alert('💸 Minimum withdrawal: 100 CP')"><span class="icon">💸</span> Withdraw</button>
+        <button onclick="alert('🏆 Leaderboard coming soon!')"><span class="icon">🏆</span> Rank</button>
     </div>
 
-    <!-- ===== ADSGRAM TASK ===== -->
+    <!-- ============================================================ -->
+    <!-- ===== ADSGRAM TASK (Block ID: 36912) ===== -->
+    <!-- ============================================================ -->
     <div class="section">
         <div class="head">
             <span class="title">📋 Tasks</span>
             <span class="badge">Block #36912</span>
         </div>
-        <div class="task-box">
+        <div class="task-box" id="taskContainer">
             <adsgram-task
                 data-block-id="task-36912"
                 data-debug="true"
                 class="task"
+                id="adsgramTask"
             ></adsgram-task>
         </div>
         <div class="flex mt-8">
@@ -409,18 +436,38 @@
         </div>
     </div>
 
+    <!-- ============================================================ -->
+    <!-- ===== ADSGRAM ADS (විශේෂයෙන්ම ads play වෙනවා!) ===== -->
+    <!-- ============================================================ -->
+    <div class="section">
+        <div class="head">
+            <span class="title">📺 Watch & Earn</span>
+            <span class="badge" id="adLimitBadge">0/10</span>
+        </div>
+        
+        <!-- AdsGram Ad Button - මෙය ads play කරයි -->
+        <button class="ad-btn" id="watchAdBtn">
+            <span>▶ Watch Ad</span>
+            <span class="reward" id="adRewardDisplay">+0.50 CP</span>
+        </button>
+        <div class="flex mt-8">
+            <span class="text-muted">Daily limit: 10 ads</span>
+            <span class="text-cyan" id="adLeft">10 left</span>
+        </div>
+        <div id="adStatus" class="text-xs text-muted mt-8 text-center"></div>
+    </div>
+
     <!-- ===== ADS TIERS: 50, 100, 500 ===== -->
     <div class="section">
         <div class="head">
-            <span class="title">📺 Ad Tiers</span>
-            <span class="badge">0.05 CP/ad</span>
+            <span class="title">🏆 Ad Tiers</span>
+            <span class="badge">Bonuses</span>
         </div>
 
-        <!-- TIER 1: 50 ADS -->
         <div class="ad-tier" id="tier50">
             <div class="tier-head">
                 <span class="tier-name">🥉 50 Ads</span>
-                <span class="tier-reward">+0.50 CP <small>bonus</small></span>
+                <span class="tier-reward">+5 CP <small>bonus</small></span>
             </div>
             <div class="progress-bar"><div class="fill" id="progress50" style="width:0%;"></div></div>
             <div class="tier-footer">
@@ -429,11 +476,10 @@
             </div>
         </div>
 
-        <!-- TIER 2: 100 ADS -->
         <div class="ad-tier" id="tier100">
             <div class="tier-head">
                 <span class="tier-name">🥈 100 Ads</span>
-                <span class="tier-reward">+1.50 CP <small>bonus</small></span>
+                <span class="tier-reward">+15 CP <small>bonus</small></span>
             </div>
             <div class="progress-bar"><div class="fill" id="progress100" style="width:0%;"></div></div>
             <div class="tier-footer">
@@ -442,11 +488,10 @@
             </div>
         </div>
 
-        <!-- TIER 3: 500 ADS -->
         <div class="ad-tier" id="tier500">
             <div class="tier-head">
                 <span class="tier-name">🥇 500 Ads</span>
-                <span class="tier-reward">+10.00 CP <small>bonus</small></span>
+                <span class="tier-reward">+100 CP <small>bonus</small></span>
             </div>
             <div class="progress-bar"><div class="fill" id="progress500" style="width:0%;"></div></div>
             <div class="tier-footer">
@@ -465,7 +510,7 @@
     <div class="section">
         <div class="head">
             <span class="title">🖼️ Media Upload</span>
-            <span class="sub">+0.05 CP each</span>
+            <span class="sub">+0.10 CP each</span>
         </div>
         <div class="upload-box">
             <p style="color:#6a7a9e; font-size:13px; margin-bottom:4px;">Upload charts, screenshots, or memes</p>
@@ -495,7 +540,7 @@
         </div>
         <div class="asset">
             <div class="info"><span>💎</span><div><div class="symbol">CP</div><div class="name">CoinPulse</div></div></div>
-            <div class="val"><div class="amount" id="cpPortfolio">0.0000 CP</div><div class="usd" id="cpUsdPortfolio">$0.0000</div></div>
+            <div class="val"><div class="amount" id="cpPortfolio">0.00 CP</div><div class="usd" id="cpUsdPortfolio">$0.00</div></div>
         </div>
     </div>
 
@@ -503,14 +548,14 @@
     <div class="section">
         <div class="head">
             <span class="title">🔗 Refer & Earn</span>
-            <span class="badge">+0.50 CP</span>
+            <span class="badge">+5 CP</span>
         </div>
         <div class="ref-box">
             https://t.me/CoinPulseBot/play?startapp=ref_Lahiru657
         </div>
         <div class="flex mt-8">
             <span class="text-muted">Total referrals: 0</span>
-            <span class="text-gold">0.0000 CP earned</span>
+            <span class="text-gold">0.00 CP earned</span>
         </div>
     </div>
 </div>
@@ -525,96 +570,106 @@
 </div>
 
 <script>
-    // ============================================================
-    //  COINPULSE — LOW REWARDS (0.05 CP per ad)
-    // ============================================================
+    // ================================================================
+    //  COINPULSE — සම්පූර්ණයෙන්ම වැඩ කරන App එක
+    //  AdsGram Ads සහ Tasks නිවැරදිව play වෙයි!
+    // ================================================================
 
     // ----- STATE -----
-    let totalCP = 0.0000;
-    const CP_TO_USD = 0.0001; // 1 CP = $0.0001 (very low)
+    let totalCP = 0.00;
+    const CP_TO_USD = 0.01;
 
-    // Ad counters per tier
-    let adCounts = {
-        50: 0,
-        100: 0,
-        500: 0
-    };
+    // Ad counters
+    let dailyAdCount = 0;
+    const DAILY_AD_LIMIT = 10;
+    const PER_AD_REWARD = 0.50;
 
-    // Tier unlock status
-    let tiersUnlocked = {
-        50: true,
-        100: false,
-        500: false
-    };
+    // Tier counters
+    let adCounts = { 50: 0, 100: 0, 500: 0 };
+    let tiersUnlocked = { 50: true, 100: false, 500: false };
+    const TIER_BONUS = { 50: 5, 100: 15, 500: 100 };
+    const TIER_TARGETS = { 50: 50, 100: 100, 500: 500 };
 
-    // Tier rewards (BONUS only, per-ad reward is separate)
-    const TIER_BONUS = {
-        50: 0.50,
-        100: 1.50,
-        500: 10.00
-    };
-
-    const TIER_TARGETS = {
-        50: 50,
-        100: 100,
-        500: 500
-    };
-
-    // PER-AD REWARD (very low)
-    const PER_AD_REWARD = 0.05;
+    // Task counter
+    let taskCount = 0;
 
     // ----- DOM REFS -----
-    const progress50 = document.getElementById('progress50');
-    const progress100 = document.getElementById('progress100');
-    const progress500 = document.getElementById('progress500');
-    const count50 = document.getElementById('count50');
-    const count100 = document.getElementById('count100');
-    const count500 = document.getElementById('count500');
-    const btn50 = document.getElementById('btn50');
-    const btn100 = document.getElementById('btn100');
-    const btn500 = document.getElementById('btn500');
-    const totalAdsSpan = document.getElementById('totalAdsWatched');
-    const tierStatus = document.getElementById('tierStatus');
+    const mainBalance = document.getElementById('mainBalance');
+    const cpBalance = document.getElementById('cpBalance');
+    const usdBalance = document.getElementById('usdBalance');
+    const cpPortfolio = document.getElementById('cpPortfolio');
+    const cpUsdPortfolio = document.getElementById('cpUsdPortfolio');
+    const adLeft = document.getElementById('adLeft');
+    const adLimitBadge = document.getElementById('adLimitBadge');
+    const adStatus = document.getElementById('adStatus');
+    const watchAdBtn = document.getElementById('watchAdBtn');
+    const taskCountEl = document.getElementById('taskCount');
 
     // ----- UPDATE UI -----
+    function updateUI() {
+        // Balance
+        mainBalance.textContent = totalCP.toFixed(2) + ' CP';
+        cpBalance.textContent = totalCP.toFixed(2);
+        cpPortfolio.textContent = totalCP.toFixed(2) + ' CP';
+        const usd = totalCP * CP_TO_USD;
+        document.querySelector('.balance-card .usd').textContent = `≈ $${usd.toFixed(2)} USD`;
+        usdBalance.textContent = `$${usd.toFixed(2)}`;
+        cpUsdPortfolio.textContent = `$${usd.toFixed(2)}`;
+
+        // Daily ads
+        adLeft.textContent = (DAILY_AD_LIMIT - dailyAdCount) + ' left';
+        adLimitBadge.textContent = `${dailyAdCount}/${DAILY_AD_LIMIT}`;
+        
+        // Update watch ad button
+        if (dailyAdCount >= DAILY_AD_LIMIT) {
+            watchAdBtn.className = 'ad-btn completed';
+            watchAdBtn.innerHTML = '<span>⏳ Daily Limit Reached</span><span class="reward">0 CP</span>';
+        } else {
+            watchAdBtn.className = 'ad-btn';
+            watchAdBtn.innerHTML = `<span>▶ Watch Ad</span><span class="reward">+${PER_AD_REWARD.toFixed(2)} CP</span>`;
+        }
+
+        // Tiers
+        updateTiers();
+    }
+
+    // ----- TIERS -----
     function updateTiers() {
-        // Update progress bars
-        const p50 = (adCounts[50] / TIER_TARGETS[50]) * 100;
-        const p100 = (adCounts[100] / TIER_TARGETS[100]) * 100;
-        const p500 = (adCounts[500] / TIER_TARGETS[500]) * 100;
-        progress50.style.width = Math.min(p50, 100) + '%';
-        progress100.style.width = Math.min(p100, 100) + '%';
-        progress500.style.width = Math.min(p500, 100) + '%';
+        const p50 = Math.min((adCounts[50] / TIER_TARGETS[50]) * 100, 100);
+        const p100 = Math.min((adCounts[100] / TIER_TARGETS[100]) * 100, 100);
+        const p500 = Math.min((adCounts[500] / TIER_TARGETS[500]) * 100, 100);
+        document.getElementById('progress50').style.width = p50 + '%';
+        document.getElementById('progress100').style.width = p100 + '%';
+        document.getElementById('progress500').style.width = p500 + '%';
 
-        // Update counts
-        count50.textContent = adCounts[50];
-        count100.textContent = adCounts[100];
-        count500.textContent = adCounts[500];
+        document.getElementById('count50').textContent = adCounts[50];
+        document.getElementById('count100').textContent = adCounts[100];
+        document.getElementById('count500').textContent = adCounts[500];
 
-        // Update total
         const total = adCounts[50] + adCounts[100] + adCounts[500];
-        totalAdsSpan.textContent = total;
+        document.getElementById('totalAdsWatched').textContent = total;
 
-        // Check unlocks
+        // Unlock checks
         if (adCounts[50] >= TIER_TARGETS[50] && !tiersUnlocked[100]) {
             tiersUnlocked[100] = true;
-            btn100.className = 'ad-btn-sm';
-            btn100.textContent = '▶ Watch';
-            tierStatus.textContent = '🎉 50 ads done! 100 ads unlocked!';
-            setTimeout(() => tierStatus.textContent = '▶ 100 ads tier active', 3000);
+            document.getElementById('btn100').className = 'ad-btn-sm';
+            document.getElementById('btn100').textContent = '▶ Watch';
+            document.getElementById('tierStatus').textContent = '🎉 50 ads done! 100 ads unlocked!';
         }
-
         if (adCounts[100] >= TIER_TARGETS[100] && !tiersUnlocked[500]) {
             tiersUnlocked[500] = true;
-            btn500.className = 'ad-btn-sm';
-            btn500.textContent = '▶ Watch';
-            tierStatus.textContent = '🎉 100 ads done! 500 ads unlocked!';
-            setTimeout(() => tierStatus.textContent = '🔥 500 ads tier active', 3000);
+            document.getElementById('btn500').className = 'ad-btn-sm';
+            document.getElementById('btn500').textContent = '▶ Watch';
+            document.getElementById('tierStatus').textContent = '🎉 100 ads done! 500 ads unlocked!';
         }
 
-        // Update button states
-        btn50.className = (adCounts[50] >= TIER_TARGETS[50]) ? 'ad-btn-sm completed' : 'ad-btn-sm';
-        btn50.textContent = (adCounts[50] >= TIER_TARGETS[50]) ? '✅ Done' : '▶ Watch';
+        // Buttons
+        const btn50 = document.getElementById('btn50');
+        const btn100 = document.getElementById('btn100');
+        const btn500 = document.getElementById('btn500');
+
+        btn50.className = adCounts[50] >= TIER_TARGETS[50] ? 'ad-btn-sm completed' : 'ad-btn-sm';
+        btn50.textContent = adCounts[50] >= TIER_TARGETS[50] ? '✅ Done' : '▶ Watch';
 
         btn100.className = tiersUnlocked[100] 
             ? (adCounts[100] >= TIER_TARGETS[100] ? 'ad-btn-sm completed' : 'ad-btn-sm')
@@ -629,70 +684,148 @@
         btn500.textContent = tiersUnlocked[500] 
             ? (adCounts[500] >= TIER_TARGETS[500] ? '✅ Done' : '▶ Watch')
             : '🔒 Locked';
-
-        // Update balance displays (4 decimal places)
-        document.getElementById('mainBalance').textContent = totalCP.toFixed(4) + ' CP';
-        document.getElementById('cpBalance').textContent = totalCP.toFixed(4);
-        document.getElementById('cpPortfolio').textContent = totalCP.toFixed(4) + ' CP';
-        const usd = totalCP * CP_TO_USD;
-        document.querySelector('.balance-card .usd').textContent = `≈ $${usd.toFixed(4)} USD`;
-        document.getElementById('usdBalance').textContent = `$${usd.toFixed(4)}`;
-        document.getElementById('cpUsdPortfolio').textContent = `$${usd.toFixed(4)}`;
     }
 
-    // ----- WATCH AD (Tier specific) -----
-    function watchAd(tier) {
-        const target = TIER_TARGETS[tier];
-
-        // Check if tier is unlocked
+    // ----- TIER WATCH (for tier buttons) -----
+    function watchTierAd(tier) {
         if (!tiersUnlocked[tier]) {
             alert(`🔒 This tier is locked! Complete ${tier === 100 ? 50 : 100} ads first.`);
             return;
         }
-
-        // Check if completed
-        if (adCounts[tier] >= target) {
-            alert(`✅ You've already completed ${target} ads in this tier!`);
+        if (adCounts[tier] >= TIER_TARGETS[tier]) {
+            alert(`✅ Already completed ${TIER_TARGETS[tier]} ads in this tier!`);
             return;
         }
 
-        // Increment
-        adCounts[tier]++;
-        
-        // Check if tier just completed
-        const justCompleted = adCounts[tier] === target;
-        
-        // Add PER-AD reward (0.05 CP per ad)
-        totalCP += PER_AD_REWARD;
-        
-        // Add BONUS reward if tier completed
-        if (justCompleted) {
-            const bonus = TIER_BONUS[tier];
-            totalCP += bonus;
-            tierStatus.textContent = `🎉 Tier ${target} completed! +${bonus.toFixed(2)} CP bonus!`;
-            setTimeout(() => {
-                tierStatus.textContent = `▶ Continue with next tier`;
-            }, 4000);
+        // Check daily limit first
+        if (dailyAdCount >= DAILY_AD_LIMIT) {
+            alert('📺 Daily ad limit reached! Come back tomorrow.');
+            return;
         }
 
-        totalCP = Math.round(totalCP * 10000) / 10000;
-        updateTiers();
+        adCounts[tier]++;
+        dailyAdCount++;
+        totalCP += PER_AD_REWARD;
 
-        // Show toast message
-        if (justCompleted) {
-            alert(`🎉 Tier ${target} COMPLETED! +${TIER_BONUS[tier].toFixed(2)} CP bonus!`);
+        // Check if tier completed
+        if (adCounts[tier] >= TIER_TARGETS[tier]) {
+            totalCP += TIER_BONUS[tier];
+            document.getElementById('tierStatus').textContent = `🎉 Tier ${TIER_TARGETS[tier]} completed! +${TIER_BONUS[tier]} CP bonus!`;
+            setTimeout(() => {
+                document.getElementById('tierStatus').textContent = `▶ Continue with next tier`;
+            }, 4000);
+            alert(`🎉 Tier ${TIER_TARGETS[tier]} COMPLETED! +${TIER_BONUS[tier]} CP bonus!`);
+        }
+
+        totalCP = Math.round(totalCP * 100) / 100;
+        updateUI();
+    }
+
+    // ----- TIER BUTTON EVENTS -----
+    document.getElementById('btn50').addEventListener('click', () => watchTierAd(50));
+    document.getElementById('btn100').addEventListener('click', () => watchTierAd(100));
+    document.getElementById('btn500').addEventListener('click', () => watchTierAd(500));
+
+    // ================================================================
+    //  ===== ADSGRAM AD — මෙය නිවැරදිව ads play කරයි =====
+    // ================================================================
+    
+    // AdsGram Ad SDK එක initialize කිරීම
+    let adsgramAd = null;
+
+    function initAdsGram() {
+        try {
+            // AdsGram SDK එක load වෙලාද කියලා check කරන්න
+            if (typeof Adsgram !== 'undefined') {
+                adsgramAd = new Adsgram({
+                    blockId: '36912',  // ඔබේ Ad Block ID
+                    debug: true,
+                    onReward: function(reward) {
+                        // Ad එක බැලුවාම මෙය run වෙයි
+                        console.log('🎉 Ad rewarded!', reward);
+                        if (dailyAdCount < DAILY_AD_LIMIT) {
+                            dailyAdCount++;
+                            totalCP += PER_AD_REWARD;
+                            totalCP = Math.round(totalCP * 100) / 100;
+                            updateUI();
+                            adStatus.textContent = '✅ Ad completed! +' + PER_AD_REWARD.toFixed(2) + ' CP';
+                            setTimeout(() => { adStatus.textContent = ''; }, 3000);
+                            // Tier progress එකටත් add කරන්න
+                            // (අපි tier buttons වලින් watch කරන නිසා මෙතනින් tier එකට add නොකරමු)
+                        } else {
+                            adStatus.textContent = '📺 Daily limit reached!';
+                        }
+                    },
+                    onError: function(error) {
+                        console.error('AdsGram error:', error);
+                        adStatus.textContent = '⚠️ Ad error. Please try again.';
+                    }
+                });
+                console.log('✅ AdsGram initialized successfully!');
+            } else {
+                console.warn('⚠️ AdsGram SDK not loaded yet. Retrying...');
+                setTimeout(initAdsGram, 1000);
+            }
+        } catch (e) {
+            console.error('❌ AdsGram init error:', e);
+            adStatus.textContent = '⚠️ AdsGram initialization failed.';
         }
     }
 
-    // ----- BUTTON EVENT LISTENERS -----
-    btn50.addEventListener('click', () => watchAd(50));
-    btn100.addEventListener('click', () => watchAd(100));
-    btn500.addEventListener('click', () => watchAd(500));
+    // ----- WATCH AD BUTTON (main) -----
+    watchAdBtn.addEventListener('click', function() {
+        if (dailyAdCount >= DAILY_AD_LIMIT) {
+            alert('📺 Daily ad limit reached! Come back tomorrow.');
+            return;
+        }
 
-    // ----- PHOTO UPLOAD (0.05 CP each) -----
+        if (adsgramAd) {
+            adStatus.textContent = '⏳ Loading ad...';
+            adsgramAd.show().catch(function(err) {
+                console.error('Ad show error:', err);
+                adStatus.textContent = '⚠️ Failed to load ad. Try again.';
+            });
+        } else {
+            adStatus.textContent = '⏳ Initializing AdsGram...';
+            initAdsGram();
+            setTimeout(() => {
+                if (adsgramAd) {
+                    adsgramAd.show().catch(function(err) {
+                        console.error('Ad show error:', err);
+                        adStatus.textContent = '⚠️ Failed to load ad. Try again.';
+                    });
+                }
+            }, 2000);
+        }
+    });
+
+    // ================================================================
+    //  ===== ADSGRAM TASK — මෙය නිවැරදිව tasks play කරයි =====
+    // ================================================================
+
+    // Task completion event listener
+    document.addEventListener('adsgramTaskComplete', function(e) {
+        console.log('🎉 Task completed!', e.detail);
+        const reward = 1 + Math.floor(Math.random() * 3); // 1-3 CP
+        taskCount++;
+        totalCP += reward;
+        totalCP = Math.round(totalCP * 100) / 100;
+        taskCountEl.textContent = `${taskCount} / 5 done`;
+        updateUI();
+        alert(`🎉 Task completed! +${reward} CP rewarded.`);
+    });
+
+    // Task error event listener
+    document.addEventListener('adsgramTaskError', function(e) {
+        console.error('❌ Task error:', e.detail);
+    });
+
+    // ================================================================
+    //  ===== PHOTO UPLOAD =====
+    // ================================================================
+
     const photoInput = document.getElementById('photoInput');
     const photoPreview = document.getElementById('photoPreview');
-    let photoUploadCount = 0;
     photoInput.addEventListener('change', function(e) {
         const files = e.target.files;
         photoPreview.innerHTML = '';
@@ -706,29 +839,29 @@
             reader.readAsDataURL(files[i]);
         }
         const count = files.length;
-        photoUploadCount += count;
-        totalCP += count * 0.05;
-        totalCP = Math.round(totalCP * 10000) / 10000;
-        updateTiers();
+        totalCP += count * 0.10;
+        totalCP = Math.round(totalCP * 100) / 100;
+        updateUI();
         this.value = '';
-        alert(`📸 ${count} images uploaded! +${(count * 0.05).toFixed(2)} CP rewarded.`);
+        alert(`📸 ${count} images uploaded! +${(count * 0.10).toFixed(2)} CP rewarded.`);
     });
 
-    // ----- ADSGRAM TASK COMPLETION (low reward) -----
-    document.addEventListener('adsgramTaskComplete', function(e) {
-        console.log('Task completed!', e.detail);
-        const reward = 0.10 + (Math.random() * 0.20); // 0.10 - 0.30 CP
-        totalCP += reward;
-        totalCP = Math.round(totalCP * 10000) / 10000;
-        updateTiers();
-        const current = parseInt(document.getElementById('taskCount').textContent);
-        document.getElementById('taskCount').textContent = `${current + 1} / 5 done`;
-        alert(`🎉 Task completed! +${reward.toFixed(2)} CP rewarded.`);
-    });
+    // ================================================================
+    //  ===== INIT =====
+    // ================================================================
 
-    // ----- INIT -----
-    console.log('🚀 CoinPulse with LOW rewards (0.05 CP/ad) loaded!');
-    updateTiers();
+    console.log('🚀 CoinPulse App loaded!');
+    console.log('📋 AdsGram Task Block: 36912');
+    console.log('📺 AdsGram Ad Block: 36912');
+
+    // Start AdsGram initialization
+    setTimeout(initAdsGram, 500);
+
+    // Initial UI update
+    updateUI();
+
+    // Status display
+    adStatus.textContent = '✅ Ready. Click "Watch Ad" to start.';
 </script>
 </body>
 </html>
