@@ -2,665 +2,797 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-<title>🐝 BeeVault — Earn USDT</title>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Diary Dash — Earn USDT</title>
+
+<!-- Monetag SDK (Rewarded Interstitial: zone 11239209) -->
+<script src='//libtl.com/sdk.js' data-zone='11239209' data-sdk='show_11239209'></script>
 <!-- Adsgram SDK -->
 <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
-<!-- Monetag Rewarded Interstitial -->
-<script src='//libtl.com/sdk.js' data-zone='11239209' data-sdk='show_11239209'></script>
+
 <style>
   :root{
-    --bg:#0b0b0f;
-    --bg-2:#111118;
-    --card:#15151d;
-    --card-2:#1b1b25;
-    --border:#2a2a35;
-    --gold:#f5b301;
-    --gold-2:#ffd24d;
-    --gold-glow:0 0 24px rgba(245,179,1,.35);
-    --green:#22c55e;
-    --blue:#3b82f6;
-    --purple:#a855f7;
-    --red:#ef4444;
-    --text:#f5f5f7;
-    --muted:#8a8a99;
+    --bg:#0b0d12;
+    --bg-2:#111521;
+    --card:#161a26;
+    --card-2:#1c2130;
+    --border:#262b3d;
+    --text:#f5f6fa;
+    --muted:#8a91a6;
+    --primary:#f5c518;
+    --primary-2:#ffdc5c;
+    --green:#25d366;
+    --blue:#3ea6ff;
+    --purple:#a878ff;
+    --red:#ff5b6a;
+    --gold-glow:0 0 24px rgba(245,197,24,.35);
   }
-  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-  html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;overscroll-behavior:none}
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;font-family:'Segoe UI',system-ui,sans-serif}
+  html,body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
   body{
     background:
-      radial-gradient(1200px 400px at 50% -100px, rgba(245,179,1,.15), transparent 60%),
-      repeating-linear-gradient(60deg, rgba(245,179,1,.03) 0 2px, transparent 2px 40px),
+      radial-gradient(1200px 600px at 50% -200px, rgba(245,197,24,.08), transparent 60%),
+      repeating-linear-gradient(60deg, rgba(245,197,24,.02) 0 2px, transparent 2px 40px),
       var(--bg);
-    padding-bottom:88px;
+    padding-bottom:90px;
   }
-  .app-header{
-    position:sticky;top:0;z-index:20;background:#141822;border-bottom:1px solid #1f2430;
-    display:flex;align-items:center;gap:10px;padding:14px 16px;font-weight:600
-  }
-  .app-header .close{width:28px;height:28px;display:grid;place-items:center;color:#fff;font-size:20px;opacity:.85}
-  .app-header .title{flex:1;display:flex;align-items:center;gap:8px;font-size:16px}
-  .container{padding:16px;max-width:520px;margin:0 auto}
-  .card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px;box-shadow:var(--gold-glow)}
-  .muted{color:var(--muted)}
-  .gold{color:var(--gold)}
-  .green{color:var(--green)}
-  .section-title{font-size:12px;letter-spacing:2px;color:var(--muted);margin:18px 4px 10px;font-weight:700}
-  button{font-family:inherit;cursor:pointer;border:none}
+  a{color:inherit;text-decoration:none}
+  button{border:none;cursor:pointer;font-family:inherit;color:inherit;background:none}
 
-  /* Loading */
-  #loader{position:fixed;inset:0;background:var(--bg);z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .5s}
-  #loader.hide{opacity:0;pointer-events:none}
-  .bee-logo{width:150px;height:150px;border-radius:50%;border:3px solid var(--gold);display:grid;place-items:center;font-size:80px;box-shadow:var(--gold-glow);background:radial-gradient(circle,#1a1a22,#0b0b0f)}
-  .brand{font-size:36px;color:var(--gold);font-weight:800;margin-top:22px;letter-spacing:1px}
-  .brand-sub{color:var(--muted);letter-spacing:4px;margin-top:6px;font-size:12px}
-  .load-actions{display:flex;gap:28px;margin-top:22px}
-  .load-actions .li{display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--muted);font-size:12px}
-  .load-actions .ic{width:44px;height:44px;border-radius:12px;background:#1a1a22;border:1px solid var(--border);display:grid;place-items:center;font-size:20px}
-  .bar-wrap{width:80%;max-width:340px;height:6px;background:#1a1a22;border-radius:8px;margin-top:40px;overflow:hidden}
-  .bar{height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--gold-2));transition:width .2s;box-shadow:var(--gold-glow)}
-  #loadStatus{margin-top:12px;color:var(--muted);font-size:13px}
+  /* Top bar */
+  .topbar{
+    position:sticky;top:0;z-index:50;
+    background:rgba(15,18,28,.9);backdrop-filter:blur(10px);
+    display:flex;align-items:center;justify-content:space-between;
+    padding:14px 16px;border-bottom:1px solid var(--border);
+  }
+  .topbar .brand{display:flex;align-items:center;gap:8px;font-weight:700}
+  .topbar .brand span.logo{font-size:22px}
+  .topbar .icons{display:flex;gap:14px;color:var(--muted)}
+  .topbar .icons svg{width:22px;height:22px}
+
+  /* Screens */
+  .screen{display:none;padding:16px;animation:fade .3s ease}
+  .screen.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  /* Loading splash */
+  #loader{
+    position:fixed;inset:0;z-index:100;background:var(--bg);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;
+  }
+  #loader .logo-circle{
+    width:160px;height:160px;border-radius:50%;
+    background:radial-gradient(circle at 50% 50%, #1b1f2e 55%, #0e1119 100%);
+    border:2px solid var(--primary);
+    box-shadow:var(--gold-glow), inset 0 0 40px rgba(245,197,24,.15);
+    display:flex;align-items:center;justify-content:center;font-size:70px;
+    animation:pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+  #loader h1{color:var(--primary);font-size:36px;letter-spacing:1px}
+  #loader .sub{color:var(--muted);letter-spacing:4px;font-size:12px}
+  #loader .quick{display:flex;gap:22px;margin-top:8px}
+  #loader .quick div{display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--muted);font-size:11px}
+  #loader .quick .ic{width:44px;height:44px;border-radius:12px;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:20px;border:1px solid var(--border)}
+  #loader .bar{width:280px;height:5px;background:#1a1f2e;border-radius:8px;overflow:hidden;margin-top:14px}
+  #loader .bar>span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--primary),var(--primary-2));box-shadow:var(--gold-glow);transition:width .2s linear}
+  #loader .status{color:var(--muted);font-size:12px}
 
   /* Home */
-  .welcome{display:flex;align-items:center;gap:12px;margin-bottom:16px}
-  .avatar{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#4ade80,#22c55e);display:grid;place-items:center;font-weight:800;color:#0b0b0f;font-size:18px;position:relative}
-  .avatar::after{content:"";position:absolute;bottom:2px;right:2px;width:10px;height:10px;background:var(--green);border-radius:50%;border:2px solid var(--bg)}
-  .welcome .who{flex:1}
-  .welcome .who .hi{color:var(--muted);font-size:13px}
-  .welcome .who .name{font-weight:600}
-  .bell{width:44px;height:44px;border-radius:12px;background:var(--card);border:1px solid var(--border);display:grid;place-items:center}
+  .welcome{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .welcome .who{display:flex;align-items:center;gap:12px}
+  .avatar{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#5ee2c6,#2ec5a3);display:flex;align-items:center;justify-content:center;font-weight:700;color:#0b3b30;position:relative}
+  .avatar::after{content:"";position:absolute;bottom:2px;right:2px;width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--bg)}
+  .who small{color:var(--muted);display:block;font-size:12px}
+  .who b{font-size:14px}
+  .bell{width:42px;height:42px;border-radius:12px;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted)}
 
-  .balance{text-align:center;padding:22px}
-  .balance .lbl{color:var(--muted);font-size:12px;letter-spacing:2px}
-  .balance .val{font-size:52px;color:var(--gold);font-weight:800;margin:6px 0;line-height:1}
-  .balance .val small{font-size:16px;margin-left:6px;color:var(--gold-2)}
-  .balance .usdt{color:var(--muted);font-size:14px}
-  .balance .sep{height:1px;background:var(--border);margin:16px 0}
-  .balance .row{display:flex;justify-content:space-around;text-align:center}
-  .balance .row div small{color:var(--muted);font-size:12px;display:block;margin-bottom:4px}
+  .balance-card{
+    background:linear-gradient(180deg,var(--card),var(--card-2));
+    border:1px solid var(--border);border-radius:20px;padding:20px;text-align:center;
+    box-shadow:var(--gold-glow);position:relative;overflow:hidden;
+  }
+  .balance-card .label{color:var(--muted);font-size:12px;letter-spacing:2px}
+  .balance-card .amount{font-size:56px;font-weight:800;color:var(--primary);line-height:1;margin-top:10px}
+  .balance-card .unit{color:var(--muted);font-size:14px;margin-top:6px}
+  .balance-card .split{display:flex;justify-content:space-around;margin-top:16px;padding-top:14px;border-top:1px dashed var(--border);color:var(--muted);font-size:12px}
+  .balance-card .split b{display:block;font-size:16px;margin-top:4px}
+  .balance-card .split .usd b{color:var(--green)}
+  .balance-card .split .id b{color:var(--text)}
 
-  .quick{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-  .qa{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 8px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px}
-  .qa .icb{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-size:18px}
-  .qa small{font-size:11px;font-weight:600}
+  .section-title{color:var(--muted);font-size:12px;letter-spacing:2px;margin:20px 4px 10px}
 
-  .earn-more{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-  .em{border-radius:16px;padding:14px;border:1px solid var(--border);position:relative;overflow:hidden}
-  .em h4{font-size:14px;margin-top:8px}
-  .em p{font-size:11px;color:var(--muted);margin-top:2px}
-  .em .ic2{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-size:16px;border:1px solid var(--border)}
+  .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  .qa{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px 8px;text-align:center;transition:.2s}
+  .qa:active{transform:scale(.96)}
+  .qa .ic{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 8px;font-size:18px}
+  .qa small{font-size:11px;color:var(--muted)}
+  .qa .ic.g{background:rgba(37,211,102,.15);color:var(--green)}
+  .qa .ic.p{background:rgba(168,120,255,.15);color:var(--purple)}
+  .qa .ic.b{background:rgba(62,166,255,.15);color:var(--blue)}
+  .qa .ic.y{background:rgba(245,197,24,.15);color:var(--primary)}
 
-  .refbox{margin-top:14px}
-  .refbox .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-  .link{display:flex;gap:8px;background:#0f0f16;border:1px solid var(--border);border-radius:12px;padding:10px 12px;align-items:center}
-  .link input{flex:1;background:transparent;border:none;color:var(--muted);font-size:13px;outline:none}
-  .link button{background:transparent;color:var(--gold);font-size:18px}
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .earn-card{border-radius:16px;padding:14px;border:1px solid var(--border);min-height:110px;display:flex;flex-direction:column;justify-content:space-between}
+  .earn-card .ic{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px}
+  .earn-card h4{font-size:14px;margin-top:8px}
+  .earn-card p{font-size:11px;color:var(--muted);margin-top:2px}
+  .ec-ads{background:linear-gradient(160deg,#132135,#0f1a2b)}
+  .ec-ads .ic{background:rgba(62,166,255,.2);color:var(--blue)}
+  .ec-tasks{background:linear-gradient(160deg,#12281f,#0f2118)}
+  .ec-tasks .ic{background:rgba(37,211,102,.2);color:var(--green)}
+  .ec-refer{background:linear-gradient(160deg,#241a35,#1a1327)}
+  .ec-refer .ic{background:rgba(168,120,255,.2);color:var(--purple)}
 
-  /* Bottom nav */
-  .nav{position:fixed;bottom:0;left:0;right:0;background:#141822;border-top:1px solid #1f2430;display:flex;z-index:30}
-  .nav button{flex:1;background:transparent;color:var(--muted);padding:10px 0;font-size:11px;display:flex;flex-direction:column;align-items:center;gap:4px;transition:.2s}
-  .nav button.active{color:var(--gold);text-shadow:var(--gold-glow)}
-  .nav button .n-ic{font-size:20px}
+  .refer-box{margin-top:16px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px}
+  .refer-box .row{display:flex;justify-content:space-between;align-items:center}
+  .refer-box b{color:var(--purple);display:flex;align-items:center;gap:8px}
+  .refer-box .reward{color:var(--primary);font-weight:700}
+  .refer-box .link{margin-top:10px;background:var(--bg-2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:12px;overflow:hidden}
+  .refer-box .link span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;margin-right:8px}
+  .refer-box .link button{color:var(--primary)}
 
-  /* Page header (Ads/Tasks/Refer) */
-  .page-head{display:flex;gap:10px;align-items:flex-start;margin-bottom:14px}
-  .back{width:40px;height:40px;border-radius:12px;background:var(--card);border:1px solid var(--border);display:grid;place-items:center;color:var(--text)}
+  /* Ads screen */
+  .page-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px}
+  .back{width:40px;height:40px;border-radius:10px;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted)}
   .page-head h2{font-size:22px}
-  .page-head p{color:var(--muted);font-size:13px}
+  .page-head p{color:var(--muted);font-size:12px;margin-top:2px}
 
-  /* Ads page */
-  .stat-card{display:flex;justify-content:space-between;padding:18px}
-  .stat-card .col small{color:var(--muted);font-size:11px;letter-spacing:2px;display:block;margin-bottom:6px}
-  .stat-card .v{font-size:26px;font-weight:800}
-  .timer{color:var(--gold);font-family:monospace;font-size:20px}
+  .stat-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;display:flex;justify-content:space-between;box-shadow:var(--gold-glow)}
+  .stat-card > div{flex:1;text-align:center}
+  .stat-card > div + div{border-left:1px solid var(--border)}
+  .stat-card small{color:var(--muted);font-size:11px;letter-spacing:1px}
+  .stat-card .v{font-size:22px;font-weight:800;margin-top:4px}
+  .stat-card .v.y{color:var(--primary)}
+  .stat-card .v.g{color:var(--green)}
+  .reset-row{margin-top:10px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;font-size:13px}
+  .reset-row .t{color:var(--muted)}
+  .reset-row .c{color:var(--primary);font-weight:700;font-variant-numeric:tabular-nums}
 
-  .tabs{display:flex;background:#0f0f16;border:1px solid var(--border);border-radius:14px;padding:6px;margin:16px 0}
-  .tabs button{flex:1;background:transparent;color:var(--muted);padding:10px;border-radius:10px;font-weight:600}
-  .tabs button.active{background:var(--gold);color:#111;box-shadow:var(--gold-glow)}
+  .tabs{display:flex;gap:10px;margin-top:14px}
+  .tabs .tab{flex:1;padding:12px;border-radius:12px;background:var(--card);border:1px solid var(--border);color:var(--muted);font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px}
+  .tabs .tab.active{background:linear-gradient(90deg,var(--primary),var(--primary-2));color:#111;box-shadow:var(--gold-glow)}
 
-  .ad-item{margin-top:12px;padding:16px}
-  .ad-item .h{display:flex;gap:12px;align-items:center}
-  .ad-item .icon{width:52px;height:52px;border-radius:12px;display:grid;place-items:center;font-size:26px;background:#0f0f16;border:1px solid var(--border)}
-  .ad-item .name{font-weight:700}
-  .ad-item .sub{font-size:12px;color:var(--gold)}
-  .progress{width:100%;height:5px;background:#0f0f16;border-radius:6px;margin-top:12px;overflow:hidden}
-  .progress .fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-2))}
-  .meta{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;margin-top:8px}
-  .btn-gold{width:100%;margin-top:12px;background:linear-gradient(90deg,var(--gold),var(--gold-2));color:#111;font-weight:700;padding:14px;border-radius:12px;font-size:14px;box-shadow:var(--gold-glow)}
-  .btn-gold:disabled{opacity:.5;filter:grayscale(.4)}
-  .btn-outline{width:100%;margin-top:10px;background:transparent;color:var(--text);border:1px solid var(--border);padding:12px;border-radius:12px;font-weight:600}
+  .ad-card{margin-top:14px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px}
+  .ad-card .head{display:flex;gap:12px;align-items:center}
+  .ad-card .head .ic{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;background:var(--bg-2)}
+  .ad-card h4{font-size:15px}
+  .ad-card p{color:var(--blue);font-size:12px;margin-top:2px}
+  .ad-card.a1 p{color:var(--primary)}
+  .progress{margin-top:12px}
+  .progress .info{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;margin-bottom:6px}
+  .progress .track{height:4px;background:#222736;border-radius:4px;overflow:hidden}
+  .progress .track>span{display:block;height:100%;background:linear-gradient(90deg,var(--primary),var(--primary-2));width:0%;transition:width .5s}
+  .btn-primary{margin-top:12px;width:100%;padding:14px;border-radius:12px;background:linear-gradient(90deg,var(--primary),var(--primary-2));color:#111;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:var(--gold-glow)}
+  .btn-primary:disabled{opacity:.55;box-shadow:none;filter:grayscale(.4)}
+  .btn-ghost{margin-top:10px;width:100%;padding:12px;border-radius:12px;background:var(--card);border:1px solid var(--border);color:var(--text);font-weight:600}
 
   /* Tasks */
-  .task-item{padding:14px;margin-top:12px}
-  .task-item .h{display:flex;gap:12px;align-items:flex-start}
-  .task-item .icon{width:52px;height:52px;border-radius:12px;background:#0f0f16;border:1px solid var(--border);display:grid;place-items:center;font-size:24px}
-  .task-item .name{font-weight:700}
-  .task-item .desc{font-size:12px;color:var(--muted);margin-top:2px}
-  .task-item .desc a{color:#60a5fa;text-decoration:none}
-  .task-item .reward{color:var(--gold);font-weight:700;margin-left:auto}
+  .task{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin-top:12px;display:flex;gap:12px}
+  .task .thumb{width:52px;height:52px;border-radius:12px;background:linear-gradient(135deg,#f5c518,#c48a00);display:flex;align-items:center;justify-content:center;font-size:26px}
+  .task .body{flex:1}
+  .task h4{font-size:14px}
+  .task .desc{color:var(--muted);font-size:12px;margin-top:2px}
+  .task .link{color:var(--blue);font-size:12px;margin-top:2px}
+  .task .reward{color:var(--primary);font-weight:700}
+  .task .go{margin-top:10px;background:linear-gradient(90deg,var(--primary),var(--primary-2));color:#111;padding:8px 14px;border-radius:8px;font-weight:700;font-size:13px}
+  .task.done .go{background:#1e2536;color:var(--muted)}
 
   /* Refer */
-  .stats3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
-  .stats3 .s{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center}
-  .stats3 .s .v{font-size:26px;font-weight:800}
-  .stats3 .s small{color:var(--muted);font-size:12px}
-  .row-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
-  .reward-list{margin-top:12px}
-  .rw{display:flex;gap:12px;padding:10px 0}
-  .rw .num{width:36px;height:36px;border-radius:50%;border:1px solid var(--gold);color:var(--gold);display:grid;place-items:center;font-weight:700;flex-shrink:0}
-  .rw .txt .t{font-weight:700}
-  .rw .txt .t .plus{color:var(--gold);margin-left:8px}
-  .rw .txt .d{color:var(--muted);font-size:12px}
-  .total-line{display:flex;justify-content:space-between;padding-top:14px;border-top:1px solid var(--border);margin-top:10px;font-weight:700}
+  .refer-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+  .refer-stats .rs{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center}
+  .refer-stats .rs .n{font-size:26px;font-weight:800}
+  .refer-stats .rs small{color:var(--muted);font-size:11px}
+  .refer-stats .rs.g .n{color:var(--green)}
+  .refer-stats .rs.y .n{color:var(--primary)}
+
+  .refer-link-card{margin-top:14px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;box-shadow:var(--gold-glow)}
+  .refer-link-card .cap{color:var(--muted);font-size:11px;letter-spacing:2px}
+  .refer-link-card .lnk{margin-top:10px;background:var(--bg-2);border:1px solid var(--border);border-radius:10px;padding:12px;font-size:12px;color:var(--muted);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+  .refer-link-card .actions{display:flex;gap:10px;margin-top:10px}
+  .refer-link-card .actions button{flex:1;padding:12px;border-radius:10px;font-weight:700}
+  .refer-link-card .copy{background:linear-gradient(90deg,var(--primary),var(--primary-2));color:#111}
+  .refer-link-card .share{background:var(--card-2);border:1px solid var(--border)}
+
+  .milestones{margin-top:16px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;box-shadow:var(--gold-glow)}
+  .milestones h4{color:var(--muted);letter-spacing:2px;font-size:11px;margin-bottom:12px}
+  .mile{display:flex;gap:12px;padding:10px 0;position:relative}
+  .mile+.mile{border-top:1px dashed var(--border)}
+  .mile .num{width:32px;height:32px;border-radius:50%;border:2px solid var(--primary);color:var(--primary);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0}
+  .mile h5{font-size:14px}
+  .mile h5 span{color:var(--primary);margin-left:6px}
+  .mile p{font-size:12px;color:var(--muted);margin-top:2px}
+  .total{margin-top:14px;padding-top:12px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+  .total b{color:var(--primary);font-size:22px}
 
   /* Profile */
-  .profile-top{text-align:center;padding:22px 0}
-  .profile-top .avatar{width:96px;height:96px;border-radius:22px;font-size:32px;margin:0 auto 14px}
-  .profile-top h3{font-size:22px}
-  .profile-top .u{color:var(--gold);margin-top:2px}
-  .profile-top .id{color:var(--muted);font-size:12px;margin-top:2px}
-  .menu{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-top:8px}
-  .menu-item{display:flex;align-items:center;gap:12px;padding:14px;color:var(--text);background:transparent;border-bottom:1px solid var(--border);text-align:left;font-size:14px}
-  .menu-item:last-child{border-bottom:none}
-  .menu-item .ic3{width:36px;height:36px;border-radius:10px;background:#0f0f16;border:1px solid var(--border);display:grid;place-items:center;font-size:16px}
-  .menu-item .arr{margin-left:auto;color:var(--muted)}
+  .profile-head{text-align:center;padding:10px}
+  .profile-head .avatar{width:100px;height:100px;border-radius:24px;font-size:32px;margin:0 auto;border:2px solid var(--primary);box-shadow:var(--gold-glow)}
+  .profile-head h2{margin-top:12px;font-size:22px}
+  .profile-head .un{color:var(--primary);margin-top:4px}
+  .profile-head .id{color:var(--muted);font-size:12px;margin-top:2px}
+  .list{margin-top:14px;background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+  .list .item{display:flex;align-items:center;gap:12px;padding:14px;border-bottom:1px solid var(--border);cursor:pointer}
+  .list .item:last-child{border-bottom:none}
+  .list .item .ic{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:var(--bg-2);font-size:16px}
+  .list .item .txt{flex:1}
+  .list .item .txt small{color:var(--muted);font-size:12px;display:block}
+  .list .item .arr{color:var(--muted)}
 
-  /* Modal */
-  .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:50;padding:20px}
-  .modal-bg.show{display:flex}
-  .modal{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:22px;max-width:400px;width:100%;box-shadow:var(--gold-glow)}
-  .modal h3{margin-bottom:14px;color:var(--gold)}
-  .modal input{width:100%;background:#0f0f16;border:1px solid var(--border);color:var(--text);padding:12px;border-radius:10px;font-size:14px;margin-bottom:10px;font-family:inherit}
-  .modal .close-x{float:right;background:transparent;color:var(--muted);font-size:22px}
+  /* Bottom nav */
+  .nav{
+    position:fixed;bottom:0;left:0;right:0;z-index:60;
+    background:rgba(15,18,28,.95);backdrop-filter:blur(12px);
+    border-top:1px solid var(--border);
+    display:grid;grid-template-columns:repeat(5,1fr);padding:8px 4px 12px;
+  }
+  .nav button{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--muted);font-size:11px;padding:6px 0}
+  .nav button svg{width:22px;height:22px}
+  .nav button.active{color:var(--primary);text-shadow:0 0 12px rgba(245,197,24,.5)}
 
   /* Toast */
-  #toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#141822;color:var(--gold);border:1px solid var(--gold);padding:12px 20px;border-radius:12px;font-size:14px;z-index:200;opacity:0;transition:.3s;box-shadow:var(--gold-glow);pointer-events:none;white-space:nowrap}
-  #toast.show{opacity:1;transform:translateX(-50%) translateY(-8px)}
+  #toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#1c2130;border:1px solid var(--primary);color:var(--text);padding:12px 18px;border-radius:12px;z-index:200;box-shadow:var(--gold-glow);opacity:0;transition:.3s;pointer-events:none;font-size:13px;max-width:90%}
+  #toast.show{opacity:1;transform:translate(-50%,-8px)}
 
-  .page{display:none}
-  .page.active{display:block;animation:fade .3s}
-  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  /* Modal */
+  .modal{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:150;display:none;align-items:center;justify-content:center;padding:20px}
+  .modal.show{display:flex}
+  .modal .box{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:22px;width:100%;max-width:340px;text-align:center;box-shadow:var(--gold-glow)}
+  .modal h3{margin-bottom:8px}
+  .modal p{color:var(--muted);font-size:13px;margin-bottom:16px}
+  .modal input{width:100%;padding:12px;background:var(--bg-2);border:1px solid var(--border);border-radius:10px;color:var(--text);margin-bottom:12px}
+  .modal .row{display:flex;gap:10px}
+  .modal .row button{flex:1;padding:12px;border-radius:10px;font-weight:700}
+  .modal .ok{background:linear-gradient(90deg,var(--primary),var(--primary-2));color:#111}
+  .modal .cancel{background:var(--card-2);border:1px solid var(--border);color:var(--text)}
 </style>
 </head>
 <body>
 
-<!-- LOADING SCREEN -->
+<!-- ================= LOADING SPLASH ================= -->
 <div id="loader">
-  <div class="bee-logo">🐝</div>
-  <div class="brand">BeeVault</div>
-  <div class="brand-sub">EARN USDT</div>
-  <div class="load-actions">
-    <div class="li"><div class="ic">▶️</div>Watch Ads</div>
-    <div class="li"><div class="ic">✅</div>Do Tasks</div>
-    <div class="li"><div class="ic">👥</div>Refer & Earn</div>
+  <div class="logo-circle">📔</div>
+  <h1>Diary Dash</h1>
+  <div class="sub">EARN USDT</div>
+  <div class="quick">
+    <div><div class="ic">▶️</div>Watch Ads</div>
+    <div><div class="ic">✅</div>Do Tasks</div>
+    <div><div class="ic">👥</div>Refer &amp; Earn</div>
   </div>
-  <div class="bar-wrap"><div class="bar" id="loadBar"></div></div>
-  <div id="loadStatus">Initializing...</div>
+  <div class="bar"><span id="loadBar"></span></div>
+  <div class="status" id="loadStatus">Loading assets...</div>
 </div>
 
-<!-- HEADER -->
-<div class="app-header">
-  <div class="close">✕</div>
-  <div class="title">🐝 BeeVault</div>
-  <div>⌄</div>
-  <div>⋮</div>
-</div>
-
-<div class="container">
-
-  <!-- HOME -->
-  <section class="page active" data-page="home">
-    <div class="welcome">
-      <div class="avatar" id="avaHome">U</div>
-      <div class="who"><div class="hi">Welcome back</div><div class="name" id="uname">@user</div></div>
-      <div class="bell">🔔</div>
-    </div>
-
-    <div class="card balance">
-      <div class="lbl">YOUR BALANCE</div>
-      <div class="val"><span id="balHome">0</span><small>🍯 BEE</small></div>
-      <div class="usdt">≈ <span id="usdtHome">0.00</span> USDT</div>
-      <div class="sep"></div>
-      <div class="row">
-        <div><small>USDT Value</small><div class="green"><span id="usdtHome2">0.00</span> USDT</div></div>
-        <div><small>Telegram ID</small><div id="tgId">Guest</div></div>
-      </div>
-    </div>
-
-    <div class="section-title">QUICK ACTIONS</div>
-    <div class="quick">
-      <button class="qa" onclick="claimDailyBonus()"><div class="icb" style="background:rgba(34,197,94,.15);color:var(--green)">🎁</div><small>Daily Bonus</small></button>
-      <button class="qa" onclick="openRewardCode()"><div class="icb" style="background:rgba(168,85,247,.15);color:var(--purple)">⚡</div><small>Reward Code</small></button>
-      <button class="qa" onclick="openWithdraw()"><div class="icb" style="background:rgba(59,130,246,.15);color:var(--blue)">💳</div><small>Withdraw</small></button>
-      <button class="qa" onclick="alert('Leaderboard coming soon!')"><div class="icb" style="background:rgba(245,179,1,.15);color:var(--gold)">🏆</div><small>Leaderboard</small></button>
-    </div>
-
-    <div class="section-title">EARN MORE</div>
-    <div class="earn-more">
-      <div class="em" style="background:linear-gradient(180deg,rgba(59,130,246,.15),transparent)" onclick="go('ads')">
-        <div class="ic2" style="color:var(--blue)">▶️</div><h4>Watch Ads</h4><p>Up to 10 Bee</p>
-      </div>
-      <div class="em" style="background:linear-gradient(180deg,rgba(34,197,94,.15),transparent)" onclick="go('tasks')">
-        <div class="ic2" style="color:var(--green)">✅</div><h4>Tasks</h4><p>20–200 Bee</p>
-      </div>
-      <div class="em" style="background:linear-gradient(180deg,rgba(168,85,247,.15),transparent)" onclick="go('refer')">
-        <div class="ic2" style="color:var(--purple)">👥</div><h4>Refer</h4><p>Up to 150 Bee</p>
-      </div>
-    </div>
-
-    <div class="card refbox">
-      <div class="top"><div><b>👥 Your Referral Link</b></div><div class="gold">+150 Bee</div></div>
-      <div class="link"><input id="refLink1" readonly><button onclick="copyRef()">📋</button></div>
-    </div>
-  </section>
-
-  <!-- ADS -->
-  <section class="page" data-page="ads">
-    <div class="page-head">
-      <button class="back" onclick="go('home')">←</button>
-      <div><h2>Earn</h2><p>Watch ads & visit websites</p></div>
-    </div>
-
-    <div class="card stat-card">
-      <div class="col"><small>TODAY EARNED</small><div class="v gold"><span id="todayEarn">0</span> BEE</div></div>
-      <div class="col" style="text-align:right"><small>AVAILABLE</small><div class="v green"><span id="avail">270</span> BEE</div></div>
-    </div>
-    <div class="card" style="margin-top:10px;display:flex;justify-content:space-between;padding:14px 18px">
-      <span class="muted">Daily reset in:</span><span class="timer" id="reset">07:31:14</span>
-    </div>
-
-    <div class="tabs">
-      <button class="active" onclick="switchAdTab(this,'watch')">📺 Watch Ads</button>
-      <button onclick="switchAdTab(this,'visit')">🌐 Visit Sites</button>
-    </div>
-
-    <div id="watchTab">
-      <div class="card ad-item">
-        <div class="h">
-          <div class="icon">📺</div>
-          <div><div class="name">Adsgram Reward</div><div class="sub">+10 Bee per ad</div></div>
-        </div>
-        <div class="progress"><div class="fill" id="agFill" style="width:0%"></div></div>
-        <div class="meta"><span><span id="agDone">0</span> / 5 ads</span><span><span id="agLeft">5</span> left</span></div>
-        <button class="btn-gold" onclick="showAdsgram()">▶ Watch Ad — +10 BEE</button>
-      </div>
-
-      <div class="card ad-item" style="background:linear-gradient(180deg,rgba(59,130,246,.08),transparent)">
-        <div class="h">
-          <div class="icon">🎯</div>
-          <div><div class="name">Monetag Rewarded</div><div class="sub" style="color:#60a5fa">+8 Bee per ad</div></div>
-        </div>
-        <div class="progress"><div class="fill" id="mtFill" style="width:0%"></div></div>
-        <div class="meta"><span><span id="mtDone">0</span> / 15 ads</span><span><span id="mtLeft">15</span> left</span></div>
-        <button class="btn-gold" onclick="showMonetag()">▶ Watch Ad — +8 BEE</button>
-      </div>
-    </div>
-
-    <div id="visitTab" style="display:none">
-      <div class="card ad-item">
-        <div class="h">
-          <div class="icon">🌐</div>
-          <div><div class="name">Visit Sponsor</div><div class="sub">+15 Bee — 20s stay</div></div>
-        </div>
-        <button class="btn-gold" onclick="visitSite('https://example.com',15)">Open Site</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- TASKS -->
-  <section class="page" data-page="tasks">
-    <div class="page-head">
-      <button class="back" onclick="go('home')">←</button>
-      <div><h2>Tasks</h2><p>Complete tasks to earn Bee</p></div>
-    </div>
-    <div class="tabs">
-      <button class="active" onclick="switchTaskTab(this,0)">Main</button>
-      <button onclick="switchTaskTab(this,1)">Partner</button>
-      <button onclick="switchTaskTab(this,2)">Community</button>
-    </div>
-    <div id="taskList"></div>
-  </section>
-
-  <!-- REFER -->
-  <section class="page" data-page="refer">
-    <div class="page-head">
-      <button class="back" onclick="go('home')">←</button>
-      <div><h2>Refer & Earn</h2><p>Earn up to 150 Bee per referral</p></div>
-    </div>
-    <div class="stats3">
-      <div class="s"><div class="v" id="rTotal">0</div><small>Total Refs</small></div>
-      <div class="s"><div class="v green" id="rDone">0</div><small>Completed</small></div>
-      <div class="s"><div class="v gold" id="rEarn">0</div><small>Bee Earned</small></div>
-    </div>
-    <div class="card">
-      <div class="section-title" style="margin:0 0 10px">YOUR REFERRAL LINK</div>
-      <div class="link"><input id="refLink2" readonly></div>
-      <div class="row-btns">
-        <button class="btn-gold" onclick="copyRef()">📋 Copy Link</button>
-        <button class="btn-outline" onclick="shareRef()">🔗 Share</button>
-      </div>
-    </div>
-    <div class="section-title">REWARD STRUCTURE</div>
-    <div class="card reward-list">
-      <div class="rw"><div class="num">1</div><div class="txt"><div class="t">Friend joins<span class="plus">+25 Bee</span></div><div class="d">Instant reward when they sign up</div></div></div>
-      <div class="rw"><div class="num">2</div><div class="txt"><div class="t">Watches 10 ads<span class="plus">+50 Bee</span></div><div class="d">After first 10 ad watches</div></div></div>
-      <div class="rw"><div class="num">3</div><div class="txt"><div class="t">Day 2 milestone<span class="plus">+75 Bee</span></div><div class="d">10 more ads on their 2nd day</div></div></div>
-      <div class="total-line"><span>Total per referral</span><span class="gold">150 Bee</span></div>
-      <div class="muted" style="font-size:12px;margin-top:8px">⚠ Referral must complete milestones within 48 hours</div>
-    </div>
-  </section>
-
-  <!-- PROFILE -->
-  <section class="page" data-page="profile">
-    <div class="profile-top">
-      <div class="avatar" id="avaProf">U</div>
-      <h3 id="pName">User</h3>
-      <div class="u" id="pUser">@user</div>
-      <div class="id">ID: <span id="pId">-</span></div>
-    </div>
-    <div class="card balance" style="padding:18px">
-      <div class="val"><span id="balProf">0</span><small>🍯 BEE</small></div>
-      <div class="usdt">≈ <span id="usdtProf">0.00</span> USDT</div>
-    </div>
-    <div class="menu" style="margin-top:12px">
-      <button class="menu-item" onclick="openWallet()"><div class="ic3" style="color:var(--blue)">💳</div><div><div>BEP20 Wallet</div><div class="muted" style="font-size:12px" id="walletState">Not connected</div></div><div class="arr">›</div></button>
-    </div>
-    <div class="section-title">FINANCE</div>
-    <div class="menu">
-      <button class="menu-item" onclick="openWallet()"><div class="ic3" style="color:var(--blue)">💼</div>Wallet<div class="arr">›</div></button>
-      <button class="menu-item" onclick="showTxs()"><div class="ic3" style="color:var(--green)">🕒</div>Transactions<div class="arr">›</div></button>
-      <button class="menu-item" onclick="openWithdraw()"><div class="ic3" style="color:var(--gold)">💰</div>Withdraw<div class="arr">›</div></button>
-    </div>
-    <div class="section-title">SOCIAL</div>
-    <div class="menu">
-      <button class="menu-item" onclick="go('refer')"><div class="ic3" style="color:var(--purple)">👥</div>Refer Friends<div class="arr">›</div></button>
-      <button class="menu-item" onclick="alert('Support: @beevault_support')"><div class="ic3">💬</div>Support<div class="arr">›</div></button>
-    </div>
-  </section>
-</div>
-
-<!-- NAV -->
-<div class="nav">
-  <button class="active" data-nav="home" onclick="go('home')"><span class="n-ic">🏠</span>Home</button>
-  <button data-nav="ads" onclick="go('ads')"><span class="n-ic">▶️</span>Ads</button>
-  <button data-nav="tasks" onclick="go('tasks')"><span class="n-ic">✅</span>Tasks</button>
-  <button data-nav="refer" onclick="go('refer')"><span class="n-ic">👥</span>Refer</button>
-  <button data-nav="profile" onclick="go('profile')"><span class="n-ic">👤</span>Profile</button>
-</div>
-
-<!-- MODALS -->
-<div class="modal-bg" id="mWithdraw">
-  <div class="modal">
-    <button class="close-x" onclick="closeModal('mWithdraw')">×</button>
-    <h3>💳 Withdraw USDT (BEP20)</h3>
-    <p class="muted" style="font-size:13px;margin-bottom:12px">Minimum: 10,000 BEE ≈ 1 USDT</p>
-    <input id="wAddr" placeholder="Enter BEP20 wallet address (0x...)" />
-    <input id="wAmt" type="number" placeholder="Amount in BEE" />
-    <button class="btn-gold" onclick="submitWithdraw()">Request Withdrawal</button>
+<!-- ================= TOP BAR ================= -->
+<div class="topbar">
+  <div class="brand"><span class="logo">📔</span> Diary Dash</div>
+  <div class="icons">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>
   </div>
 </div>
 
-<div class="modal-bg" id="mCode">
-  <div class="modal">
-    <button class="close-x" onclick="closeModal('mCode')">×</button>
-    <h3>⚡ Reward Code</h3>
-    <input id="rCode" placeholder="Enter code" />
-    <button class="btn-gold" onclick="redeemCode()">Redeem</button>
-    <p class="muted" style="font-size:12px;margin-top:10px">Try: <b>BEE100</b> for 100 Bee</p>
+<!-- ================= HOME ================= -->
+<section id="home" class="screen active">
+  <div class="welcome">
+    <div class="who">
+      <div class="avatar" id="avaHome">DD</div>
+      <div>
+        <small>Welcome back</small>
+        <b id="unameHome">@DiaryUser</b>
+      </div>
+    </div>
+    <button class="bell">🔔</button>
   </div>
-</div>
 
-<div class="modal-bg" id="mWallet">
-  <div class="modal">
-    <button class="close-x" onclick="closeModal('mWallet')">×</button>
-    <h3>💼 BEP20 Wallet</h3>
-    <input id="wConn" placeholder="0x... (BEP20 address)" />
-    <button class="btn-gold" onclick="saveWallet()">Save Wallet</button>
+  <div class="balance-card">
+    <div class="label">YOUR BALANCE</div>
+    <div class="amount"><span id="balHome">0</span> 📔</div>
+    <div class="unit">DASH • ≈ <span id="usdHome">0.00</span> USDT</div>
+    <div class="split">
+      <div class="usd"><small>USDT VALUE</small><b><span id="usdHome2">0.00</span> USDT</b></div>
+      <div class="id"><small>Telegram ID</small><b id="tgId">6202492881</b></div>
+    </div>
   </div>
-</div>
+
+  <div class="section-title">QUICK ACTIONS</div>
+  <div class="grid-4">
+    <button class="qa" onclick="dailyBonus()"><div class="ic g">🎁</div><small>Daily Bonus</small></button>
+    <button class="qa" onclick="openReward()"><div class="ic p">⚡</div><small>Reward Code</small></button>
+    <button class="qa" onclick="openWithdraw()"><div class="ic b">💳</div><small>Withdraw</small></button>
+    <button class="qa" onclick="openLeaderboard()"><div class="ic y">🏆</div><small>Leaderboard</small></button>
+  </div>
+
+  <div class="section-title">EARN MORE</div>
+  <div class="grid-3">
+    <button class="earn-card ec-ads" onclick="switchTab('ads')">
+      <div class="ic">▶️</div>
+      <div><h4>Watch Ads</h4><p>Up to 15 Dash</p></div>
+    </button>
+    <button class="earn-card ec-tasks" onclick="switchTab('tasks')">
+      <div class="ic">✅</div>
+      <div><h4>Tasks</h4><p>25–200 Dash</p></div>
+    </button>
+    <button class="earn-card ec-refer" onclick="switchTab('refer')">
+      <div class="ic">👥</div>
+      <div><h4>Refer</h4><p>Up to 200 Dash</p></div>
+    </button>
+  </div>
+
+  <div class="refer-box">
+    <div class="row">
+      <b>👥 Your Referral Link</b>
+      <span class="reward">+200 Dash</span>
+    </div>
+    <div class="link">
+      <span id="refLink1">https://t.me/DiaryDashBot/play?startapp=ref_6202492881</span>
+      <button onclick="copyRef()">📋</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ADS ================= -->
+<section id="ads" class="screen">
+  <div class="page-head">
+    <button class="back" onclick="switchTab('home')">←</button>
+    <div><h2>Earn</h2><p>Watch ads &amp; visit websites</p></div>
+  </div>
+
+  <div class="stat-card">
+    <div><small>TODAY EARNED</small><div class="v y"><span id="todayEarned">0</span> DASH</div></div>
+    <div><small>AVAILABLE</small><div class="v g"><span id="adsAvail">300</span> DASH</div></div>
+  </div>
+  <div class="reset-row">
+    <span class="t">Daily reset in:</span>
+    <span class="c" id="resetTimer">07:31:14</span>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" id="tabAds" onclick="adTab('ads')">📺 Watch Ads</button>
+    <button class="tab" id="tabSites" onclick="adTab('sites')">🌐 Visit Sites</button>
+  </div>
+
+  <div id="adsList">
+    <div class="ad-card a1">
+      <div class="head">
+        <div class="ic">📺</div>
+        <div><h4>Adsgram Reward</h4><p>+15 Dash per ad</p></div>
+      </div>
+      <div class="progress">
+        <div class="info"><span><span id="adsgramDone">0</span> / 5 ads</span><span><span id="adsgramLeft">5</span> left</span></div>
+        <div class="track"><span id="adsgramBar" style="width:0%"></span></div>
+      </div>
+      <button class="btn-primary" id="adsgramBtn" onclick="showAdsgram()">▶️ Watch Ad — +15 D</button>
+    </div>
+
+    <div class="ad-card">
+      <div class="head">
+        <div class="ic">🎯</div>
+        <div><h4>Monetag Rewarded</h4><p>+12 Dash per ad</p></div>
+      </div>
+      <div class="progress">
+        <div class="info"><span><span id="monetagDone">0</span> / 20 ads</span><span><span id="monetagLeft">20</span> left</span></div>
+        <div class="track"><span id="monetagBar" style="width:0%"></span></div>
+      </div>
+      <button class="btn-primary" onclick="showMonetag()">▶️ Watch Ad — +12 D</button>
+    </div>
+
+    <div class="ad-card">
+      <div class="head">
+        <div class="ic">💎</div>
+        <div><h4>Premium Video</h4><p>+25 Dash per ad</p></div>
+      </div>
+      <div class="progress">
+        <div class="info"><span><span id="premDone">0</span> / 3 ads</span><span><span id="premLeft">3</span> left</span></div>
+        <div class="track"><span id="premBar" style="width:0%"></span></div>
+      </div>
+      <button class="btn-primary" onclick="showPremium()">▶️ Watch Ad — +25 D</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= TASKS ================= -->
+<section id="tasks" class="screen">
+  <div class="page-head">
+    <button class="back" onclick="switchTab('home')">←</button>
+    <div><h2>Tasks</h2><p>Complete tasks to earn Dash</p></div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" id="ttMain" onclick="taskTab('main')">Main</button>
+    <button class="tab" id="ttPartner" onclick="taskTab('partner')">Partner</button>
+    <button class="tab" id="ttCommunity" onclick="taskTab('community')">Community</button>
+  </div>
+  <div id="taskList"></div>
+</section>
+
+<!-- ================= REFER ================= -->
+<section id="refer" class="screen">
+  <div class="page-head">
+    <button class="back" onclick="switchTab('home')">←</button>
+    <div><h2>Refer &amp; Earn</h2><p>Earn up to 200 Dash per referral</p></div>
+  </div>
+
+  <div class="refer-stats">
+    <div class="rs"><div class="n" id="rTotal">0</div><small>Total Refs</small></div>
+    <div class="rs g"><div class="n" id="rDone">0</div><small>Completed</small></div>
+    <div class="rs y"><div class="n" id="rEarned">0</div><small>Dash Earned</small></div>
+  </div>
+
+  <div class="refer-link-card">
+    <div class="cap">YOUR REFERRAL LINK</div>
+    <div class="lnk" id="refLink2">https://t.me/DiaryDashBot/play?startapp=ref_6202492881</div>
+    <div class="actions">
+      <button class="copy" onclick="copyRef()">📋 Copy Link</button>
+      <button class="share" onclick="shareRef()">🔗 Share</button>
+    </div>
+  </div>
+
+  <div class="milestones">
+    <h4>REWARD STRUCTURE</h4>
+    <div class="mile"><div class="num">1</div><div><h5>Friend joins <span>+50 Dash</span></h5><p>Instant reward when they sign up</p></div></div>
+    <div class="mile"><div class="num">2</div><div><h5>Watches 10 ads <span>+75 Dash</span></h5><p>After first 10 ad watches</p></div></div>
+    <div class="mile"><div class="num">3</div><div><h5>Day 2 milestone <span>+75 Dash</span></h5><p>10 more ads on their 2nd day</p></div></div>
+    <div class="total"><span>Total per referral</span><b>200 Dash</b></div>
+    <p style="color:var(--muted);font-size:11px;margin-top:8px">⚠️ Referral must complete milestones within 48 hours</p>
+  </div>
+</section>
+
+<!-- ================= PROFILE ================= -->
+<section id="profile" class="screen">
+  <div class="profile-head">
+    <div class="avatar" id="avaPro">DD</div>
+    <h2 id="nameP">Diary User</h2>
+    <div class="un" id="unamePro">@DiaryUser</div>
+    <div class="id">ID: <span id="tgIdPro">6202492881</span></div>
+  </div>
+
+  <div class="balance-card" style="margin-top:14px">
+    <div class="amount"><span id="balPro">0</span> 📔</div>
+    <div class="unit">DASH • ≈ <span id="usdPro">0.00</span> USDT</div>
+  </div>
+
+  <div class="list">
+    <div class="item" onclick="openWallet()">
+      <div class="ic">💳</div>
+      <div class="txt"><b>BEP20 Wallet</b><small id="walletStatus">Not connected</small></div>
+      <div class="arr">›</div>
+    </div>
+  </div>
+
+  <div class="section-title">FINANCE</div>
+  <div class="list">
+    <div class="item" onclick="openWithdraw()"><div class="ic">💰</div><div class="txt"><b>Withdraw</b></div><div class="arr">›</div></div>
+    <div class="item" onclick="openTx()"><div class="ic">🔄</div><div class="txt"><b>Transactions</b></div><div class="arr">›</div></div>
+  </div>
+
+  <div class="section-title">SOCIAL</div>
+  <div class="list">
+    <div class="item" onclick="switchTab('refer')"><div class="ic">👥</div><div class="txt"><b>Refer Friends</b></div><div class="arr">›</div></div>
+    <div class="item" onclick="openLeaderboard()"><div class="ic">🏆</div><div class="txt"><b>Leaderboard</b></div><div class="arr">›</div></div>
+    <div class="item" onclick="openSupport()"><div class="ic">💬</div><div class="txt"><b>Support</b></div><div class="arr">›</div></div>
+  </div>
+</section>
+
+<!-- ================= BOTTOM NAV ================= -->
+<nav class="nav">
+  <button class="active" data-t="home" onclick="switchTab('home')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l9 8h-3v10h-4v-6h-4v6H6V11H3z"/></svg>Home</button>
+  <button data-t="ads" onclick="switchTab('ads')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M10 8l6 4-6 4V8z" fill="currentColor"/></svg>Ads</button>
+  <button data-t="tasks" onclick="switchTab('tasks')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 12l3 3 5-6"/></svg>Tasks</button>
+  <button data-t="refer" onclick="switchTab('refer')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a4 4 0 100-8 4 4 0 000 8zm-8 9a8 8 0 0116 0z"/></svg>Refer</button>
+  <button data-t="profile" onclick="switchTab('profile')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0116 0"/></svg>Profile</button>
+</nav>
 
 <div id="toast"></div>
 
+<!-- Modal -->
+<div class="modal" id="modal">
+  <div class="box">
+    <h3 id="mTitle">Title</h3>
+    <p id="mDesc">Description</p>
+    <input id="mInput" style="display:none" />
+    <div class="row">
+      <button class="cancel" onclick="closeModal()">Cancel</button>
+      <button class="ok" id="mOk">OK</button>
+    </div>
+  </div>
+</div>
+
 <script>
-/* ============ STATE ============ */
-const RATE = 10000; // 10,000 BEE = 1 USDT
-const state = JSON.parse(localStorage.getItem('beevault') || '{}');
-const defaults = {
-  balance:0, todayEarn:0, agDone:0, mtDone:0, refs:0, refsDone:0, refEarn:0,
-  lastDaily:0, wallet:'', txs:[], resetAt: nextMidnight()
+/* ===== State ===== */
+const state = JSON.parse(localStorage.getItem('diaryDash') || 'null') || {
+  balance: 0,
+  todayEarned: 0,
+  available: 300,
+  adsgramDone: 0, adsgramMax: 5,
+  monetagDone: 0, monetagMax: 20,
+  premDone: 0, premMax: 3,
+  tasksDone: {},
+  refs: 0, refsDone: 0, refsEarned: 0,
+  wallet: null,
+  lastBonus: 0,
+  tgId: '6202492881',
+  username: 'DiaryUser',
+  name: 'Diary User',
+  lastReset: Date.now(),
 };
-Object.keys(defaults).forEach(k=>{ if(state[k]===undefined) state[k]=defaults[k]; });
+function save(){ localStorage.setItem('diaryDash', JSON.stringify(state)); render(); }
 
-function nextMidnight(){ const d=new Date(); d.setHours(24,0,0,0); return d.getTime(); }
-function save(){ localStorage.setItem('beevault', JSON.stringify(state)); }
-
-/* ============ USER ============ */
-let USER = { id:'Guest', username:'user', name:'User', initials:'U' };
+/* ===== Telegram integration (optional) ===== */
 try {
-  const tg = window.Telegram?.WebApp;
-  if (tg) { tg.ready(); tg.expand();
-    const u = tg.initDataUnsafe?.user;
+  if (window.Telegram && Telegram.WebApp) {
+    Telegram.WebApp.ready(); Telegram.WebApp.expand();
+    const u = Telegram.WebApp.initDataUnsafe?.user;
     if (u) {
-      USER.id = u.id;
-      USER.username = u.username || ('user'+u.id);
-      USER.name = [u.first_name,u.last_name].filter(Boolean).join(' ') || USER.username;
-      USER.initials = (u.first_name?.[0]||'U')+(u.last_name?.[0]||'');
+      state.tgId = String(u.id);
+      state.username = u.username || (u.first_name || 'DiaryUser');
+      state.name = ((u.first_name||'') + ' ' + (u.last_name||'')).trim() || 'Diary User';
     }
   }
 } catch(e){}
 
-/* ============ LOADING ============ */
-const loadSteps = ['Initializing...','Connecting to Telegram...','Loading balance...','Loading tasks...','Loading Complete'];
-let li=0;
-const barI = setInterval(()=>{
-  const bar = document.getElementById('loadBar');
-  const cur = parseInt(bar.style.width)||0;
-  const next = Math.min(cur+8, 100);
-  bar.style.width = next+'%';
-  document.getElementById('loadStatus').textContent = loadSteps[Math.min(Math.floor(next/25),4)];
-  if (next>=100) { clearInterval(barI); setTimeout(()=>{ document.getElementById('loader').classList.add('hide'); renderAll(); },500); }
-},180);
+/* ===== Render ===== */
+function render(){
+  const usd = (state.balance * 0.0001).toFixed(4);
+  const initials = (state.name||'DD').split(' ').map(s=>s[0]).join('').slice(0,2).toUpperCase();
+  ['avaHome','avaPro'].forEach(id=>document.getElementById(id).textContent=initials);
+  document.getElementById('unameHome').textContent = '@'+state.username;
+  document.getElementById('unamePro').textContent = '@'+state.username;
+  document.getElementById('nameP').textContent = state.name;
+  document.getElementById('tgId').textContent = state.tgId;
+  document.getElementById('tgIdPro').textContent = state.tgId;
 
-/* ============ RENDER ============ */
-function renderAll(){
-  document.getElementById('uname').textContent = '@'+USER.username;
-  document.getElementById('tgId').textContent = USER.id;
-  document.getElementById('pName').textContent = USER.name;
-  document.getElementById('pUser').textContent = '@'+USER.username;
-  document.getElementById('pId').textContent = USER.id;
-  document.getElementById('avaHome').textContent = USER.initials;
-  document.getElementById('avaProf').textContent = USER.initials;
-  const link = `https://t.me/BeeVaultBot/play?startapp=ref_${USER.id}`;
-  document.getElementById('refLink1').value = link;
-  document.getElementById('refLink2').value = link;
-  document.getElementById('walletState').textContent = state.wallet ? state.wallet.slice(0,10)+'...' : 'Not connected';
-  updateBalance();
-  renderTasks();
-  tickReset();
-  setInterval(tickReset,1000);
-}
+  document.getElementById('balHome').textContent = state.balance;
+  document.getElementById('balPro').textContent = state.balance;
+  document.getElementById('usdHome').textContent = usd;
+  document.getElementById('usdHome2').textContent = usd;
+  document.getElementById('usdPro').textContent = usd;
 
-function updateBalance(){
-  const usdt = (state.balance/RATE).toFixed(2);
-  ['balHome','balProf'].forEach(id=>document.getElementById(id).textContent=state.balance);
-  ['usdtHome','usdtHome2','usdtProf'].forEach(id=>document.getElementById(id).textContent=usdt);
-  document.getElementById('todayEarn').textContent = state.todayEarn;
-  document.getElementById('avail').textContent = Math.max(0, 270 - state.todayEarn);
-  document.getElementById('agDone').textContent = state.agDone;
-  document.getElementById('agLeft').textContent = Math.max(0,5-state.agDone);
-  document.getElementById('agFill').style.width = (state.agDone/5*100)+'%';
-  document.getElementById('mtDone').textContent = state.mtDone;
-  document.getElementById('mtLeft').textContent = Math.max(0,15-state.mtDone);
-  document.getElementById('mtFill').style.width = (state.mtDone/15*100)+'%';
+  document.getElementById('todayEarned').textContent = state.todayEarned;
+  document.getElementById('adsAvail').textContent = state.available;
+
+  const setProg = (done,max,barId,doneId,leftId) => {
+    document.getElementById(doneId).textContent = done;
+    document.getElementById(leftId).textContent = max-done;
+    document.getElementById(barId).style.width = (done/max*100)+'%';
+  };
+  setProg(state.adsgramDone, state.adsgramMax,'adsgramBar','adsgramDone','adsgramLeft');
+  setProg(state.monetagDone, state.monetagMax,'monetagBar','monetagDone','monetagLeft');
+  setProg(state.premDone, state.premMax,'premBar','premDone','premLeft');
+
   document.getElementById('rTotal').textContent = state.refs;
   document.getElementById('rDone').textContent = state.refsDone;
-  document.getElementById('rEarn').textContent = state.refEarn;
+  document.getElementById('rEarned').textContent = state.refsEarned;
+
+  document.getElementById('walletStatus').textContent = state.wallet ? state.wallet.slice(0,10)+'...' : 'Not connected';
+
+  const link = `https://t.me/DiaryDashBot/play?startapp=ref_${state.tgId}`;
+  document.getElementById('refLink1').textContent = link;
+  document.getElementById('refLink2').textContent = link;
+}
+
+/* ===== Reward ===== */
+function reward(amt, msg){
+  state.balance += amt;
+  state.todayEarned += amt;
+  state.available = Math.max(0, state.available - amt);
   save();
+  toast((msg||'You earned') + ' +' + amt + ' Dash 📔');
 }
 
-function addBee(n, note){
-  state.balance += n;
-  state.todayEarn += n;
-  state.txs.unshift({t:Date.now(), amt:n, note:note||'Reward'});
-  updateBalance();
-  toast(`+${n} BEE 🍯`);
+/* ===== Toast ===== */
+let toastT;
+function toast(m){
+  const t = document.getElementById('toast');
+  t.textContent = m; t.classList.add('show');
+  clearTimeout(toastT);
+  toastT = setTimeout(()=>t.classList.remove('show'), 2500);
 }
 
-function tickReset(){
-  if (Date.now() >= state.resetAt){
-    state.todayEarn=0; state.agDone=0; state.mtDone=0; state.resetAt=nextMidnight();
-    updateBalance();
-  }
-  const ms = state.resetAt - Date.now();
-  const h = String(Math.floor(ms/3600000)).padStart(2,'0');
-  const m = String(Math.floor(ms/60000)%60).padStart(2,'0');
-  const s = String(Math.floor(ms/1000)%60).padStart(2,'0');
-  document.getElementById('reset').textContent = `${h}:${m}:${s}`;
+/* ===== Nav ===== */
+function switchTab(name){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(name).classList.add('active');
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active', b.dataset.t===name));
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 
-/* ============ NAV ============ */
-function go(p){
-  document.querySelectorAll('.page').forEach(el=>el.classList.toggle('active', el.dataset.page===p));
-  document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active', b.dataset.nav===p));
-  window.scrollTo(0,0);
-}
-
-/* ============ TABS ============ */
-function switchAdTab(btn, which){
-  btn.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('watchTab').style.display = which==='watch'?'block':'none';
-  document.getElementById('visitTab').style.display = which==='visit'?'block':'none';
-}
-
-const TASKS = [
-  [ // Main
-    {icon:'🐝',name:'BeeVault Community',desc:'Join our channel',link:'@beevault',reward:10},
-    {icon:'💰',name:'BeeVault Payments',desc:'Payment proofs channel',link:'@beevaultpay',reward:10},
-    {icon:'📣',name:'Follow on X',desc:'Follow @beevault',link:'https://x.com/beevault',reward:15},
-  ],
-  [ // Partner
-    {icon:'🚀',name:'Partner Bot #1',desc:'Join & start',link:'https://t.me/partnerbot',reward:20},
-    {icon:'🎁',name:'Partner Airdrop',desc:'Claim tokens',link:'https://t.me/airdropbot',reward:25},
-  ],
-  [ // Community
-    {icon:'👥',name:'Invite 3 Friends',desc:'Grow the hive',reward:75},
-    {icon:'⭐',name:'Rate Us 5★',desc:'Support the app',reward:20},
-  ]
-];
-let tt=0;
-function switchTaskTab(btn,i){
-  btn.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active'); tt=i; renderTasks();
-}
-function renderTasks(){
-  const done = JSON.parse(localStorage.getItem('bv_tasks')||'{}');
-  document.getElementById('taskList').innerHTML = TASKS[tt].map((t,i)=>{
-    const key=tt+'_'+i, isDone=done[key];
-    return `<div class="card task-item">
-      <div class="h">
-        <div class="icon">${t.icon}</div>
-        <div style="flex:1"><div class="name">${t.name}</div>
-          <div class="desc">${t.desc}${t.link?` <a href="${t.link.startsWith('@')?'https://t.me/'+t.link.slice(1):t.link}" target="_blank">${t.link}</a>`:''}</div>
-        </div>
-        <div class="reward">+${t.reward}H</div>
-      </div>
-      <button class="btn-gold" ${isDone?'disabled':''} onclick="doTask('${key}',${t.reward},'${t.link||''}')">${isDone?'✓ Completed':'↗ Open & Earn +'+t.reward+'H'}</button>
-    </div>`;
-  }).join('');
-}
-function doTask(key, reward, link){
-  if (link) window.open(link.startsWith('@')?'https://t.me/'+link.slice(1):link,'_blank');
-  setTimeout(()=>{
-    const done = JSON.parse(localStorage.getItem('bv_tasks')||'{}');
-    done[key]=1; localStorage.setItem('bv_tasks', JSON.stringify(done));
-    addBee(reward,'Task');
-    renderTasks();
-  }, 1500);
-}
-
-/* ============ ADS ============ */
-// Adsgram — your ID: 36912
-let AdController = null;
-try { if (window.Adsgram) AdController = window.Adsgram.init({ blockId: "36912" }); } catch(e){ console.log(e); }
+/* ===== Ads ===== */
+// Adsgram (block ID: 36912)
+let adsgramCtl = null;
+try {
+  if (window.Adsgram) adsgramCtl = window.Adsgram.init({ blockId: "36912" });
+} catch(e){ console.warn('Adsgram init failed', e); }
 
 function showAdsgram(){
-  if (state.agDone >= 5) return toast('Daily limit reached');
-  if (!AdController) return toast('Ad not ready, retry');
-  AdController.show().then(()=>{ state.agDone++; addBee(10,'Adsgram'); })
-    .catch(err=>{ console.log(err); toast('Ad closed / failed'); });
+  if (state.adsgramDone >= state.adsgramMax) return toast('Daily limit reached, come back tomorrow');
+  if (adsgramCtl && adsgramCtl.show) {
+    adsgramCtl.show().then(()=>{
+      state.adsgramDone++; reward(15, 'Adsgram ad complete!');
+    }).catch(err=>{
+      console.warn(err); toast('Ad not available, try again');
+    });
+  } else {
+    // Fallback simulate
+    simulateAd(()=>{ state.adsgramDone++; reward(15, 'Adsgram ad complete!'); });
+  }
 }
 
-// Monetag rewarded interstitial
+// Monetag rewarded interstitial (zone 11239209)
 function showMonetag(){
-  if (state.mtDone >= 15) return toast('Daily limit reached');
-  if (typeof show_11239209 !== 'function') return toast('Ad SDK loading...');
-  show_11239209().then(()=>{ state.mtDone++; addBee(8,'Monetag'); })
-    .catch(err=>{ console.log(err); toast('Ad failed'); });
+  if (state.monetagDone >= state.monetagMax) return toast('Daily limit reached');
+  if (typeof show_11239209 === 'function') {
+    show_11239209().then(() => {
+      state.monetagDone++; reward(12, 'Monetag ad complete!');
+    }).catch(err=>{ console.warn(err); toast('Ad not available'); });
+  } else {
+    simulateAd(()=>{ state.monetagDone++; reward(12, 'Monetag ad complete!'); });
+  }
 }
 
-function visitSite(url, reward){
-  window.open(url,'_blank');
-  toast('Stay 20s to earn');
-  setTimeout(()=>addBee(reward,'Visit'), 20000);
+// Premium (uses Monetag again as premium slot)
+function showPremium(){
+  if (state.premDone >= state.premMax) return toast('Daily limit reached');
+  if (typeof show_11239209 === 'function') {
+    show_11239209({ type:'end', requestVar:'premium' }).then(()=>{
+      state.premDone++; reward(25, 'Premium ad complete!');
+    }).catch(()=>simulateAd(()=>{state.premDone++;reward(25);}));
+  } else simulateAd(()=>{ state.premDone++; reward(25); });
 }
 
-/* ============ ACTIONS ============ */
-function claimDailyBonus(){
-  const today = new Date().toDateString();
-  if (state.lastDaily === today) return toast('Already claimed today');
-  state.lastDaily = today;
-  addBee(50, 'Daily Bonus');
+function simulateAd(cb){
+  toast('Loading ad...');
+  setTimeout(()=>{ toast('Ad watched (demo)'); cb(); }, 1500);
 }
-function openRewardCode(){ document.getElementById('mCode').classList.add('show'); }
-function redeemCode(){
-  const c = document.getElementById('rCode').value.trim().toUpperCase();
-  if (c==='BEE100'){ addBee(100,'Code'); closeModal('mCode'); }
-  else toast('Invalid code');
-}
-function openWithdraw(){
-  if (!state.wallet) { toast('Connect wallet first'); return openWallet(); }
-  document.getElementById('wAddr').value = state.wallet;
-  document.getElementById('mWithdraw').classList.add('show');
-}
-function submitWithdraw(){
-  const amt = parseInt(document.getElementById('wAmt').value);
-  if (!amt || amt<10000) return toast('Min 10,000 BEE');
-  if (amt>state.balance) return toast('Insufficient balance');
-  state.balance -= amt;
-  state.txs.unshift({t:Date.now(), amt:-amt, note:'Withdraw'});
-  updateBalance(); closeModal('mWithdraw');
-  toast('Withdrawal requested ✓');
-}
-function openWallet(){ document.getElementById('wConn').value=state.wallet; document.getElementById('mWallet').classList.add('show'); }
-function saveWallet(){
-  const w = document.getElementById('wConn').value.trim();
-  if (!/^0x[a-fA-F0-9]{40}$/.test(w)) return toast('Invalid BEP20 address');
-  state.wallet = w; save();
-  document.getElementById('walletState').textContent = w.slice(0,10)+'...';
-  closeModal('mWallet'); toast('Wallet saved ✓');
-}
-function showTxs(){
-  if (!state.txs.length) return toast('No transactions yet');
-  alert(state.txs.slice(0,10).map(t=>`${new Date(t.t).toLocaleString()}: ${t.amt>0?'+':''}${t.amt} — ${t.note}`).join('\n'));
-}
-function closeModal(id){ document.getElementById(id).classList.remove('show'); }
 
+/* ===== Ad tabs ===== */
+function adTab(k){
+  document.getElementById('tabAds').classList.toggle('active', k==='ads');
+  document.getElementById('tabSites').classList.toggle('active', k==='sites');
+  // Same list for demo
+}
+
+/* ===== Tasks ===== */
+const TASKS = {
+  main: [
+    {id:'ch1', title:'Diary Dash | Community', desc:'Join our community channel', link:'@diarydash', reward:25, url:'https://t.me/diarydash'},
+    {id:'ch2', title:'Diary Dash | Payments', desc:'🔴 Join our payment channel', link:'@diarydashpay', reward:25, url:'https://t.me/diarydashpay'},
+    {id:'ch3', title:'Diary Dash | News', desc:'Get latest airdrop news', link:'@diarydashnews', reward:20, url:'https://t.me/diarydashnews'},
+  ],
+  partner: [
+    {id:'p1', title:'Partner Bot A', desc:'Start & play 30 seconds', reward:50, url:'https://t.me/'},
+    {id:'p2', title:'Partner Bot B', desc:'Complete first task', reward:75, url:'https://t.me/'},
+  ],
+  community: [
+    {id:'c1', title:'Follow on X (Twitter)', desc:'Follow @diarydash', reward:30, url:'https://x.com/'},
+    {id:'c2', title:'YouTube Subscribe', desc:'Subscribe to our channel', reward:40, url:'https://youtube.com/'},
+  ]
+};
+let currentTaskTab = 'main';
+function taskTab(k){
+  currentTaskTab = k;
+  ['Main','Partner','Community'].forEach(x=>{
+    document.getElementById('tt'+x).classList.toggle('active', x.toLowerCase()===k);
+  });
+  renderTasks();
+}
+function renderTasks(){
+  const list = document.getElementById('taskList');
+  list.innerHTML = '';
+  TASKS[currentTaskTab].forEach(t=>{
+    const done = state.tasksDone[t.id];
+    const el = document.createElement('div');
+    el.className = 'task' + (done?' done':'');
+    el.innerHTML = `
+      <div class="thumb">📔</div>
+      <div class="body">
+        <div style="display:flex;justify-content:space-between">
+          <h4>${t.title}</h4>
+          <span class="reward">+${t.reward}D</span>
+        </div>
+        <div class="desc">${t.desc}</div>
+        ${t.link?`<div class="link">${t.link}</div>`:''}
+        <button class="go">${done?'✓ Completed':'Open & Earn +'+t.reward+'D'}</button>
+      </div>`;
+    el.querySelector('.go').onclick = ()=>{
+      if (done) return;
+      window.open(t.url,'_blank');
+      setTimeout(()=>{
+        state.tasksDone[t.id] = 1;
+        reward(t.reward, 'Task complete!');
+        renderTasks();
+      }, 3000);
+    };
+    list.appendChild(el);
+  });
+}
+
+/* ===== Refer ===== */
 function copyRef(){
-  const l = document.getElementById('refLink1').value;
-  navigator.clipboard.writeText(l).then(()=>toast('Link copied ✓'));
+  const link = `https://t.me/DiaryDashBot/play?startapp=ref_${state.tgId}`;
+  navigator.clipboard?.writeText(link).then(()=>toast('Link copied!')).catch(()=>toast('Copy failed'));
 }
 function shareRef(){
-  const l = document.getElementById('refLink1').value;
-  if (navigator.share) navigator.share({title:'BeeVault',text:'Join & earn USDT!',url:l});
-  else copyRef();
+  const link = `https://t.me/DiaryDashBot/play?startapp=ref_${state.tgId}`;
+  const txt = `🎉 Join Diary Dash and earn USDT! ${link}`;
+  if (navigator.share) navigator.share({title:'Diary Dash', text:txt, url:link});
+  else { copyRef(); }
 }
 
-function toast(msg){
-  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
-  clearTimeout(window._tt); window._tt=setTimeout(()=>t.classList.remove('show'),2200);
+/* ===== Modals / Actions ===== */
+function openModal(title, desc, onOk, withInput, placeholder){
+  document.getElementById('mTitle').textContent = title;
+  document.getElementById('mDesc').textContent = desc;
+  const inp = document.getElementById('mInput');
+  inp.style.display = withInput?'block':'none';
+  inp.value = ''; inp.placeholder = placeholder||'';
+  document.getElementById('mOk').onclick = ()=>{ onOk(inp.value); closeModal(); };
+  document.getElementById('modal').classList.add('show');
 }
+function closeModal(){ document.getElementById('modal').classList.remove('show'); }
+
+function dailyBonus(){
+  const now = Date.now();
+  if (now - state.lastBonus < 24*3600*1000) {
+    const h = Math.ceil((24*3600*1000-(now-state.lastBonus))/3600000);
+    return toast('Come back in ~'+h+'h for next bonus');
+  }
+  state.lastBonus = now;
+  reward(50, '🎁 Daily Bonus!');
+}
+function openReward(){
+  openModal('Reward Code','Enter your promo code',(v)=>{
+    if (!v) return;
+    if (v.toUpperCase()==='DIARY100'){ reward(100,'Code redeemed!'); }
+    else toast('Invalid code');
+  }, true, 'Enter code...');
+}
+function openWithdraw(){
+  if (!state.wallet) return openModal('Connect Wallet','Enter your BEP20 wallet address',(v)=>{
+    if (v && v.length>20){ state.wallet = v; save(); toast('Wallet connected'); }
+    else toast('Invalid address');
+  }, true, '0x...');
+  if (state.balance < 10000) return toast('Minimum withdraw 10,000 Dash');
+  openModal('Withdraw','Confirm withdraw of '+state.balance+' Dash to '+state.wallet.slice(0,10)+'...',(v)=>{
+    toast('Withdraw requested! Processing in 24h');
+    state.balance = 0; save();
+  });
+}
+function openLeaderboard(){
+  openModal('🏆 Leaderboard','Top earners this week:\n1. @cryptoking - 45,200 D\n2. @earnmaster - 38,900 D\n3. @dashqueen - 32,100 D\n\nYou: '+state.balance+' D', ()=>{});
+}
+function openWallet(){ openWithdraw(); }
+function openTx(){ openModal('Transactions','No transactions yet',()=>{}); }
+function openSupport(){ window.open('https://t.me/diarydash','_blank'); }
+
+/* ===== Reset timer ===== */
+function tickTimer(){
+  const now = new Date();
+  const end = new Date(); end.setHours(24,0,0,0);
+  const diff = end - now;
+  const h = String(Math.floor(diff/3600000)).padStart(2,'0');
+  const m = String(Math.floor(diff%3600000/60000)).padStart(2,'0');
+  const s = String(Math.floor(diff%60000/1000)).padStart(2,'0');
+  document.getElementById('resetTimer').textContent = `${h}:${m}:${s}`;
+}
+setInterval(tickTimer,1000); tickTimer();
+
+/* ===== Loader ===== */
+const stages = ['Loading assets...','Connecting to server...','Loading ads SDK...','Almost ready...','Loading Complete'];
+let p = 0, stage = 0;
+const bar = document.getElementById('loadBar');
+const status = document.getElementById('loadStatus');
+const li = setInterval(()=>{
+  p += Math.random()*8+4;
+  if (p >= 100){ p = 100; clearInterval(li); setTimeout(()=>document.getElementById('loader').style.display='none', 500); }
+  bar.style.width = p+'%';
+  const s = Math.min(stages.length-1, Math.floor(p/25));
+  if (s!==stage){ stage=s; status.textContent = stages[s]; }
+},200);
+
+/* ===== Init ===== */
+render();
+renderTasks();
 </script>
 </body>
 </html>
