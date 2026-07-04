@@ -2,796 +2,665 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>GoldBee Pro — Earn USDT</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>🐝 BeeVault — Earn USDT</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <!-- Adsgram SDK -->
 <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
-<!-- Monetag SDK (Rewarded Interstitial 11239209) -->
+<!-- Monetag Rewarded Interstitial -->
 <script src='//libtl.com/sdk.js' data-zone='11239209' data-sdk='show_11239209'></script>
 <style>
   :root{
-    --bg:#0b0d10; --bg2:#111418; --card:#161a20; --card2:#1c2128;
-    --gold:#f5b301; --gold2:#ffd54a; --glow:rgba(245,179,1,.35);
-    --text:#f4f4f5; --muted:#9aa0a6; --line:#25292f;
-    --green:#22c55e; --blue:#3b82f6; --purple:#a855f7; --red:#ef4444;
+    --bg:#0b0b0f;
+    --bg-2:#111118;
+    --card:#15151d;
+    --card-2:#1b1b25;
+    --border:#2a2a35;
+    --gold:#f5b301;
+    --gold-2:#ffd24d;
+    --gold-glow:0 0 24px rgba(245,179,1,.35);
+    --green:#22c55e;
+    --blue:#3b82f6;
+    --purple:#a855f7;
+    --red:#ef4444;
+    --text:#f5f5f7;
+    --muted:#8a8a99;
   }
-  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;overflow-x:hidden}
-  body{background-image:radial-gradient(circle at 50% 0%, rgba(245,179,1,.08), transparent 60%),
-       url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='60' height='60'><polygon points='30,2 56,17 56,45 30,58 4,45 4,17' fill='none' stroke='%23f5b30110' stroke-width='1'/></svg>");
-       min-height:100vh;padding-bottom:80px}
-  .container{max-width:480px;margin:0 auto;padding:16px}
-
-  /* Splash */
-  #splash{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .6s}
-  .bee-logo{width:140px;height:140px;border-radius:50%;background:radial-gradient(circle, #2a2410, #0b0d10);border:3px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:70px;box-shadow:0 0 60px var(--glow);animation:pulse 1.6s infinite}
-  @keyframes pulse{0%,100%{transform:scale(1);box-shadow:0 0 40px var(--glow)}50%{transform:scale(1.05);box-shadow:0 0 80px var(--gold)}}
-  #splash h1{color:var(--gold);font-size:36px;margin:24px 0 4px;letter-spacing:1px}
-  #splash .tag{color:var(--muted);letter-spacing:4px;font-size:12px}
-  .quick-icons{display:flex;gap:24px;margin-top:24px}
-  .quick-icons div{text-align:center;color:var(--muted);font-size:11px}
-  .quick-icons .ic{width:44px;height:44px;border-radius:10px;background:#241e0a;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:4px}
-  .progress{width:70%;max-width:300px;height:6px;background:#222;border-radius:3px;margin-top:32px;overflow:hidden}
-  .progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--gold2));box-shadow:0 0 12px var(--gold);transition:width .3s}
-  #splash .status{color:var(--muted);font-size:13px;margin-top:12px}
-
-  /* Header */
-  .topbar{display:flex;align-items:center;gap:10px;padding:12px 16px;background:#141821;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:50}
-  .topbar .title{font-weight:700;flex:1}
-  .topbar .title span{color:var(--gold)}
-  .icon-btn{width:36px;height:36px;border-radius:10px;background:var(--card);display:flex;align-items:center;justify-content:center;border:1px solid var(--line);cursor:pointer;color:var(--text)}
-
-  /* Cards & common */
-  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px}
-  .card.glow{box-shadow:0 0 30px rgba(245,179,1,.12);border-color:rgba(245,179,1,.3)}
-  .section-title{color:var(--muted);font-size:12px;letter-spacing:2px;margin:18px 4px 10px;text-transform:uppercase}
-  .row{display:flex;align-items:center;gap:12px}
-  .between{display:flex;justify-content:space-between;align-items:center}
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;overscroll-behavior:none}
+  body{
+    background:
+      radial-gradient(1200px 400px at 50% -100px, rgba(245,179,1,.15), transparent 60%),
+      repeating-linear-gradient(60deg, rgba(245,179,1,.03) 0 2px, transparent 2px 40px),
+      var(--bg);
+    padding-bottom:88px;
+  }
+  .app-header{
+    position:sticky;top:0;z-index:20;background:#141822;border-bottom:1px solid #1f2430;
+    display:flex;align-items:center;gap:10px;padding:14px 16px;font-weight:600
+  }
+  .app-header .close{width:28px;height:28px;display:grid;place-items:center;color:#fff;font-size:20px;opacity:.85}
+  .app-header .title{flex:1;display:flex;align-items:center;gap:8px;font-size:16px}
+  .container{padding:16px;max-width:520px;margin:0 auto}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px;box-shadow:var(--gold-glow)}
   .muted{color:var(--muted)}
   .gold{color:var(--gold)}
   .green{color:var(--green)}
-  .btn{border:none;border-radius:12px;padding:12px 16px;font-weight:600;cursor:pointer;font-size:14px;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:transform .1s}
-  .btn:active{transform:scale(.97)}
-  .btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#111;box-shadow:0 0 20px var(--glow)}
-  .btn-dark{background:var(--card2);color:var(--text);border:1px solid var(--line)}
-  .btn-block{width:100%}
+  .section-title{font-size:12px;letter-spacing:2px;color:var(--muted);margin:18px 4px 10px;font-weight:700}
+  button{font-family:inherit;cursor:pointer;border:none}
 
-  /* Profile header */
-  .welcome{display:flex;align-items:center;gap:12px;margin-bottom:14px}
-  .avatar{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#4fd1c5,#38b2ac);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;color:#0b3b37;position:relative;border:2px solid var(--gold)}
-  .avatar .dot{width:12px;height:12px;background:var(--green);border-radius:50%;position:absolute;bottom:2px;right:2px;border:2px solid var(--bg)}
+  /* Loading */
+  #loader{position:fixed;inset:0;background:var(--bg);z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .5s}
+  #loader.hide{opacity:0;pointer-events:none}
+  .bee-logo{width:150px;height:150px;border-radius:50%;border:3px solid var(--gold);display:grid;place-items:center;font-size:80px;box-shadow:var(--gold-glow);background:radial-gradient(circle,#1a1a22,#0b0b0f)}
+  .brand{font-size:36px;color:var(--gold);font-weight:800;margin-top:22px;letter-spacing:1px}
+  .brand-sub{color:var(--muted);letter-spacing:4px;margin-top:6px;font-size:12px}
+  .load-actions{display:flex;gap:28px;margin-top:22px}
+  .load-actions .li{display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--muted);font-size:12px}
+  .load-actions .ic{width:44px;height:44px;border-radius:12px;background:#1a1a22;border:1px solid var(--border);display:grid;place-items:center;font-size:20px}
+  .bar-wrap{width:80%;max-width:340px;height:6px;background:#1a1a22;border-radius:8px;margin-top:40px;overflow:hidden}
+  .bar{height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--gold-2));transition:width .2s;box-shadow:var(--gold-glow)}
+  #loadStatus{margin-top:12px;color:var(--muted);font-size:13px}
 
-  /* Balance */
-  .balance{text-align:center;padding:24px 16px}
-  .balance .label{color:var(--muted);letter-spacing:2px;font-size:12px}
-  .balance .amount{font-size:52px;font-weight:800;color:var(--gold);line-height:1;margin:8px 0}
-  .balance .usd{color:var(--muted);margin-top:6px}
-  .balance .divider{height:1px;background:var(--line);margin:16px 0}
-  .balance .stats{display:flex;justify-content:space-around}
-  .balance .stats div{text-align:center}
-  .balance .stats .k{color:var(--muted);font-size:12px}
-  .balance .stats .v{font-weight:700;margin-top:4px}
+  /* Home */
+  .welcome{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+  .avatar{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#4ade80,#22c55e);display:grid;place-items:center;font-weight:800;color:#0b0b0f;font-size:18px;position:relative}
+  .avatar::after{content:"";position:absolute;bottom:2px;right:2px;width:10px;height:10px;background:var(--green);border-radius:50%;border:2px solid var(--bg)}
+  .welcome .who{flex:1}
+  .welcome .who .hi{color:var(--muted);font-size:13px}
+  .welcome .who .name{font-weight:600}
+  .bell{width:44px;height:44px;border-radius:12px;background:var(--card);border:1px solid var(--border);display:grid;place-items:center}
 
-  /* Quick actions grid */
-  .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-  .qa{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 6px;text-align:center;cursor:pointer}
-  .qa .ic{width:40px;height:40px;border-radius:10px;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:20px}
-  .qa .name{font-size:12px;font-weight:600}
+  .balance{text-align:center;padding:22px}
+  .balance .lbl{color:var(--muted);font-size:12px;letter-spacing:2px}
+  .balance .val{font-size:52px;color:var(--gold);font-weight:800;margin:6px 0;line-height:1}
+  .balance .val small{font-size:16px;margin-left:6px;color:var(--gold-2)}
+  .balance .usdt{color:var(--muted);font-size:14px}
+  .balance .sep{height:1px;background:var(--border);margin:16px 0}
+  .balance .row{display:flex;justify-content:space-around;text-align:center}
+  .balance .row div small{color:var(--muted);font-size:12px;display:block;margin-bottom:4px}
 
-  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-  .earn-card{border-radius:14px;padding:14px;border:1px solid var(--line);cursor:pointer}
-  .earn-card h4{margin:8px 0 2px;font-size:14px}
-  .earn-card p{margin:0;color:var(--muted);font-size:11px}
+  .quick{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  .qa{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 8px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px}
+  .qa .icb{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-size:18px}
+  .qa small{font-size:11px;font-weight:600}
 
-  /* Referral */
-  .ref-link{display:flex;align-items:center;gap:8px;background:#0e1116;border:1px solid var(--line);border-radius:10px;padding:10px}
-  .ref-link input{flex:1;background:transparent;border:none;color:var(--muted);font-size:13px;outline:none;font-family:monospace}
+  .earn-more{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .em{border-radius:16px;padding:14px;border:1px solid var(--border);position:relative;overflow:hidden}
+  .em h4{font-size:14px;margin-top:8px}
+  .em p{font-size:11px;color:var(--muted);margin-top:2px}
+  .em .ic2{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-size:16px;border:1px solid var(--border)}
 
-  /* Tabs (Earn/Tasks) */
-  .tabs{display:flex;background:var(--card);border-radius:14px;padding:4px;border:1px solid var(--line);margin-bottom:14px}
-  .tabs button{flex:1;padding:12px;background:transparent;border:none;color:var(--muted);font-weight:600;border-radius:10px;cursor:pointer;font-size:13px}
-  .tabs button.active{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#111;box-shadow:0 0 16px var(--glow)}
-
-  /* Ads list */
-  .ad-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
-  .ad-head{display:flex;gap:12px;align-items:center;margin-bottom:12px}
-  .ad-ic{width:44px;height:44px;border-radius:10px;background:#0e1116;display:flex;align-items:center;justify-content:center;font-size:22px;border:1px solid var(--line)}
-  .ad-progress{height:4px;background:#222;border-radius:2px;overflow:hidden;margin:8px 0 12px}
-  .ad-progress > div{height:100%;background:var(--gold)}
-
-  /* Task */
-  .task{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px;display:flex;gap:12px}
-  .task .t-ic{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#2a2410,#0e1116);display:flex;align-items:center;justify-content:center;font-size:22px;border:1px solid var(--gold);flex-shrink:0}
-  .task .reward{color:var(--gold);font-weight:700}
+  .refbox{margin-top:14px}
+  .refbox .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+  .link{display:flex;gap:8px;background:#0f0f16;border:1px solid var(--border);border-radius:12px;padding:10px 12px;align-items:center}
+  .link input{flex:1;background:transparent;border:none;color:var(--muted);font-size:13px;outline:none}
+  .link button{background:transparent;color:var(--gold);font-size:18px}
 
   /* Bottom nav */
-  .bottomnav{position:fixed;bottom:0;left:0;right:0;background:#0e1116;border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:8px 0 12px;z-index:100}
-  .bottomnav button{background:transparent;border:none;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;cursor:pointer;padding:4px 8px}
-  .bottomnav button.active{color:var(--gold)}
-  .bottomnav .icon{font-size:20px}
+  .nav{position:fixed;bottom:0;left:0;right:0;background:#141822;border-top:1px solid #1f2430;display:flex;z-index:30}
+  .nav button{flex:1;background:transparent;color:var(--muted);padding:10px 0;font-size:11px;display:flex;flex-direction:column;align-items:center;gap:4px;transition:.2s}
+  .nav button.active{color:var(--gold);text-shadow:var(--gold-glow)}
+  .nav button .n-ic{font-size:20px}
 
-  /* Views */
-  .view{display:none}
-  .view.active{display:block;animation:fadeIn .3s}
-  @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  /* Page header (Ads/Tasks/Refer) */
+  .page-head{display:flex;gap:10px;align-items:flex-start;margin-bottom:14px}
+  .back{width:40px;height:40px;border-radius:12px;background:var(--card);border:1px solid var(--border);display:grid;place-items:center;color:var(--text)}
+  .page-head h2{font-size:22px}
+  .page-head p{color:var(--muted);font-size:13px}
+
+  /* Ads page */
+  .stat-card{display:flex;justify-content:space-between;padding:18px}
+  .stat-card .col small{color:var(--muted);font-size:11px;letter-spacing:2px;display:block;margin-bottom:6px}
+  .stat-card .v{font-size:26px;font-weight:800}
+  .timer{color:var(--gold);font-family:monospace;font-size:20px}
+
+  .tabs{display:flex;background:#0f0f16;border:1px solid var(--border);border-radius:14px;padding:6px;margin:16px 0}
+  .tabs button{flex:1;background:transparent;color:var(--muted);padding:10px;border-radius:10px;font-weight:600}
+  .tabs button.active{background:var(--gold);color:#111;box-shadow:var(--gold-glow)}
+
+  .ad-item{margin-top:12px;padding:16px}
+  .ad-item .h{display:flex;gap:12px;align-items:center}
+  .ad-item .icon{width:52px;height:52px;border-radius:12px;display:grid;place-items:center;font-size:26px;background:#0f0f16;border:1px solid var(--border)}
+  .ad-item .name{font-weight:700}
+  .ad-item .sub{font-size:12px;color:var(--gold)}
+  .progress{width:100%;height:5px;background:#0f0f16;border-radius:6px;margin-top:12px;overflow:hidden}
+  .progress .fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-2))}
+  .meta{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;margin-top:8px}
+  .btn-gold{width:100%;margin-top:12px;background:linear-gradient(90deg,var(--gold),var(--gold-2));color:#111;font-weight:700;padding:14px;border-radius:12px;font-size:14px;box-shadow:var(--gold-glow)}
+  .btn-gold:disabled{opacity:.5;filter:grayscale(.4)}
+  .btn-outline{width:100%;margin-top:10px;background:transparent;color:var(--text);border:1px solid var(--border);padding:12px;border-radius:12px;font-weight:600}
+
+  /* Tasks */
+  .task-item{padding:14px;margin-top:12px}
+  .task-item .h{display:flex;gap:12px;align-items:flex-start}
+  .task-item .icon{width:52px;height:52px;border-radius:12px;background:#0f0f16;border:1px solid var(--border);display:grid;place-items:center;font-size:24px}
+  .task-item .name{font-weight:700}
+  .task-item .desc{font-size:12px;color:var(--muted);margin-top:2px}
+  .task-item .desc a{color:#60a5fa;text-decoration:none}
+  .task-item .reward{color:var(--gold);font-weight:700;margin-left:auto}
+
+  /* Refer */
+  .stats3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+  .stats3 .s{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center}
+  .stats3 .s .v{font-size:26px;font-weight:800}
+  .stats3 .s small{color:var(--muted);font-size:12px}
+  .row-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+  .reward-list{margin-top:12px}
+  .rw{display:flex;gap:12px;padding:10px 0}
+  .rw .num{width:36px;height:36px;border-radius:50%;border:1px solid var(--gold);color:var(--gold);display:grid;place-items:center;font-weight:700;flex-shrink:0}
+  .rw .txt .t{font-weight:700}
+  .rw .txt .t .plus{color:var(--gold);margin-left:8px}
+  .rw .txt .d{color:var(--muted);font-size:12px}
+  .total-line{display:flex;justify-content:space-between;padding-top:14px;border-top:1px solid var(--border);margin-top:10px;font-weight:700}
+
+  /* Profile */
+  .profile-top{text-align:center;padding:22px 0}
+  .profile-top .avatar{width:96px;height:96px;border-radius:22px;font-size:32px;margin:0 auto 14px}
+  .profile-top h3{font-size:22px}
+  .profile-top .u{color:var(--gold);margin-top:2px}
+  .profile-top .id{color:var(--muted);font-size:12px;margin-top:2px}
+  .menu{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-top:8px}
+  .menu-item{display:flex;align-items:center;gap:12px;padding:14px;color:var(--text);background:transparent;border-bottom:1px solid var(--border);text-align:left;font-size:14px}
+  .menu-item:last-child{border-bottom:none}
+  .menu-item .ic3{width:36px;height:36px;border-radius:10px;background:#0f0f16;border:1px solid var(--border);display:grid;place-items:center;font-size:16px}
+  .menu-item .arr{margin-left:auto;color:var(--muted)}
 
   /* Modal */
-  .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:200;padding:20px}
+  .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:50;padding:20px}
   .modal-bg.show{display:flex}
-  .modal{background:var(--card);border:1px solid var(--gold);border-radius:18px;padding:22px;width:100%;max-width:400px;box-shadow:0 0 60px var(--glow)}
-  .modal h3{margin:0 0 12px;color:var(--gold)}
-  .modal input, .modal select{width:100%;padding:12px;background:#0e1116;border:1px solid var(--line);border-radius:10px;color:var(--text);margin-bottom:10px;font-size:14px}
-  .close-x{float:right;background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;margin-top:-8px}
+  .modal{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:22px;max-width:400px;width:100%;box-shadow:var(--gold-glow)}
+  .modal h3{margin-bottom:14px;color:var(--gold)}
+  .modal input{width:100%;background:#0f0f16;border:1px solid var(--border);color:var(--text);padding:12px;border-radius:10px;font-size:14px;margin-bottom:10px;font-family:inherit}
+  .modal .close-x{float:right;background:transparent;color:var(--muted);font-size:22px}
 
   /* Toast */
-  .toast{position:fixed;top:70px;left:50%;transform:translateX(-50%);background:var(--card);border:1px solid var(--gold);color:var(--text);padding:12px 20px;border-radius:12px;z-index:9999;box-shadow:0 0 24px var(--glow);display:none;animation:slideDown .3s}
-  @keyframes slideDown{from{transform:translate(-50%,-20px);opacity:0}to{transform:translate(-50%,0);opacity:1}}
+  #toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#141822;color:var(--gold);border:1px solid var(--gold);padding:12px 20px;border-radius:12px;font-size:14px;z-index:200;opacity:0;transition:.3s;box-shadow:var(--gold-glow);pointer-events:none;white-space:nowrap}
+  #toast.show{opacity:1;transform:translateX(-50%) translateY(-8px)}
 
-  /* Leaderboard */
-  .lb-row{display:flex;align-items:center;gap:12px;padding:10px;border-bottom:1px solid var(--line)}
-  .lb-rank{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;background:#0e1116;border:1px solid var(--line)}
-  .lb-rank.top1{background:linear-gradient(135deg,#f5b301,#ffd54a);color:#111}
-  .lb-rank.top2{background:linear-gradient(135deg,#c0c0c0,#e0e0e0);color:#111}
-  .lb-rank.top3{background:linear-gradient(135deg,#cd7f32,#e8a05a);color:#111}
-
-  /* Milestones */
-  .mile{display:flex;gap:12px;padding:10px 0;border-bottom:1px dashed var(--line)}
-  .mile .num{width:32px;height:32px;border-radius:50%;border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;color:var(--gold);font-weight:700;flex-shrink:0}
+  .page{display:none}
+  .page.active{display:block;animation:fade .3s}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 </style>
 </head>
 <body>
 
-<!-- SPLASH -->
-<div id="splash">
+<!-- LOADING SCREEN -->
+<div id="loader">
   <div class="bee-logo">🐝</div>
-  <h1>GoldBee Pro</h1>
-  <div class="tag">EARN USDT • PREMIUM</div>
-  <div class="quick-icons">
-    <div><div class="ic">▶️</div>Watch Ads</div>
-    <div><div class="ic">✓</div>Do Tasks</div>
-    <div><div class="ic">👥</div>Refer & Earn</div>
+  <div class="brand">BeeVault</div>
+  <div class="brand-sub">EARN USDT</div>
+  <div class="load-actions">
+    <div class="li"><div class="ic">▶️</div>Watch Ads</div>
+    <div class="li"><div class="ic">✅</div>Do Tasks</div>
+    <div class="li"><div class="ic">👥</div>Refer & Earn</div>
   </div>
-  <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
-  <div class="status" id="loadStatus">Loading...</div>
+  <div class="bar-wrap"><div class="bar" id="loadBar"></div></div>
+  <div id="loadStatus">Initializing...</div>
 </div>
 
-<!-- TOPBAR -->
-<div class="topbar">
-  <div style="font-size:22px">🐝</div>
-  <div class="title">Gold<span>Bee</span> Pro</div>
-  <button class="icon-btn" onclick="showToast('No new notifications')">🔔</button>
-  <button class="icon-btn" onclick="openModal('menuModal')">⋮</button>
+<!-- HEADER -->
+<div class="app-header">
+  <div class="close">✕</div>
+  <div class="title">🐝 BeeVault</div>
+  <div>⌄</div>
+  <div>⋮</div>
 </div>
 
 <div class="container">
 
   <!-- HOME -->
-  <div class="view active" id="view-home">
+  <section class="page active" data-page="home">
     <div class="welcome">
-      <div class="avatar" id="avatarBox">GB<div class="dot"></div></div>
-      <div>
-        <div class="muted" style="font-size:12px">Welcome back</div>
-        <div class="gold" style="font-weight:700" id="username">@GoldBeeUser</div>
+      <div class="avatar" id="avaHome">U</div>
+      <div class="who"><div class="hi">Welcome back</div><div class="name" id="uname">@user</div></div>
+      <div class="bell">🔔</div>
+    </div>
+
+    <div class="card balance">
+      <div class="lbl">YOUR BALANCE</div>
+      <div class="val"><span id="balHome">0</span><small>🍯 BEE</small></div>
+      <div class="usdt">≈ <span id="usdtHome">0.00</span> USDT</div>
+      <div class="sep"></div>
+      <div class="row">
+        <div><small>USDT Value</small><div class="green"><span id="usdtHome2">0.00</span> USDT</div></div>
+        <div><small>Telegram ID</small><div id="tgId">Guest</div></div>
       </div>
     </div>
 
-    <div class="card glow balance">
-      <div class="label">YOUR BALANCE</div>
-      <div class="amount"><span id="balance">0</span> 🍯 <span style="font-size:28px">GOLD</span></div>
-      <div class="usd">≈ <span id="usdt">0.0000</span> USDT</div>
-      <div class="divider"></div>
-      <div class="stats">
-        <div><div class="k">USDT Value</div><div class="v green" id="usdt2">0.00 USDT</div></div>
-        <div><div class="k">Telegram ID</div><div class="v" id="tgId">—</div></div>
+    <div class="section-title">QUICK ACTIONS</div>
+    <div class="quick">
+      <button class="qa" onclick="claimDailyBonus()"><div class="icb" style="background:rgba(34,197,94,.15);color:var(--green)">🎁</div><small>Daily Bonus</small></button>
+      <button class="qa" onclick="openRewardCode()"><div class="icb" style="background:rgba(168,85,247,.15);color:var(--purple)">⚡</div><small>Reward Code</small></button>
+      <button class="qa" onclick="openWithdraw()"><div class="icb" style="background:rgba(59,130,246,.15);color:var(--blue)">💳</div><small>Withdraw</small></button>
+      <button class="qa" onclick="alert('Leaderboard coming soon!')"><div class="icb" style="background:rgba(245,179,1,.15);color:var(--gold)">🏆</div><small>Leaderboard</small></button>
+    </div>
+
+    <div class="section-title">EARN MORE</div>
+    <div class="earn-more">
+      <div class="em" style="background:linear-gradient(180deg,rgba(59,130,246,.15),transparent)" onclick="go('ads')">
+        <div class="ic2" style="color:var(--blue)">▶️</div><h4>Watch Ads</h4><p>Up to 10 Bee</p>
+      </div>
+      <div class="em" style="background:linear-gradient(180deg,rgba(34,197,94,.15),transparent)" onclick="go('tasks')">
+        <div class="ic2" style="color:var(--green)">✅</div><h4>Tasks</h4><p>20–200 Bee</p>
+      </div>
+      <div class="em" style="background:linear-gradient(180deg,rgba(168,85,247,.15),transparent)" onclick="go('refer')">
+        <div class="ic2" style="color:var(--purple)">👥</div><h4>Refer</h4><p>Up to 150 Bee</p>
       </div>
     </div>
 
-    <div class="section-title">Quick Actions</div>
-    <div class="grid-4">
-      <div class="qa" onclick="dailyBonus()"><div class="ic" style="background:#0f2a1a;color:#22c55e">🎁</div><div class="name">Daily Bonus</div></div>
-      <div class="qa" onclick="openModal('rewardModal')"><div class="ic" style="background:#241a2e;color:#a855f7">⚡</div><div class="name">Reward Code</div></div>
-      <div class="qa" onclick="openModal('withdrawModal')"><div class="ic" style="background:#0e1e2e;color:#3b82f6">💳</div><div class="name">Withdraw</div></div>
-      <div class="qa" onclick="openModal('leaderModal')"><div class="ic" style="background:#2a2410;color:var(--gold)">🏆</div><div class="name">Leaderboard</div></div>
+    <div class="card refbox">
+      <div class="top"><div><b>👥 Your Referral Link</b></div><div class="gold">+150 Bee</div></div>
+      <div class="link"><input id="refLink1" readonly><button onclick="copyRef()">📋</button></div>
     </div>
-
-    <div class="section-title">Earn More</div>
-    <div class="grid-3">
-      <div class="earn-card" style="background:linear-gradient(135deg,#0e1e2e,#0b1520)" onclick="switchView('ads')">
-        <div style="font-size:24px">▶️</div><h4>Watch Ads</h4><p>Up to 20 Gold</p>
-      </div>
-      <div class="earn-card" style="background:linear-gradient(135deg,#0f2a1a,#0b1e14)" onclick="switchView('tasks')">
-        <div style="font-size:24px">✅</div><h4>Tasks</h4><p>20-500 Gold</p>
-      </div>
-      <div class="earn-card" style="background:linear-gradient(135deg,#241a2e,#180f20)" onclick="switchView('refer')">
-        <div style="font-size:24px">👥</div><h4>Refer</h4><p>Up to 200 Gold</p>
-      </div>
-    </div>
-
-    <div class="section-title">Bonus Zone</div>
-    <div class="card">
-      <div class="between">
-        <div class="row">
-          <div style="font-size:22px">🎯</div>
-          <div><b>Spin & Win</b><div class="muted" style="font-size:12px">Try your luck daily</div></div>
-        </div>
-        <button class="btn btn-gold" onclick="spinWheel()">Spin</button>
-      </div>
-    </div>
-
-    <div class="card" style="background:linear-gradient(135deg,#1a1408,#0e0a04);border-color:var(--gold)">
-      <div class="between">
-        <div class="row"><div style="font-size:22px">👥</div><b>Your Referral Link</b></div>
-        <span class="gold">+200 Gold</span>
-      </div>
-      <div class="ref-link" style="margin-top:12px">
-        <input id="refLinkHome" readonly value="https://t.me/GoldBeeProBot/play?startapp=ref_0" />
-        <button class="icon-btn" onclick="copyRef()">📋</button>
-      </div>
-    </div>
-  </div>
+  </section>
 
   <!-- ADS -->
-  <div class="view" id="view-ads">
-    <div class="row" style="margin-bottom:12px">
-      <button class="icon-btn" onclick="switchView('home')">←</button>
-      <div><b style="font-size:20px">Earn</b><div class="muted" style="font-size:12px">Watch ads & complete offers</div></div>
+  <section class="page" data-page="ads">
+    <div class="page-head">
+      <button class="back" onclick="go('home')">←</button>
+      <div><h2>Earn</h2><p>Watch ads & visit websites</p></div>
     </div>
 
-    <div class="card glow">
-      <div class="between">
-        <div><div class="muted" style="font-size:11px">TODAY EARNED</div><div class="gold" style="font-size:26px;font-weight:800"><span id="todayEarn">0</span> GOLD</div></div>
-        <div style="text-align:right"><div class="muted" style="font-size:11px">AVAILABLE</div><div class="green" style="font-size:26px;font-weight:800">500 GOLD</div></div>
-      </div>
-      <div style="border-top:1px solid var(--line);margin-top:12px;padding-top:12px" class="between">
-        <span class="muted">Daily reset in:</span><span class="gold" style="font-weight:700" id="resetTimer">--:--:--</span>
-      </div>
+    <div class="card stat-card">
+      <div class="col"><small>TODAY EARNED</small><div class="v gold"><span id="todayEarn">0</span> BEE</div></div>
+      <div class="col" style="text-align:right"><small>AVAILABLE</small><div class="v green"><span id="avail">270</span> BEE</div></div>
+    </div>
+    <div class="card" style="margin-top:10px;display:flex;justify-content:space-between;padding:14px 18px">
+      <span class="muted">Daily reset in:</span><span class="timer" id="reset">07:31:14</span>
     </div>
 
     <div class="tabs">
-      <button class="active" id="tab-ads" onclick="setAdTab('ads')">📺 Watch Ads</button>
-      <button id="tab-sites" onclick="setAdTab('sites')">🌐 Visit Sites</button>
+      <button class="active" onclick="switchAdTab(this,'watch')">📺 Watch Ads</button>
+      <button onclick="switchAdTab(this,'visit')">🌐 Visit Sites</button>
     </div>
 
-    <div id="ads-list">
-      <!-- Adsgram -->
-      <div class="ad-card">
-        <div class="ad-head">
-          <div class="ad-ic">📺</div>
-          <div style="flex:1"><b>Adsgram Reward</b><div class="gold" style="font-size:12px">+15 Gold per ad</div></div>
+    <div id="watchTab">
+      <div class="card ad-item">
+        <div class="h">
+          <div class="icon">📺</div>
+          <div><div class="name">Adsgram Reward</div><div class="sub">+10 Bee per ad</div></div>
         </div>
-        <div class="between"><span class="muted"><span id="ag1Done">0</span> / 10 ads</span><span class="muted"><span id="ag1Left">10</span> left</span></div>
-        <div class="ad-progress"><div id="ag1Bar" style="width:0%"></div></div>
-        <button class="btn btn-gold btn-block" onclick="watchAdsgram()">▶️ Watch Ad — +15 GOLD</button>
+        <div class="progress"><div class="fill" id="agFill" style="width:0%"></div></div>
+        <div class="meta"><span><span id="agDone">0</span> / 5 ads</span><span><span id="agLeft">5</span> left</span></div>
+        <button class="btn-gold" onclick="showAdsgram()">▶ Watch Ad — +10 BEE</button>
       </div>
 
-      <!-- Monetag -->
-      <div class="ad-card">
-        <div class="ad-head">
-          <div class="ad-ic" style="background:#1a0f0f">🎯</div>
-          <div style="flex:1"><b>Monetag Premium</b><div style="color:#3b82f6;font-size:12px">+20 Gold per ad</div></div>
+      <div class="card ad-item" style="background:linear-gradient(180deg,rgba(59,130,246,.08),transparent)">
+        <div class="h">
+          <div class="icon">🎯</div>
+          <div><div class="name">Monetag Rewarded</div><div class="sub" style="color:#60a5fa">+8 Bee per ad</div></div>
         </div>
-        <div class="between"><span class="muted"><span id="mtDone">0</span> / 20 ads</span><span class="muted"><span id="mtLeft">20</span> left</span></div>
-        <div class="ad-progress"><div id="mtBar" style="width:0%"></div></div>
-        <button class="btn btn-gold btn-block" onclick="watchMonetag()">▶️ Watch Ad — +20 GOLD</button>
-      </div>
-
-      <!-- Bonus Ad -->
-      <div class="ad-card">
-        <div class="ad-head">
-          <div class="ad-ic" style="background:#0f1a2e">💎</div>
-          <div style="flex:1"><b>Mega Reward</b><div style="color:#a855f7;font-size:12px">+50 Gold (every 5 ads)</div></div>
-        </div>
-        <div class="between"><span class="muted"><span id="mgDone">0</span> / 5 ads</span><span class="muted"><span id="mgLeft">5</span> left</span></div>
-        <div class="ad-progress"><div id="mgBar" style="width:0%"></div></div>
-        <button class="btn btn-gold btn-block" onclick="watchMega()">💎 Watch Mega — +50 GOLD</button>
+        <div class="progress"><div class="fill" id="mtFill" style="width:0%"></div></div>
+        <div class="meta"><span><span id="mtDone">0</span> / 15 ads</span><span><span id="mtLeft">15</span> left</span></div>
+        <button class="btn-gold" onclick="showMonetag()">▶ Watch Ad — +8 BEE</button>
       </div>
     </div>
 
-    <div id="sites-list" style="display:none">
-      <div class="task" onclick="visitSite('https://google.com', 10)">
-        <div class="t-ic">🌐</div>
-        <div style="flex:1"><b>Visit Google</b><div class="muted" style="font-size:12px">Stay 15 seconds</div></div>
-        <div class="reward">+10H</div>
-      </div>
-      <div class="task" onclick="visitSite('https://youtube.com', 15)">
-        <div class="t-ic">▶️</div>
-        <div style="flex:1"><b>Visit YouTube</b><div class="muted" style="font-size:12px">Stay 20 seconds</div></div>
-        <div class="reward">+15H</div>
+    <div id="visitTab" style="display:none">
+      <div class="card ad-item">
+        <div class="h">
+          <div class="icon">🌐</div>
+          <div><div class="name">Visit Sponsor</div><div class="sub">+15 Bee — 20s stay</div></div>
+        </div>
+        <button class="btn-gold" onclick="visitSite('https://example.com',15)">Open Site</button>
       </div>
     </div>
-  </div>
+  </section>
 
   <!-- TASKS -->
-  <div class="view" id="view-tasks">
-    <div class="row" style="margin-bottom:12px">
-      <button class="icon-btn" onclick="switchView('home')">←</button>
-      <div><b style="font-size:20px">Tasks</b><div class="muted" style="font-size:12px">Complete tasks to earn Gold</div></div>
+  <section class="page" data-page="tasks">
+    <div class="page-head">
+      <button class="back" onclick="go('home')">←</button>
+      <div><h2>Tasks</h2><p>Complete tasks to earn Bee</p></div>
     </div>
-
     <div class="tabs">
-      <button class="active" onclick="setTaskTab(this,'main')">Main</button>
-      <button onclick="setTaskTab(this,'partner')">Partner</button>
-      <button onclick="setTaskTab(this,'community')">Community</button>
+      <button class="active" onclick="switchTaskTab(this,0)">Main</button>
+      <button onclick="switchTaskTab(this,1)">Partner</button>
+      <button onclick="switchTaskTab(this,2)">Community</button>
     </div>
-
-    <div id="tasks-main">
-      <div class="task">
-        <div class="t-ic">🐝</div>
-        <div style="flex:1"><b>Join GoldBee Community</b><div class="muted" style="font-size:12px">@goldbeepro</div>
-          <button class="btn btn-gold" style="margin-top:8px;padding:8px 14px" onclick="doTask(this,20)">🔗 Open & Earn +20H</button>
-        </div>
-        <div class="reward">+20H</div>
-      </div>
-      <div class="task">
-        <div class="t-ic">💰</div>
-        <div style="flex:1"><b>Join Payment Proofs</b><div class="muted" style="font-size:12px">@goldbeepayments</div>
-          <button class="btn btn-gold" style="margin-top:8px;padding:8px 14px" onclick="doTask(this,25)">🔗 Open & Earn +25H</button>
-        </div>
-        <div class="reward">+25H</div>
-      </div>
-      <div class="task">
-        <div class="t-ic">🎬</div>
-        <div style="flex:1"><b>Follow on TikTok</b><div class="muted" style="font-size:12px">@goldbeepro</div>
-          <button class="btn btn-gold" style="margin-top:8px;padding:8px 14px" onclick="doTask(this,30)">🔗 Open & Earn +30H</button>
-        </div>
-        <div class="reward">+30H</div>
-      </div>
-      <div class="task">
-        <div class="t-ic">📸</div>
-        <div style="flex:1"><b>Follow on Instagram</b><div class="muted" style="font-size:12px">@goldbee.pro</div>
-          <button class="btn btn-gold" style="margin-top:8px;padding:8px 14px" onclick="doTask(this,30)">🔗 Open & Earn +30H</button>
-        </div>
-        <div class="reward">+30H</div>
-      </div>
-    </div>
-    <div id="tasks-partner" style="display:none">
-      <div class="task"><div class="t-ic">🤝</div><div style="flex:1"><b>Partner App Bonus</b><div class="muted" style="font-size:12px">Coming soon</div></div><div class="reward">+100H</div></div>
-    </div>
-    <div id="tasks-community" style="display:none">
-      <div class="task"><div class="t-ic">💬</div><div style="flex:1"><b>Invite 3 friends today</b><div class="muted" style="font-size:12px">Community boost</div></div><div class="reward">+500H</div></div>
-    </div>
-  </div>
+    <div id="taskList"></div>
+  </section>
 
   <!-- REFER -->
-  <div class="view" id="view-refer">
-    <div class="row" style="margin-bottom:12px">
-      <button class="icon-btn" onclick="switchView('home')">←</button>
-      <div><b style="font-size:20px">Refer & Earn</b><div class="muted" style="font-size:12px">Earn up to 200 Gold per referral</div></div>
+  <section class="page" data-page="refer">
+    <div class="page-head">
+      <button class="back" onclick="go('home')">←</button>
+      <div><h2>Refer & Earn</h2><p>Earn up to 150 Bee per referral</p></div>
     </div>
-
-    <div class="grid-3" style="margin-bottom:14px">
-      <div class="card" style="text-align:center;padding:14px 6px"><div style="font-size:22px;font-weight:800" id="totalRefs">0</div><div class="muted" style="font-size:11px">Total Refs</div></div>
-      <div class="card" style="text-align:center;padding:14px 6px"><div class="green" style="font-size:22px;font-weight:800" id="compRefs">0</div><div class="muted" style="font-size:11px">Completed</div></div>
-      <div class="card" style="text-align:center;padding:14px 6px"><div class="gold" style="font-size:22px;font-weight:800" id="refEarn">0</div><div class="muted" style="font-size:11px">Gold Earned</div></div>
+    <div class="stats3">
+      <div class="s"><div class="v" id="rTotal">0</div><small>Total Refs</small></div>
+      <div class="s"><div class="v green" id="rDone">0</div><small>Completed</small></div>
+      <div class="s"><div class="v gold" id="rEarn">0</div><small>Bee Earned</small></div>
     </div>
-
-    <div class="card glow">
-      <div class="muted" style="font-size:11px;letter-spacing:2px">YOUR REFERRAL LINK</div>
-      <div class="ref-link" style="margin:10px 0"><input id="refLink" readonly /></div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        <button class="btn btn-gold" onclick="copyRef()">📋 Copy Link</button>
-        <button class="btn btn-dark" onclick="shareRef()">🔗 Share</button>
+    <div class="card">
+      <div class="section-title" style="margin:0 0 10px">YOUR REFERRAL LINK</div>
+      <div class="link"><input id="refLink2" readonly></div>
+      <div class="row-btns">
+        <button class="btn-gold" onclick="copyRef()">📋 Copy Link</button>
+        <button class="btn-outline" onclick="shareRef()">🔗 Share</button>
       </div>
     </div>
-
-    <div class="section-title">Reward Structure</div>
-    <div class="card">
-      <div class="mile"><div class="num">1</div><div style="flex:1"><b>Friend joins <span class="gold">+35 Gold</span></b><div class="muted" style="font-size:12px">Instant reward when they sign up</div></div></div>
-      <div class="mile"><div class="num">2</div><div style="flex:1"><b>Watches 10 ads <span class="gold">+65 Gold</span></b><div class="muted" style="font-size:12px">After first 10 ad watches</div></div></div>
-      <div class="mile"><div class="num">3</div><div style="flex:1"><b>Day 2 milestone <span class="gold">+100 Gold</span></b><div class="muted" style="font-size:12px">10 more ads on their 2nd day</div></div></div>
-      <div class="between" style="padding-top:12px"><b>Total per referral</b><b class="gold" style="font-size:20px">200 GOLD</b></div>
-      <div class="muted" style="font-size:12px;margin-top:6px">⚠️ Referral must complete milestones within 48 hours</div>
+    <div class="section-title">REWARD STRUCTURE</div>
+    <div class="card reward-list">
+      <div class="rw"><div class="num">1</div><div class="txt"><div class="t">Friend joins<span class="plus">+25 Bee</span></div><div class="d">Instant reward when they sign up</div></div></div>
+      <div class="rw"><div class="num">2</div><div class="txt"><div class="t">Watches 10 ads<span class="plus">+50 Bee</span></div><div class="d">After first 10 ad watches</div></div></div>
+      <div class="rw"><div class="num">3</div><div class="txt"><div class="t">Day 2 milestone<span class="plus">+75 Bee</span></div><div class="d">10 more ads on their 2nd day</div></div></div>
+      <div class="total-line"><span>Total per referral</span><span class="gold">150 Bee</span></div>
+      <div class="muted" style="font-size:12px;margin-top:8px">⚠ Referral must complete milestones within 48 hours</div>
     </div>
-  </div>
+  </section>
 
   <!-- PROFILE -->
-  <div class="view" id="view-profile">
-    <div style="text-align:center;padding:16px 0">
-      <div class="avatar" style="width:100px;height:100px;font-size:32px;border-radius:22px;margin:0 auto 12px">GB<div class="dot"></div></div>
-      <h2 style="margin:0" id="pName">GoldBee User</h2>
-      <div class="gold" id="pHandle">@GoldBeeUser</div>
-      <div class="muted" style="font-size:12px">ID: <span id="pId">—</span></div>
+  <section class="page" data-page="profile">
+    <div class="profile-top">
+      <div class="avatar" id="avaProf">U</div>
+      <h3 id="pName">User</h3>
+      <div class="u" id="pUser">@user</div>
+      <div class="id">ID: <span id="pId">-</span></div>
     </div>
-
-    <div class="card glow balance" style="padding:16px">
-      <div class="amount" style="font-size:36px"><span id="balance2">0</span> 🍯 GOLD</div>
-      <div class="usd">≈ <span id="usdt3">0.00</span> USDT</div>
+    <div class="card balance" style="padding:18px">
+      <div class="val"><span id="balProf">0</span><small>🍯 BEE</small></div>
+      <div class="usdt">≈ <span id="usdtProf">0.00</span> USDT</div>
     </div>
-
-    <div class="card row" onclick="openModal('walletModal')" style="cursor:pointer">
-      <div style="width:44px;height:44px;background:#0e1e2e;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px">💳</div>
-      <div style="flex:1"><b>BEP20 Wallet</b><div class="muted" style="font-size:12px" id="walletStat">Not connected</div></div>
-      <div class="muted">›</div>
+    <div class="menu" style="margin-top:12px">
+      <button class="menu-item" onclick="openWallet()"><div class="ic3" style="color:var(--blue)">💳</div><div><div>BEP20 Wallet</div><div class="muted" style="font-size:12px" id="walletState">Not connected</div></div><div class="arr">›</div></button>
     </div>
-
-    <div class="section-title">Finance</div>
-    <div class="card">
-      <div class="row" onclick="openModal('withdrawModal')" style="cursor:pointer;padding:8px 0"><div style="width:36px;height:36px;background:#0e1e2e;border-radius:8px;display:flex;align-items:center;justify-content:center">💰</div><b style="flex:1">Wallet</b><span class="muted">›</span></div>
-      <div style="height:1px;background:var(--line);margin:6px 0"></div>
-      <div class="row" onclick="openModal('txnModal')" style="cursor:pointer;padding:8px 0"><div style="width:36px;height:36px;background:#0f2a1a;border-radius:8px;display:flex;align-items:center;justify-content:center">🕓</div><b style="flex:1">Transactions</b><span class="muted">›</span></div>
+    <div class="section-title">FINANCE</div>
+    <div class="menu">
+      <button class="menu-item" onclick="openWallet()"><div class="ic3" style="color:var(--blue)">💼</div>Wallet<div class="arr">›</div></button>
+      <button class="menu-item" onclick="showTxs()"><div class="ic3" style="color:var(--green)">🕒</div>Transactions<div class="arr">›</div></button>
+      <button class="menu-item" onclick="openWithdraw()"><div class="ic3" style="color:var(--gold)">💰</div>Withdraw<div class="arr">›</div></button>
     </div>
-
-    <div class="section-title">Social</div>
-    <div class="card">
-      <div class="row" onclick="switchView('refer')" style="cursor:pointer;padding:8px 0"><div style="width:36px;height:36px;background:#241a2e;border-radius:8px;display:flex;align-items:center;justify-content:center">👥</div><b style="flex:1">Refer Friends</b><span class="muted">›</span></div>
-      <div style="height:1px;background:var(--line);margin:6px 0"></div>
-      <div class="row" onclick="openModal('leaderModal')" style="cursor:pointer;padding:8px 0"><div style="width:36px;height:36px;background:#2a2410;border-radius:8px;display:flex;align-items:center;justify-content:center">🏆</div><b style="flex:1">Leaderboard</b><span class="muted">›</span></div>
+    <div class="section-title">SOCIAL</div>
+    <div class="menu">
+      <button class="menu-item" onclick="go('refer')"><div class="ic3" style="color:var(--purple)">👥</div>Refer Friends<div class="arr">›</div></button>
+      <button class="menu-item" onclick="alert('Support: @beevault_support')"><div class="ic3">💬</div>Support<div class="arr">›</div></button>
     </div>
-
-    <div class="section-title">Settings</div>
-    <div class="card">
-      <div class="row" onclick="showToast('Language: English')" style="cursor:pointer;padding:8px 0"><div style="width:36px;height:36px;background:#0e1116;border-radius:8px;display:flex;align-items:center;justify-content:center">🌐</div><b style="flex:1">Language</b><span class="muted">English ›</span></div>
-      <div style="height:1px;background:var(--line);margin:6px 0"></div>
-      <div class="row" onclick="if(confirm('Reset all data?')){localStorage.clear();location.reload()}" style="cursor:pointer;padding:8px 0"><div style="width:36px;height:36px;background:#2a1010;border-radius:8px;display:flex;align-items:center;justify-content:center">🚪</div><b style="flex:1" style="color:var(--red)">Reset Data</b><span class="muted">›</span></div>
-    </div>
-  </div>
-
+  </section>
 </div>
 
-<!-- BOTTOM NAV -->
-<div class="bottomnav">
-  <button class="active" data-v="home" onclick="switchView('home')"><span class="icon">🏠</span>Home</button>
-  <button data-v="ads" onclick="switchView('ads')"><span class="icon">▶️</span>Ads</button>
-  <button data-v="tasks" onclick="switchView('tasks')"><span class="icon">✅</span>Tasks</button>
-  <button data-v="refer" onclick="switchView('refer')"><span class="icon">👥</span>Refer</button>
-  <button data-v="profile" onclick="switchView('profile')"><span class="icon">👤</span>Profile</button>
+<!-- NAV -->
+<div class="nav">
+  <button class="active" data-nav="home" onclick="go('home')"><span class="n-ic">🏠</span>Home</button>
+  <button data-nav="ads" onclick="go('ads')"><span class="n-ic">▶️</span>Ads</button>
+  <button data-nav="tasks" onclick="go('tasks')"><span class="n-ic">✅</span>Tasks</button>
+  <button data-nav="refer" onclick="go('refer')"><span class="n-ic">👥</span>Refer</button>
+  <button data-nav="profile" onclick="go('profile')"><span class="n-ic">👤</span>Profile</button>
 </div>
 
 <!-- MODALS -->
-<div class="modal-bg" id="withdrawModal"><div class="modal">
-  <button class="close-x" onclick="closeModal('withdrawModal')">✕</button>
-  <h3>💳 Withdraw USDT</h3>
-  <div class="muted" style="font-size:13px;margin-bottom:12px">Minimum: 10000 Gold (≈ 1 USDT)</div>
-  <input id="wdAmount" type="number" placeholder="Amount (Gold)" />
-  <input id="wdWallet" placeholder="BEP20 Wallet Address (0x...)" />
-  <button class="btn btn-gold btn-block" onclick="withdraw()">Request Withdrawal</button>
-</div></div>
+<div class="modal-bg" id="mWithdraw">
+  <div class="modal">
+    <button class="close-x" onclick="closeModal('mWithdraw')">×</button>
+    <h3>💳 Withdraw USDT (BEP20)</h3>
+    <p class="muted" style="font-size:13px;margin-bottom:12px">Minimum: 10,000 BEE ≈ 1 USDT</p>
+    <input id="wAddr" placeholder="Enter BEP20 wallet address (0x...)" />
+    <input id="wAmt" type="number" placeholder="Amount in BEE" />
+    <button class="btn-gold" onclick="submitWithdraw()">Request Withdrawal</button>
+  </div>
+</div>
 
-<div class="modal-bg" id="rewardModal"><div class="modal">
-  <button class="close-x" onclick="closeModal('rewardModal')">✕</button>
-  <h3>⚡ Redeem Reward Code</h3>
-  <input id="rcInput" placeholder="Enter code (try: GOLDBEE100)" />
-  <button class="btn btn-gold btn-block" onclick="redeemCode()">Redeem</button>
-</div></div>
+<div class="modal-bg" id="mCode">
+  <div class="modal">
+    <button class="close-x" onclick="closeModal('mCode')">×</button>
+    <h3>⚡ Reward Code</h3>
+    <input id="rCode" placeholder="Enter code" />
+    <button class="btn-gold" onclick="redeemCode()">Redeem</button>
+    <p class="muted" style="font-size:12px;margin-top:10px">Try: <b>BEE100</b> for 100 Bee</p>
+  </div>
+</div>
 
-<div class="modal-bg" id="walletModal"><div class="modal">
-  <button class="close-x" onclick="closeModal('walletModal')">✕</button>
-  <h3>💳 Connect BEP20 Wallet</h3>
-  <input id="wConnect" placeholder="Your BEP20 Address (0x...)" />
-  <button class="btn btn-gold btn-block" onclick="connectWallet()">Connect</button>
-</div></div>
+<div class="modal-bg" id="mWallet">
+  <div class="modal">
+    <button class="close-x" onclick="closeModal('mWallet')">×</button>
+    <h3>💼 BEP20 Wallet</h3>
+    <input id="wConn" placeholder="0x... (BEP20 address)" />
+    <button class="btn-gold" onclick="saveWallet()">Save Wallet</button>
+  </div>
+</div>
 
-<div class="modal-bg" id="leaderModal"><div class="modal" style="max-width:420px">
-  <button class="close-x" onclick="closeModal('leaderModal')">✕</button>
-  <h3>🏆 Leaderboard</h3>
-  <div id="leaderList"></div>
-</div></div>
-
-<div class="modal-bg" id="txnModal"><div class="modal">
-  <button class="close-x" onclick="closeModal('txnModal')">✕</button>
-  <h3>🕓 Transactions</h3>
-  <div id="txnList"><div class="muted" style="text-align:center;padding:20px">No transactions yet</div></div>
-</div></div>
-
-<div class="modal-bg" id="menuModal"><div class="modal">
-  <button class="close-x" onclick="closeModal('menuModal')">✕</button>
-  <h3>Menu</h3>
-  <div class="card row" onclick="showToast('GoldBee Pro v1.0')" style="cursor:pointer"><div>ℹ️</div><b>About</b></div>
-  <div class="card row" onclick="showToast('Support: @goldbeesupport')" style="cursor:pointer"><div>💬</div><b>Support</b></div>
-  <div class="card row" onclick="showToast('Rules: Fair play only')" style="cursor:pointer"><div>📜</div><b>Rules</b></div>
-</div></div>
-
-<div class="modal-bg" id="spinModal"><div class="modal" style="text-align:center">
-  <h3>🎯 Spin Result</h3>
-  <div id="spinResult" style="font-size:42px;font-weight:800;color:var(--gold);margin:20px 0">+0</div>
-  <button class="btn btn-gold btn-block" onclick="closeModal('spinModal')">Claim</button>
-</div></div>
-
-<div class="toast" id="toast"></div>
+<div id="toast"></div>
 
 <script>
-/* ================= STATE ================= */
-const S = {
-  balance: +localStorage.getItem('gb_bal') || 0,
-  todayEarn: +localStorage.getItem('gb_today') || 0,
-  ag1: +localStorage.getItem('gb_ag1') || 0,
-  mt: +localStorage.getItem('gb_mt') || 0,
-  mg: +localStorage.getItem('gb_mg') || 0,
-  refs: +localStorage.getItem('gb_refs') || 0,
-  refEarn: +localStorage.getItem('gb_refearn') || 0,
-  wallet: localStorage.getItem('gb_wallet') || '',
-  lastDaily: +localStorage.getItem('gb_daily') || 0,
-  txns: JSON.parse(localStorage.getItem('gb_txns') || '[]'),
-  user: null
+/* ============ STATE ============ */
+const RATE = 10000; // 10,000 BEE = 1 USDT
+const state = JSON.parse(localStorage.getItem('beevault') || '{}');
+const defaults = {
+  balance:0, todayEarn:0, agDone:0, mtDone:0, refs:0, refsDone:0, refEarn:0,
+  lastDaily:0, wallet:'', txs:[], resetAt: nextMidnight()
 };
-const RATE = 0.0001; // 1 GOLD = 0.0001 USDT (10000 gold = 1 USDT)
+Object.keys(defaults).forEach(k=>{ if(state[k]===undefined) state[k]=defaults[k]; });
 
-function save(){
-  localStorage.setItem('gb_bal', S.balance);
-  localStorage.setItem('gb_today', S.todayEarn);
-  localStorage.setItem('gb_ag1', S.ag1);
-  localStorage.setItem('gb_mt', S.mt);
-  localStorage.setItem('gb_mg', S.mg);
-  localStorage.setItem('gb_refs', S.refs);
-  localStorage.setItem('gb_refearn', S.refEarn);
-  localStorage.setItem('gb_txns', JSON.stringify(S.txns));
+function nextMidnight(){ const d=new Date(); d.setHours(24,0,0,0); return d.getTime(); }
+function save(){ localStorage.setItem('beevault', JSON.stringify(state)); }
+
+/* ============ USER ============ */
+let USER = { id:'Guest', username:'user', name:'User', initials:'U' };
+try {
+  const tg = window.Telegram?.WebApp;
+  if (tg) { tg.ready(); tg.expand();
+    const u = tg.initDataUnsafe?.user;
+    if (u) {
+      USER.id = u.id;
+      USER.username = u.username || ('user'+u.id);
+      USER.name = [u.first_name,u.last_name].filter(Boolean).join(' ') || USER.username;
+      USER.initials = (u.first_name?.[0]||'U')+(u.last_name?.[0]||'');
+    }
+  }
+} catch(e){}
+
+/* ============ LOADING ============ */
+const loadSteps = ['Initializing...','Connecting to Telegram...','Loading balance...','Loading tasks...','Loading Complete'];
+let li=0;
+const barI = setInterval(()=>{
+  const bar = document.getElementById('loadBar');
+  const cur = parseInt(bar.style.width)||0;
+  const next = Math.min(cur+8, 100);
+  bar.style.width = next+'%';
+  document.getElementById('loadStatus').textContent = loadSteps[Math.min(Math.floor(next/25),4)];
+  if (next>=100) { clearInterval(barI); setTimeout(()=>{ document.getElementById('loader').classList.add('hide'); renderAll(); },500); }
+},180);
+
+/* ============ RENDER ============ */
+function renderAll(){
+  document.getElementById('uname').textContent = '@'+USER.username;
+  document.getElementById('tgId').textContent = USER.id;
+  document.getElementById('pName').textContent = USER.name;
+  document.getElementById('pUser').textContent = '@'+USER.username;
+  document.getElementById('pId').textContent = USER.id;
+  document.getElementById('avaHome').textContent = USER.initials;
+  document.getElementById('avaProf').textContent = USER.initials;
+  const link = `https://t.me/BeeVaultBot/play?startapp=ref_${USER.id}`;
+  document.getElementById('refLink1').value = link;
+  document.getElementById('refLink2').value = link;
+  document.getElementById('walletState').textContent = state.wallet ? state.wallet.slice(0,10)+'...' : 'Not connected';
+  updateBalance();
+  renderTasks();
+  tickReset();
+  setInterval(tickReset,1000);
 }
-function addBal(n, reason){
-  S.balance += n; S.todayEarn += n;
-  S.txns.unshift({t:Date.now(), amt:n, reason});
-  if(S.txns.length>50) S.txns.pop();
-  save(); render();
-}
-function addTxn(amt, reason){
-  S.txns.unshift({t:Date.now(), amt, reason});
+
+function updateBalance(){
+  const usdt = (state.balance/RATE).toFixed(2);
+  ['balHome','balProf'].forEach(id=>document.getElementById(id).textContent=state.balance);
+  ['usdtHome','usdtHome2','usdtProf'].forEach(id=>document.getElementById(id).textContent=usdt);
+  document.getElementById('todayEarn').textContent = state.todayEarn;
+  document.getElementById('avail').textContent = Math.max(0, 270 - state.todayEarn);
+  document.getElementById('agDone').textContent = state.agDone;
+  document.getElementById('agLeft').textContent = Math.max(0,5-state.agDone);
+  document.getElementById('agFill').style.width = (state.agDone/5*100)+'%';
+  document.getElementById('mtDone').textContent = state.mtDone;
+  document.getElementById('mtLeft').textContent = Math.max(0,15-state.mtDone);
+  document.getElementById('mtFill').style.width = (state.mtDone/15*100)+'%';
+  document.getElementById('rTotal').textContent = state.refs;
+  document.getElementById('rDone').textContent = state.refsDone;
+  document.getElementById('rEarn').textContent = state.refEarn;
   save();
 }
 
-/* ================= RENDER ================= */
-function render(){
-  const fmt = n => n.toLocaleString();
-  document.querySelectorAll('#balance,#balance2').forEach(e=>e.textContent=fmt(S.balance));
-  const usdt = (S.balance*RATE).toFixed(4);
-  document.getElementById('usdt').textContent = usdt;
-  document.getElementById('usdt2').textContent = (S.balance*RATE).toFixed(2)+' USDT';
-  document.getElementById('usdt3').textContent = (S.balance*RATE).toFixed(2);
-  document.getElementById('todayEarn').textContent = fmt(S.todayEarn);
-
-  // Ad progress
-  const upd=(done,total,barId,doneId,leftId)=>{
-    document.getElementById(doneId).textContent=done;
-    document.getElementById(leftId).textContent=total-done;
-    document.getElementById(barId).style.width=(done/total*100)+'%';
-  };
-  upd(S.ag1,10,'ag1Bar','ag1Done','ag1Left');
-  upd(S.mt,20,'mtBar','mtDone','mtLeft');
-  upd(S.mg,5,'mgBar','mgDone','mgLeft');
-
-  document.getElementById('totalRefs').textContent = S.refs;
-  document.getElementById('compRefs').textContent = S.refs;
-  document.getElementById('refEarn').textContent = fmt(S.refEarn);
-  document.getElementById('walletStat').textContent = S.wallet ? S.wallet.slice(0,6)+'...'+S.wallet.slice(-4) : 'Not connected';
+function addBee(n, note){
+  state.balance += n;
+  state.todayEarn += n;
+  state.txs.unshift({t:Date.now(), amt:n, note:note||'Reward'});
+  updateBalance();
+  toast(`+${n} BEE 🍯`);
 }
 
-/* ================= NAV ================= */
-function switchView(v){
-  document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
-  document.getElementById('view-'+v).classList.add('active');
-  document.querySelectorAll('.bottomnav button').forEach(b=>b.classList.toggle('active', b.dataset.v===v));
+function tickReset(){
+  if (Date.now() >= state.resetAt){
+    state.todayEarn=0; state.agDone=0; state.mtDone=0; state.resetAt=nextMidnight();
+    updateBalance();
+  }
+  const ms = state.resetAt - Date.now();
+  const h = String(Math.floor(ms/3600000)).padStart(2,'0');
+  const m = String(Math.floor(ms/60000)%60).padStart(2,'0');
+  const s = String(Math.floor(ms/1000)%60).padStart(2,'0');
+  document.getElementById('reset').textContent = `${h}:${m}:${s}`;
+}
+
+/* ============ NAV ============ */
+function go(p){
+  document.querySelectorAll('.page').forEach(el=>el.classList.toggle('active', el.dataset.page===p));
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active', b.dataset.nav===p));
   window.scrollTo(0,0);
 }
-function openModal(id){
-  document.getElementById(id).classList.add('show');
-  if(id==='leaderModal') renderLeaderboard();
-  if(id==='txnModal') renderTxns();
-}
-function closeModal(id){ document.getElementById(id).classList.remove('show'); }
-function showToast(msg){
-  const t=document.getElementById('toast'); t.textContent=msg; t.style.display='block';
-  clearTimeout(window._tt); window._tt=setTimeout(()=>t.style.display='none',2200);
-}
 
-/* ================= ADS ================= */
-let AdController=null;
-try{ if(window.Adsgram) AdController = window.Adsgram.init({ blockId: "36912" }); }catch(e){}
-
-function watchAdsgram(){
-  if(S.ag1>=10) return showToast('Daily limit reached');
-  if(!AdController){
-    // Fallback if SDK not ready
-    setTimeout(()=>{ S.ag1++; addBal(15,'Adsgram Ad'); showToast('+15 GOLD earned!'); },1500);
-    showToast('Loading ad...'); return;
-  }
-  AdController.show().then(()=>{
-    S.ag1++; addBal(15,'Adsgram Ad'); showToast('+15 GOLD earned!');
-  }).catch(err=>{ showToast('Ad not available, try again'); });
-}
-
-function watchMonetag(){
-  if(S.mt>=20) return showToast('Daily limit reached');
-  if(typeof show_11239209==='function'){
-    show_11239209().then(()=>{
-      S.mt++; addBal(20,'Monetag Ad'); showToast('+20 GOLD earned!');
-    }).catch(()=>showToast('Ad failed, try again'));
-  } else {
-    setTimeout(()=>{ S.mt++; addBal(20,'Monetag Ad'); showToast('+20 GOLD earned!'); },1500);
-    showToast('Loading ad...');
-  }
-}
-
-function watchMega(){
-  if(S.mg>=5) return showToast('Daily limit reached');
-  // Use Monetag for mega too
-  if(typeof show_11239209==='function'){
-    show_11239209().then(()=>{
-      S.mg++; addBal(50,'Mega Reward'); showToast('💎 +50 GOLD MEGA!');
-    }).catch(()=>showToast('Ad failed'));
-  } else {
-    setTimeout(()=>{ S.mg++; addBal(50,'Mega Reward'); showToast('💎 +50 GOLD MEGA!'); },1500);
-  }
-}
-
-function setAdTab(t){
-  document.getElementById('tab-ads').classList.toggle('active',t==='ads');
-  document.getElementById('tab-sites').classList.toggle('active',t==='sites');
-  document.getElementById('ads-list').style.display=t==='ads'?'block':'none';
-  document.getElementById('sites-list').style.display=t==='sites'?'block':'none';
-}
-function visitSite(url, reward){
-  window.open(url,'_blank');
-  showToast('Come back in 15s for reward');
-  setTimeout(()=>{ addBal(reward,'Site Visit'); showToast('+'+reward+' GOLD'); },15000);
-}
-
-/* ================= TASKS ================= */
-function setTaskTab(btn, name){
+/* ============ TABS ============ */
+function switchAdTab(btn, which){
   btn.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  ['main','partner','community'].forEach(n=>document.getElementById('tasks-'+n).style.display=n===name?'block':'none');
-}
-function doTask(btn, reward){
-  btn.disabled=true; btn.textContent='✓ Completed';
-  btn.style.background='#0f2a1a'; btn.style.color='#22c55e';
-  addBal(reward,'Task');
-  showToast('+'+reward+' GOLD earned!');
+  document.getElementById('watchTab').style.display = which==='watch'?'block':'none';
+  document.getElementById('visitTab').style.display = which==='visit'?'block':'none';
 }
 
-/* ================= REFERRAL ================= */
-function updateRefLink(){
-  const id = S.user?.id || '0';
-  const link = `https://t.me/GoldBeeProBot/play?startapp=ref_${id}`;
-  document.getElementById('refLink').value = link;
-  document.getElementById('refLinkHome').value = link;
+const TASKS = [
+  [ // Main
+    {icon:'🐝',name:'BeeVault Community',desc:'Join our channel',link:'@beevault',reward:10},
+    {icon:'💰',name:'BeeVault Payments',desc:'Payment proofs channel',link:'@beevaultpay',reward:10},
+    {icon:'📣',name:'Follow on X',desc:'Follow @beevault',link:'https://x.com/beevault',reward:15},
+  ],
+  [ // Partner
+    {icon:'🚀',name:'Partner Bot #1',desc:'Join & start',link:'https://t.me/partnerbot',reward:20},
+    {icon:'🎁',name:'Partner Airdrop',desc:'Claim tokens',link:'https://t.me/airdropbot',reward:25},
+  ],
+  [ // Community
+    {icon:'👥',name:'Invite 3 Friends',desc:'Grow the hive',reward:75},
+    {icon:'⭐',name:'Rate Us 5★',desc:'Support the app',reward:20},
+  ]
+];
+let tt=0;
+function switchTaskTab(btn,i){
+  btn.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active'); tt=i; renderTasks();
 }
+function renderTasks(){
+  const done = JSON.parse(localStorage.getItem('bv_tasks')||'{}');
+  document.getElementById('taskList').innerHTML = TASKS[tt].map((t,i)=>{
+    const key=tt+'_'+i, isDone=done[key];
+    return `<div class="card task-item">
+      <div class="h">
+        <div class="icon">${t.icon}</div>
+        <div style="flex:1"><div class="name">${t.name}</div>
+          <div class="desc">${t.desc}${t.link?` <a href="${t.link.startsWith('@')?'https://t.me/'+t.link.slice(1):t.link}" target="_blank">${t.link}</a>`:''}</div>
+        </div>
+        <div class="reward">+${t.reward}H</div>
+      </div>
+      <button class="btn-gold" ${isDone?'disabled':''} onclick="doTask('${key}',${t.reward},'${t.link||''}')">${isDone?'✓ Completed':'↗ Open & Earn +'+t.reward+'H'}</button>
+    </div>`;
+  }).join('');
+}
+function doTask(key, reward, link){
+  if (link) window.open(link.startsWith('@')?'https://t.me/'+link.slice(1):link,'_blank');
+  setTimeout(()=>{
+    const done = JSON.parse(localStorage.getItem('bv_tasks')||'{}');
+    done[key]=1; localStorage.setItem('bv_tasks', JSON.stringify(done));
+    addBee(reward,'Task');
+    renderTasks();
+  }, 1500);
+}
+
+/* ============ ADS ============ */
+// Adsgram — your ID: 36912
+let AdController = null;
+try { if (window.Adsgram) AdController = window.Adsgram.init({ blockId: "36912" }); } catch(e){ console.log(e); }
+
+function showAdsgram(){
+  if (state.agDone >= 5) return toast('Daily limit reached');
+  if (!AdController) return toast('Ad not ready, retry');
+  AdController.show().then(()=>{ state.agDone++; addBee(10,'Adsgram'); })
+    .catch(err=>{ console.log(err); toast('Ad closed / failed'); });
+}
+
+// Monetag rewarded interstitial
+function showMonetag(){
+  if (state.mtDone >= 15) return toast('Daily limit reached');
+  if (typeof show_11239209 !== 'function') return toast('Ad SDK loading...');
+  show_11239209().then(()=>{ state.mtDone++; addBee(8,'Monetag'); })
+    .catch(err=>{ console.log(err); toast('Ad failed'); });
+}
+
+function visitSite(url, reward){
+  window.open(url,'_blank');
+  toast('Stay 20s to earn');
+  setTimeout(()=>addBee(reward,'Visit'), 20000);
+}
+
+/* ============ ACTIONS ============ */
+function claimDailyBonus(){
+  const today = new Date().toDateString();
+  if (state.lastDaily === today) return toast('Already claimed today');
+  state.lastDaily = today;
+  addBee(50, 'Daily Bonus');
+}
+function openRewardCode(){ document.getElementById('mCode').classList.add('show'); }
+function redeemCode(){
+  const c = document.getElementById('rCode').value.trim().toUpperCase();
+  if (c==='BEE100'){ addBee(100,'Code'); closeModal('mCode'); }
+  else toast('Invalid code');
+}
+function openWithdraw(){
+  if (!state.wallet) { toast('Connect wallet first'); return openWallet(); }
+  document.getElementById('wAddr').value = state.wallet;
+  document.getElementById('mWithdraw').classList.add('show');
+}
+function submitWithdraw(){
+  const amt = parseInt(document.getElementById('wAmt').value);
+  if (!amt || amt<10000) return toast('Min 10,000 BEE');
+  if (amt>state.balance) return toast('Insufficient balance');
+  state.balance -= amt;
+  state.txs.unshift({t:Date.now(), amt:-amt, note:'Withdraw'});
+  updateBalance(); closeModal('mWithdraw');
+  toast('Withdrawal requested ✓');
+}
+function openWallet(){ document.getElementById('wConn').value=state.wallet; document.getElementById('mWallet').classList.add('show'); }
+function saveWallet(){
+  const w = document.getElementById('wConn').value.trim();
+  if (!/^0x[a-fA-F0-9]{40}$/.test(w)) return toast('Invalid BEP20 address');
+  state.wallet = w; save();
+  document.getElementById('walletState').textContent = w.slice(0,10)+'...';
+  closeModal('mWallet'); toast('Wallet saved ✓');
+}
+function showTxs(){
+  if (!state.txs.length) return toast('No transactions yet');
+  alert(state.txs.slice(0,10).map(t=>`${new Date(t.t).toLocaleString()}: ${t.amt>0?'+':''}${t.amt} — ${t.note}`).join('\n'));
+}
+function closeModal(id){ document.getElementById(id).classList.remove('show'); }
+
 function copyRef(){
-  const l=document.getElementById('refLink').value;
-  navigator.clipboard.writeText(l); showToast('Link copied!');
+  const l = document.getElementById('refLink1').value;
+  navigator.clipboard.writeText(l).then(()=>toast('Link copied ✓'));
 }
 function shareRef(){
-  const l=document.getElementById('refLink').value;
-  if(navigator.share) navigator.share({title:'GoldBee Pro',text:'Earn USDT with me!',url:l});
-  else { navigator.clipboard.writeText(l); showToast('Link copied to share!'); }
+  const l = document.getElementById('refLink1').value;
+  if (navigator.share) navigator.share({title:'BeeVault',text:'Join & earn USDT!',url:l});
+  else copyRef();
 }
 
-/* ================= FEATURES ================= */
-function dailyBonus(){
-  const now=Date.now();
-  if(now-S.lastDaily < 86400000){
-    const h=Math.ceil((86400000-(now-S.lastDaily))/3600000);
-    return showToast('Come back in '+h+'h');
-  }
-  S.lastDaily=now; localStorage.setItem('gb_daily',now);
-  const bonus=Math.floor(Math.random()*50)+50;
-  addBal(bonus,'Daily Bonus');
-  showToast('🎁 Daily Bonus: +'+bonus+' GOLD');
+function toast(msg){
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(window._tt); window._tt=setTimeout(()=>t.classList.remove('show'),2200);
 }
-function redeemCode(){
-  const c=document.getElementById('rcInput').value.trim().toUpperCase();
-  const codes={'GOLDBEE100':100,'WELCOME50':50,'BEEHIVE500':500};
-  if(codes[c]){
-    if(localStorage.getItem('rc_'+c)) return showToast('Already redeemed');
-    localStorage.setItem('rc_'+c,'1');
-    addBal(codes[c],'Reward Code');
-    closeModal('rewardModal'); showToast('+'+codes[c]+' GOLD!');
-  } else showToast('Invalid code');
-}
-function withdraw(){
-  const amt=+document.getElementById('wdAmount').value;
-  const w=document.getElementById('wdWallet').value.trim();
-  if(amt<10000) return showToast('Min 10000 Gold');
-  if(amt>S.balance) return showToast('Not enough balance');
-  if(!w.startsWith('0x')||w.length!==42) return showToast('Invalid BEP20 address');
-  S.balance-=amt; addTxn(-amt,'Withdrawal to '+w.slice(0,8)+'...'); save(); render();
-  closeModal('withdrawModal'); showToast('✅ Withdrawal requested');
-}
-function connectWallet(){
-  const w=document.getElementById('wConnect').value.trim();
-  if(!w.startsWith('0x')||w.length!==42) return showToast('Invalid address');
-  S.wallet=w; localStorage.setItem('gb_wallet',w); render();
-  closeModal('walletModal'); showToast('✅ Wallet connected');
-}
-function spinWheel(){
-  const rewards=[5,10,15,25,50,100,5,10];
-  const r=rewards[Math.floor(Math.random()*rewards.length)];
-  addBal(r,'Spin Wheel');
-  document.getElementById('spinResult').textContent='+'+r+' GOLD';
-  openModal('spinModal');
-}
-function renderLeaderboard(){
-  const names=['CryptoKing','BeeLord','GoldHunter','HiveMaster','You','BeeQueen','NectarPro','HoneyBee','GoldSeeker','BuzzWin'];
-  const meIdx=4;
-  const list=names.map((n,i)=>({name:n, gold: i===meIdx? S.balance : Math.floor(Math.random()*50000)+1000}))
-    .sort((a,b)=>b.gold-a.gold);
-  document.getElementById('leaderList').innerHTML = list.slice(0,10).map((u,i)=>`
-    <div class="lb-row">
-      <div class="lb-rank ${i===0?'top1':i===1?'top2':i===2?'top3':''}">${i+1}</div>
-      <div style="flex:1"><b>${u.name}</b></div>
-      <div class="gold" style="font-weight:700">${u.gold.toLocaleString()} 🍯</div>
-    </div>`).join('');
-}
-function renderTxns(){
-  const el=document.getElementById('txnList');
-  if(!S.txns.length) return el.innerHTML='<div class="muted" style="text-align:center;padding:20px">No transactions yet</div>';
-  el.innerHTML = S.txns.map(t=>`
-    <div class="lb-row">
-      <div style="width:36px;height:36px;border-radius:8px;background:${t.amt>0?'#0f2a1a':'#2a1010'};display:flex;align-items:center;justify-content:center">${t.amt>0?'⬆️':'⬇️'}</div>
-      <div style="flex:1"><b>${t.reason}</b><div class="muted" style="font-size:11px">${new Date(t.t).toLocaleString()}</div></div>
-      <div style="color:${t.amt>0?'var(--green)':'var(--red)'};font-weight:700">${t.amt>0?'+':''}${t.amt}</div>
-    </div>`).join('');
-}
-
-/* ================= DAILY RESET TIMER ================= */
-setInterval(()=>{
-  const now=new Date();
-  const t=new Date(); t.setHours(24,0,0,0);
-  const diff=t-now;
-  const h=String(Math.floor(diff/3600000)).padStart(2,'0');
-  const m=String(Math.floor(diff%3600000/60000)).padStart(2,'0');
-  const s=String(Math.floor(diff%60000/1000)).padStart(2,'0');
-  const el=document.getElementById('resetTimer');
-  if(el) el.textContent=`${h}:${m}:${s}`;
-  // Reset daily counters at midnight
-  const key='gb_lastReset';
-  const today=new Date().toDateString();
-  if(localStorage.getItem(key)!==today){
-    localStorage.setItem(key,today);
-    S.ag1=0;S.mt=0;S.mg=0;S.todayEarn=0;save();render();
-  }
-},1000);
-
-/* ================= TELEGRAM INIT ================= */
-function initTG(){
-  try{
-    const tg=window.Telegram?.WebApp;
-    if(tg){
-      tg.ready(); tg.expand();
-      const u=tg.initDataUnsafe?.user;
-      if(u){
-        S.user=u;
-        const name = u.first_name + (u.last_name?' '+u.last_name:'');
-        const handle = '@'+(u.username || ('user'+u.id));
-        document.getElementById('username').textContent=handle;
-        document.getElementById('pName').textContent=name;
-        document.getElementById('pHandle').textContent=handle;
-        document.getElementById('pId').textContent=u.id;
-        document.getElementById('tgId').textContent=u.id;
-        const initials=(u.first_name?.[0]||'G')+(u.last_name?.[0]||'B');
-        document.querySelectorAll('.avatar').forEach(a=>{
-          a.firstChild.textContent=initials.toUpperCase();
-        });
-      }
-    }
-  }catch(e){}
-  updateRefLink();
-}
-
-/* ================= SPLASH LOADER ================= */
-window.addEventListener('load',()=>{
-  const steps=['Initializing...','Loading assets...','Connecting wallet...','Loading ads SDK...','Loading Complete'];
-  let p=0, i=0;
-  const bar=document.getElementById('progressBar');
-  const st=document.getElementById('loadStatus');
-  const iv=setInterval(()=>{
-    p+=Math.random()*18+8; if(p>100)p=100;
-    bar.style.width=p+'%';
-    if(i<steps.length-1 && p>(i+1)*20){ i++; st.textContent=steps[i]; }
-    if(p>=100){
-      clearInterval(iv); st.textContent='Loading Complete';
-      setTimeout(()=>{
-        const sp=document.getElementById('splash');
-        sp.style.opacity='0';
-        setTimeout(()=>sp.style.display='none',600);
-      },500);
-    }
-  },200);
-  initTG(); render();
-});
-
-// close modal on backdrop click
-document.querySelectorAll('.modal-bg').forEach(m=>m.addEventListener('click',e=>{
-  if(e.target===m) m.classList.remove('show');
-}));
 </script>
 </body>
 </html>
