@@ -4,36 +4,57 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>NectarPay - Earn USDT</title>
+    <meta name="description" content="Earn Nectar and convert to USDT" />
+    <meta property="og:title" content="NectarPay" />
+    <meta property="og:description" content="Earn Nectar rewards" />
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        /* ============ Global Styles ============ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
             background: #0b0904;
             color: #fef9e7;
             min-height: 100vh;
             display: flex;
             justify-content: center;
+            align-items: center;
         }
 
+        /* ============ App Container ============ */
         .app-container {
             max-width: 420px;
             width: 100%;
             min-height: 100vh;
             background: radial-gradient(ellipse at 30% 20%, #1a1205, #0b0904);
-            padding: 0 0 80px;
+            padding-bottom: 80px;
             position: relative;
+            overflow-x: hidden;
         }
 
+        /* ============ Hex Background ============ */
         .hex-bg {
             background-image: 
-                linear-gradient(30deg, rgba(245,158,11,0.03) 12%, transparent 12.5%, transparent 87%, rgba(245,158,11,0.03) 87.5%),
-                linear-gradient(150deg, rgba(245,158,11,0.03) 12%, transparent 12.5%, transparent 87%, rgba(245,158,11,0.03) 87.5%);
+                linear-gradient(30deg, rgba(245, 158, 11, 0.03) 12%, transparent 12.5%, transparent 87%, rgba(245, 158, 11, 0.03) 87.5%),
+                linear-gradient(150deg, rgba(245, 158, 11, 0.03) 12%, transparent 12.5%, transparent 87%, rgba(245, 158, 11, 0.03) 87.5%),
+                linear-gradient(30deg, rgba(245, 158, 11, 0.03) 12%, transparent 12.5%, transparent 87%, rgba(245, 158, 11, 0.03) 87.5%),
+                linear-gradient(150deg, rgba(245, 158, 11, 0.03) 12%, transparent 12.5%, transparent 87%, rgba(245, 158, 11, 0.03) 87.5%);
             background-size: 80px 140px;
-            background-position: 0 0, 40px 70px;
+            background-position: 0 0, 0 0, 40px 70px, 40px 70px;
         }
 
+        /* ============ Gold Text ============ */
         .gold-text {
             background: linear-gradient(135deg, #fde047, #f59e0b, #d97706);
             -webkit-background-clip: text;
@@ -41,6 +62,7 @@
             background-clip: text;
         }
 
+        /* ============ Glow Card ============ */
         .glow-card {
             background: rgba(20, 15, 8, 0.7);
             backdrop-filter: blur(12px);
@@ -48,6 +70,7 @@
             box-shadow: 0 4px 30px rgba(245, 158, 11, 0.05);
         }
 
+        /* ============ Gold Button ============ */
         .btn-gold {
             background: linear-gradient(135deg, #fde047, #f59e0b);
             color: #1a1205;
@@ -56,15 +79,49 @@
             border: none;
             cursor: pointer;
         }
-        .btn-gold:hover { transform: scale(0.98); box-shadow: 0 0 25px rgba(245,158,11,0.3); }
-        .btn-gold:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-gold:hover {
+            transform: scale(0.98);
+            box-shadow: 0 0 25px rgba(245, 158, 11, 0.3);
+        }
+        .btn-gold:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
 
+        /* ============ Animations ============ */
         @keyframes floaty {
             0%, 100% { transform: translateY(0px); }
             50% { transform: translateY(-10px); }
         }
         .floaty { animation: floaty 3s ease-in-out infinite; }
 
+        @keyframes spin-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .spin-slow { animation: spin-slow 20s linear infinite; }
+
+        /* ============ Toast ============ */
+        .toast {
+            position: fixed;
+            top: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            padding: 8px 20px;
+            border-radius: 9999px;
+            background: rgba(20, 15, 8, 0.9);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            color: #fef9e7;
+            font-size: 14px;
+            display: none;
+            max-width: 90%;
+            text-align: center;
+        }
+        .toast.show { display: block; }
+
+        /* ============ Bottom Navigation ============ */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -78,7 +135,6 @@
             display: grid;
             grid-template-columns: repeat(5, 1fr);
             padding: 8px 0 12px;
-            z-index: 50;
         }
         .nav-item {
             display: flex;
@@ -93,316 +149,524 @@
             padding: 4px 0;
             transition: color 0.2s;
         }
-        .nav-item.active { color: #fbbf24; }
-        .nav-item.active i { filter: drop-shadow(0 0 6px rgba(245,158,11,0.4)); }
-        .nav-item i { font-size: 20px; }
-
-        .toast {
-            position: fixed;
-            top: 16px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 100;
-            padding: 10px 24px;
-            border-radius: 9999px;
-            background: rgba(20, 15, 8, 0.95);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(245, 158, 11, 0.2);
-            color: #fef9e7;
-            font-size: 14px;
-            display: none;
-            max-width: 90%;
-            text-align: center;
+        .nav-item.active {
+            color: #fbbf24;
         }
-        .toast.show { display: block; }
+        .nav-item.active i {
+            filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.4));
+        }
+        .nav-item i {
+            font-size: 20px;
+        }
 
-        /* Modal */
+        /* ============ Modal ============ */
         .modal-overlay {
             position: fixed;
             inset: 0;
             z-index: 90;
-            background: rgba(0,0,0,0.7);
+            background: rgba(0, 0, 0, 0.7);
             display: none;
             align-items: center;
             justify-content: center;
             padding: 16px;
         }
         .modal-overlay.show { display: flex; }
-        .modal-content {
-            background: rgba(20,15,8,0.95);
+        .modal-box {
+            background: rgba(20, 15, 8, 0.9);
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(245,158,11,0.2);
+            border: 1px solid rgba(245, 158, 11, 0.15);
             border-radius: 16px;
             padding: 20px;
             width: 100%;
             max-width: 380px;
         }
 
-        .spin-wheel {
-            width: 100%;
-            aspect-ratio: 1/1;
-            border-radius: 50%;
-            border: 4px solid #fbbf24;
-            position: relative;
-            overflow: hidden;
-            transition: transform 3.5s cubic-bezier(0.17, 0.67, 0.12, 0.99);
-        }
-        .spin-pointer {
-            position: absolute;
-            top: -12px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-left: 10px solid transparent;
-            border-right: 10px solid transparent;
-            border-top: 20px solid #fbbf24;
-            z-index: 10;
-        }
-        .spin-center {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 64px;
-            height: 64px;
-            border-radius: 50%;
-            background: #422006;
-            border: 4px solid #fbbf24;
+        /* ============ Loading Screen ============ */
+        .loading-container {
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            z-index: 5;
-        }
-        .spin-slice {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            align-items: flex-start;
-            justify-content: center;
-            padding-top: 20px;
-            font-weight: 900;
-            color: white;
-            font-size: 18px;
+            justify-content: space-between;
+            min-height: 100vh;
+            padding: 64px 0;
         }
 
+        /* ============ Responsive ============ */
         @media (max-width: 420px) {
-            .app-container { padding: 0; }
+            .app-container { padding: 0 12px 80px; }
         }
     </style>
 </head>
 <body>
 
-<div id="app" class="app-container hex-bg">
+<div class="app-container hex-bg" id="app">
 
-    <!-- ===== TOP BAR ===== -->
-    <div class="flex items-center justify-between px-4 py-3 border-b border-yellow-900/40 bg-[#0b0904]/80 backdrop-blur sticky top-0 z-40">
-        <button class="text-yellow-50/80 text-xl"><i class="fas fa-times"></i></button>
-        <div class="flex items-center gap-2 font-semibold text-yellow-50">
-            <span class="text-2xl">🐝</span> NectarPay
-        </div>
-        <div class="flex items-center gap-2 text-yellow-50/70">
-            <i class="fas fa-chevron-down"></i>
-            <span class="text-xl">⋮</span>
-        </div>
-    </div>
-
-    <!-- ===== TOAST ===== -->
-    <div id="toast" class="toast"></div>
-
-    <!-- ===== MAIN CONTENT ===== -->
-    <main id="main-content" class="px-4 pt-4 space-y-5 pb-6">
-
-        <!-- Welcome -->
-        <div class="flex items-center gap-3">
-            <div class="w-14 h-14 rounded-2xl bg-emerald-400 text-emerald-950 flex items-center justify-center font-bold text-lg relative">
-                LJ
-                <span class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-400 border-2 border-[#0e0b06]"></span>
+    <!-- ========== LOADING SCREEN ========== -->
+    <div id="loadingScreen" class="loading-container">
+        <!-- Top Bar -->
+        <div class="flex items-center justify-between px-3 py-3 border-b border-yellow-900/40 bg-[#0b0904]/80 backdrop-blur w-full">
+            <button class="p-1.5 text-yellow-50/80"><i class="fas fa-times"></i></button>
+            <div class="flex items-center gap-2 font-semibold text-yellow-50">
+                <span class="text-xl">🐝</span> NectarPay
             </div>
-            <div class="flex-1">
-                <div class="text-yellow-100/60 text-sm">Welcome back</div>
-                <div class="text-yellow-400 font-semibold">@Lahiru657</div>
+            <div class="flex items-center gap-2 text-yellow-50/70">
+                <i class="fas fa-chevron-down"></i>
+                <span class="text-lg">⋮</span>
             </div>
-            <button class="w-11 h-11 rounded-xl glow-card flex items-center justify-center text-yellow-50">
-                <i class="fas fa-bell text-lg"></i>
-            </button>
         </div>
 
-        <!-- Balance -->
-        <div class="glow-card rounded-3xl p-5 text-center">
-            <div class="tracking-[0.3em] text-yellow-100/50 text-xs">YOUR BALANCE</div>
-            <div class="mt-2 flex items-baseline justify-center gap-2">
-                <span id="balance" class="text-6xl font-black gold-text">0</span>
-                <span class="text-2xl">🍯</span>
-                <span class="text-2xl font-bold gold-text">NECTAR</span>
+        <!-- Loading Content -->
+        <div class="flex flex-col items-center flex-1 justify-center">
+            <div class="relative w-40 h-40 rounded-full border-4 border-yellow-500/70 flex items-center justify-center floaty" style="background: radial-gradient(circle at 30% 30%, #422006, #1a1205); box-shadow: 0 0 60px rgba(245,158,11,0.55);">
+                <div class="absolute inset-2 rounded-full opacity-30 spin-slow" style="background-image: url('data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'60\' height=\'52\' viewBox=\'0 0 60 52\'><path d=\'M15 1 L45 1 L59 26 L45 51 L15 51 L1 26 Z\' fill=\'none\' stroke=\'%23fde047\' stroke-width=\'1.5\'/></svg>');"></div>
+                <div class="text-6xl">🍯</div>
+                <div class="absolute -right-1 bottom-2 w-11 h-11 rounded-full bg-emerald-500 flex items-center justify-center text-white font-bold text-lg shadow-lg">₮</div>
             </div>
-            <div class="text-yellow-100/60 text-sm mt-1">≈ <span id="usdt">0.0000</span> USDT</div>
-            <div class="mt-4 border-t border-yellow-900/50 pt-3 grid grid-cols-2 divide-x divide-yellow-900/50">
-                <div>
-                    <div class="text-yellow-100/50 text-xs">USDT Value</div>
-                    <div class="text-emerald-400 font-bold"><span id="usdt2">0.0000</span> USDT</div>
+            <h1 class="mt-8 text-5xl font-black gold-text tracking-tight">NectarPay</h1>
+            <p class="text-yellow-200/70 tracking-[0.3em] text-xs mt-2">EARN USDT</p>
+            <div class="flex gap-6 mt-8">
+                <div class="flex flex-col items-center gap-1.5">
+                    <div class="w-12 h-12 rounded-xl bg-yellow-900/40 border border-yellow-700/40 flex items-center justify-center text-yellow-300"><i class="fas fa-play"></i></div>
+                    <div class="text-[11px] text-yellow-200/70">Watch Ads</div>
                 </div>
-                <div>
-                    <div class="text-yellow-100/50 text-xs">Telegram ID</div>
-                    <div class="text-yellow-50">6202492881</div>
+                <div class="flex flex-col items-center gap-1.5">
+                    <div class="w-12 h-12 rounded-xl bg-yellow-900/40 border border-yellow-700/40 flex items-center justify-center text-yellow-300"><i class="fas fa-check"></i></div>
+                    <div class="text-[11px] text-yellow-200/70">Do Tasks</div>
+                </div>
+                <div class="flex flex-col items-center gap-1.5">
+                    <div class="w-12 h-12 rounded-xl bg-yellow-900/40 border border-yellow-700/40 flex items-center justify-center text-yellow-300"><i class="fas fa-users"></i></div>
+                    <div class="text-[11px] text-yellow-200/70">Refer & Earn</div>
                 </div>
             </div>
         </div>
 
-        <!-- Quick Actions -->
-        <div>
-            <div class="tracking-[0.2em] text-yellow-100/50 text-xs mb-2">QUICK ACTIONS</div>
-            <div class="grid grid-cols-4 gap-2">
-                <button class="glow-card rounded-2xl py-3 flex flex-col items-center gap-1.5" onclick="claimDaily()">
-                    <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-emerald-900/40 text-emerald-300 text-xl"><i class="fas fa-gift"></i></div>
-                    <div class="text-xs text-yellow-50 font-medium">Daily</div>
-                </button>
-                <button class="glow-card rounded-2xl py-3 flex flex-col items-center gap-1.5" onclick="showRedeemModal()">
-                    <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-purple-900/40 text-purple-300 text-xl"><i class="fas fa-bolt"></i></div>
-                    <div class="text-xs text-yellow-50 font-medium">Reward</div>
-                </button>
-                <button class="glow-card rounded-2xl py-3 flex flex-col items-center gap-1.5" onclick="showToast('💳 Wallet section coming soon')">
-                    <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-blue-900/40 text-blue-300 text-xl"><i class="fas fa-wallet"></i></div>
-                    <div class="text-xs text-yellow-50 font-medium">Withdraw</div>
-                </button>
-                <button class="glow-card rounded-2xl py-3 flex flex-col items-center gap-1.5" onclick="showToast('🏆 Leaderboard coming soon')">
-                    <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-yellow-900/40 text-yellow-300 text-xl"><i class="fas fa-trophy"></i></div>
-                    <div class="text-xs text-yellow-50 font-medium">Leaders</div>
-                </button>
+        <!-- Progress Bar -->
+        <div class="w-full px-8">
+            <div class="h-2 rounded-full bg-yellow-900/40 overflow-hidden">
+                <div id="progressBar" class="h-full rounded-full transition-all duration-200" style="width: 0%; background: linear-gradient(90deg, #fde047, #f59e0b); box-shadow: 0 0 12px #f59e0b;"></div>
             </div>
-            <div class="grid grid-cols-3 gap-2 mt-2">
-                <button class="glow-card rounded-2xl py-3 flex flex-col items-center gap-1.5" onclick="switchTab('spin')">
-                    <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-pink-900/40 text-pink-300 text-xl"><i class="fas fa-spinner"></i></div>
-                    <div class="text-xs text-yellow-50 font-medium">Spin</div>
-                </button>
-                <button class="glow-card rounded-2xl py-3 flex flex-col items-center gap-1.5" onclick="switchTab('mining')">
-                    <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-orange-900/40 text-orange-300 text-xl"><i class="fas fa-hammer"></i></div>
-                    <div class="text-xs text-yellow-50 font-medium">Mining</div>
-                </button>
-                <button class="glow-card rounded-2xl py-3 flex flex-col items-center gap-1.5" onclick="switchTab('achievements')">
-                    <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-cyan-900/40 text-cyan-300 text-xl"><i class="fas fa-award"></i></div>
-                    <div class="text-xs text-yellow-50 font-medium">Achieve</div>
-                </button>
-            </div>
-        </div>
-
-        <!-- Earn More -->
-        <div>
-            <div class="tracking-[0.2em] text-yellow-100/50 text-xs mb-2">EARN MORE</div>
-            <div class="grid grid-cols-3 gap-2">
-                <div class="rounded-2xl p-3 bg-gradient-to-br from-blue-800/50 to-black/60 border border-yellow-900/40">
-                    <div class="w-9 h-9 rounded-full border border-yellow-100/20 flex items-center justify-center text-yellow-100"><i class="fas fa-play"></i></div>
-                    <div class="mt-2 font-bold text-yellow-50 text-sm">Watch Ads</div>
-                    <div class="text-xs text-yellow-200/70">Up to 10</div>
-                </div>
-                <div class="rounded-2xl p-3 bg-gradient-to-br from-emerald-800/50 to-black/60 border border-yellow-900/40">
-                    <div class="w-9 h-9 rounded-full border border-yellow-100/20 flex items-center justify-center text-yellow-100"><i class="fas fa-check-square"></i></div>
-                    <div class="mt-2 font-bold text-yellow-50 text-sm">Tasks</div>
-                    <div class="text-xs text-yellow-200/70">20-200</div>
-                </div>
-                <div class="rounded-2xl p-3 bg-gradient-to-br from-purple-800/50 to-black/60 border border-yellow-900/40">
-                    <div class="w-9 h-9 rounded-full border border-yellow-100/20 flex items-center justify-center text-yellow-100"><i class="fas fa-users"></i></div>
-                    <div class="mt-2 font-bold text-yellow-50 text-sm">Refer</div>
-                    <div class="text-xs text-yellow-200/70">Up to 150</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Referral Link -->
-        <div class="glow-card rounded-2xl p-4">
-            <div class="flex justify-between items-center mb-2">
-                <div class="flex items-center gap-2 font-semibold text-yellow-50">
-                    <i class="fas fa-users text-purple-300"></i> Your Referral Link
-                </div>
-                <div class="text-yellow-400 font-bold text-sm">+150 Nectar</div>
-            </div>
-            <div class="flex items-center gap-2 bg-black/40 border border-yellow-900/40 rounded-xl px-3 py-2.5">
-                <span id="refLink" class="truncate text-yellow-100/70 text-xs flex-1">https://t.me/NectarPayBot/play?startapp=ref_6202492881</span>
-                <button onclick="copyLink()" class="text-yellow-300"><i class="fas fa-copy"></i></button>
-            </div>
-        </div>
-
-        <!-- ====== SPIN WHEEL SECTION (hidden by default) ====== -->
-        <div id="spin-section" class="hidden space-y-4">
-            <div class="flex items-center gap-3">
-                <button onclick="switchTab('home')" class="w-11 h-11 rounded-xl glow-card flex items-center justify-center"><i class="fas fa-arrow-left text-yellow-50"></i></button>
-                <div>
-                    <div class="text-2xl font-black text-yellow-50">Spin Wheel</div>
-                    <div class="text-yellow-100/60 text-sm">Free spin every 6 hours</div>
-                </div>
-            </div>
-            <div class="relative w-72 h-72 mx-auto">
-                <div class="spin-pointer"></div>
-                <div id="spinWheel" class="spin-wheel" style="transform: rotate(0deg); background: conic-gradient(#f59e0b 0deg 45deg, #dc2626 45deg 90deg, #f59e0b 90deg 135deg, #059669 135deg 180deg, #f59e0b 180deg 225deg, #7c3aed 225deg 270deg, #f59e0b 270deg 315deg, #0891b2 315deg 360deg);">
-                    <div class="spin-slice" style="transform: rotate(22.5deg);">5</div>
-                    <div class="spin-slice" style="transform: rotate(67.5deg);">25</div>
-                    <div class="spin-slice" style="transform: rotate(112.5deg);">10</div>
-                    <div class="spin-slice" style="transform: rotate(157.5deg);">50</div>
-                    <div class="spin-slice" style="transform: rotate(202.5deg);">15</div>
-                    <div class="spin-slice" style="transform: rotate(247.5deg);">100</div>
-                    <div class="spin-slice" style="transform: rotate(292.5deg);">20</div>
-                    <div class="spin-slice" style="transform: rotate(337.5deg);">200</div>
-                    <div class="spin-center">🍯</div>
-                </div>
-            </div>
-            <button id="spinBtn" onclick="spinWheel()" class="btn-gold w-full py-4 rounded-2xl text-lg">SPIN!</button>
-        </div>
-
-        <!-- ====== MINING SECTION (hidden by default) ====== -->
-        <div id="mining-section" class="hidden space-y-4">
-            <div class="flex items-center gap-3">
-                <button onclick="switchTab('home')" class="w-11 h-11 rounded-xl glow-card flex items-center justify-center"><i class="fas fa-arrow-left text-yellow-50"></i></button>
-                <div>
-                    <div class="text-2xl font-black text-yellow-50">Nectar Mining</div>
-                    <div class="text-yellow-100/60 text-sm">Passive earning while you're away</div>
-                </div>
-            </div>
-            <div class="glow-card rounded-2xl p-5 text-center">
-                <div class="text-6xl mb-2">⛏</div>
-                <div class="text-yellow-100/60 text-sm">Level <span id="miningLevel">1</span> • <span id="miningRate">1</span> Nectar/hour</div>
-                <div class="mt-4 text-5xl font-black gold-text"><span id="pendingMining">0.0</span></div>
-                <div class="text-yellow-100/60 text-sm">Pending (cap <span id="miningCap">8</span>)</div>
-                <div class="h-2 rounded-full bg-black/50 mt-3 overflow-hidden">
-                    <div id="miningProgress" class="h-full bg-gradient-to-r from-orange-400 to-yellow-400" style="width: 0%"></div>
-                </div>
-                <div class="grid grid-cols-2 gap-2 mt-4">
-                    <button onclick="startMining()" id="startMiningBtn" class="btn-gold py-3 rounded-xl col-span-2">Start Mining</button>
-                    <button onclick="claimMining()" id="claimMiningBtn" class="btn-gold py-3 rounded-xl hidden">Claim</button>
-                    <button onclick="upgradeMining()" class="py-3 rounded-xl font-semibold glow-card text-yellow-100 col-span-2">Upgrade (500N)</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- ====== ACHIEVEMENTS SECTION (hidden by default) ====== -->
-        <div id="achievements-section" class="hidden space-y-3">
-            <div class="flex items-center gap-3">
-                <button onclick="switchTab('home')" class="w-11 h-11 rounded-xl glow-card flex items-center justify-center"><i class="fas fa-arrow-left text-yellow-50"></i></button>
-                <div>
-                    <div class="text-2xl font-black text-yellow-50">Achievements</div>
-                    <div class="text-yellow-100/60 text-sm">Milestones & rewards</div>
-                </div>
-            </div>
-            <div id="achievementsList"></div>
-        </div>
-
-    </main>
-
-    <!-- ====== REDEEM MODAL ====== -->
-    <div id="redeemModal" class="modal-overlay">
-        <div class="modal-content">
-            <div class="flex justify-between items-center mb-3">
-                <div class="font-bold text-yellow-50">Enter Reward Code</div>
-                <button onclick="closeRedeemModal()"><i class="fas fa-times text-yellow-100/70"></i></button>
-            </div>
-            <input id="redeemInput" type="text" placeholder="e.g. WELCOME50" class="w-full bg-black/40 border border-yellow-900/50 rounded-xl px-4 py-3 text-yellow-50 outline-none focus:border-yellow-500 uppercase" />
-            <button onclick="redeemCode()" class="btn-gold w-full py-3 rounded-xl mt-3">Redeem</button>
-            <div class="text-xs text-yellow-100/50 mt-2">Try: WELCOME50, NECTAR100, SWEETBEE</div>
+            <div id="loadingText" class="text-center text-yellow-200/70 mt-3 text-sm">Loading...</div>
         </div>
     </div>
 
-    <!-- ====== BOTTOM NAV ====== -->
-    <nav class="bottom-nav">
+    <!-- ========== MAIN CONTENT (Hidden initially) ========== -->
+    <div id="mainContent" style="display: none;">
+
+        <!-- ========== TOP BAR ========== -->
+        <div class="flex items-center justify-between px-3 py-3 border-b border-yellow-900/40 bg-[#0b0904]/80 backdrop-blur">
+            <button class="p-1.5 text-yellow-50/80"><i class="fas fa-times"></i></button>
+            <div class="flex items-center gap-2 font-semibold text-yellow-50">
+                <span class="text-xl">🐝</span> NectarPay
+            </div>
+            <div class="flex items-center gap-2 text-yellow-50/70">
+                <i class="fas fa-chevron-down"></i>
+                <span class="text-lg">⋮</span>
+            </div>
+        </div>
+
+        <!-- ========== TOAST ========== -->
+        <div id="toast" class="toast"></div>
+
+        <!-- ========== MAIN CONTENT AREA ========== -->
+        <main class="px-4 pt-4" id="mainContentArea">
+
+            <!-- ===== HOME VIEW ===== -->
+            <div id="homeView">
+                <div class="space-y-5">
+                    <!-- Welcome -->
+                    <div class="flex items-center gap-3">
+                        <div class="w-14 h-14 rounded-2xl bg-emerald-400 text-emerald-950 flex items-center justify-center font-bold text-lg relative">
+                            LJ
+                            <span class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-400 border-2 border-[#0e0b06]"></span>
+                        </div>
+                        <div class="flex-1">
+                            <div class="text-yellow-100/60 text-sm">Welcome back</div>
+                            <div class="text-yellow-400 font-semibold">@Lahiru657</div>
+                        </div>
+                        <button class="w-11 h-11 rounded-xl glow-card flex items-center justify-center"><i class="fas fa-bell text-yellow-50/80"></i></button>
+                    </div>
+
+                    <!-- Balance -->
+                    <div class="glow-card rounded-3xl p-5 text-center">
+                        <div class="tracking-[0.3em] text-yellow-100/50 text-xs">YOUR BALANCE</div>
+                        <div class="mt-2 flex items-baseline justify-center gap-2">
+                            <span id="nectarBalance" class="text-6xl font-black gold-text">0</span>
+                            <span class="text-2xl">🍯</span>
+                            <span class="text-2xl font-bold gold-text">NECTAR</span>
+                        </div>
+                        <div class="text-yellow-100/60 text-sm mt-1">≈ <span id="usdtBalance">0.0000</span> USDT</div>
+                        <div class="mt-4 border-t border-yellow-900/50 pt-3 grid grid-cols-2 divide-x divide-yellow-900/50">
+                            <div>
+                                <div class="text-yellow-100/50 text-xs">USDT Value</div>
+                                <div class="text-emerald-400 font-bold"><span id="usdtValue">0.0000</span> USDT</div>
+                            </div>
+                            <div>
+                                <div class="text-yellow-100/50 text-xs">Telegram ID</div>
+                                <div class="text-yellow-50">6202492881</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div>
+                        <div class="tracking-[0.2em] text-yellow-100/50 text-xs mb-2">QUICK ACTIONS</div>
+                        <div class="grid grid-cols-4 gap-2">
+                            <button onclick="claimDaily()" class="glow-card rounded-2xl py-3 flex flex-col items-center gap-1.5 active:scale-95 transition">
+                                <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-emerald-900/40 text-emerald-300"><i class="fas fa-gift text-xl"></i></div>
+                                <div class="text-xs text-yellow-50 font-medium">Daily</div>
+                            </button>
+                            <button onclick="openRedeem()" class="glow-card rounded-2xl py-3 flex flex-col items-center gap-1.5 active:scale-95 transition">
+                                <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-purple-900/40 text-purple-300"><i class="fas fa-bolt text-xl"></i></div>
+                                <div class="text-xs text-yellow-50 font-medium">Reward</div>
+                            </button>
+                            <button onclick="showToast('💳 Wallet section')" class="glow-card rounded-2xl py-3 flex flex-col items-center gap-1.5 active:scale-95 transition">
+                                <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-blue-900/40 text-blue-300"><i class="fas fa-wallet text-xl"></i></div>
+                                <div class="text-xs text-yellow-50 font-medium">Withdraw</div>
+                            </button>
+                            <button onclick="switchTab('leaderboard')" class="glow-card rounded-2xl py-3 flex flex-col items-center gap-1.5 active:scale-95 transition">
+                                <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-yellow-900/40 text-yellow-300"><i class="fas fa-trophy text-xl"></i></div>
+                                <div class="text-xs text-yellow-50 font-medium">Leaders</div>
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 mt-2">
+                            <button onclick="showToast('🎡 Spin the wheel!')" class="glow-card rounded-2xl py-3 flex flex-col items-center gap-1.5 active:scale-95 transition">
+                                <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-pink-900/40 text-pink-300"><i class="fas fa-sparkles text-xl"></i></div>
+                                <div class="text-xs text-yellow-50 font-medium">Spin</div>
+                            </button>
+                            <button onclick="showToast('⛏ Mining started!')" class="glow-card rounded-2xl py-3 flex flex-col items-center gap-1.5 active:scale-95 transition">
+                                <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-orange-900/40 text-orange-300"><i class="fas fa-hammer text-xl"></i></div>
+                                <div class="text-xs text-yellow-50 font-medium">Mining</div>
+                            </button>
+                            <button onclick="showToast('🏆 Achievements')" class="glow-card rounded-2xl py-3 flex flex-col items-center gap-1.5 active:scale-95 transition">
+                                <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-cyan-900/40 text-cyan-300"><i class="fas fa-award text-xl"></i></div>
+                                <div class="text-xs text-yellow-50 font-medium">Achieve</div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Earn More -->
+                    <div>
+                        <div class="tracking-[0.2em] text-yellow-100/50 text-xs mb-2">EARN MORE</div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="rounded-2xl p-3 bg-gradient-to-br from-blue-800/50 to-black/60 border border-yellow-900/40">
+                                <div class="w-9 h-9 rounded-full border border-yellow-100/20 flex items-center justify-center text-yellow-100"><i class="fas fa-play"></i></div>
+                                <div class="mt-2 font-bold text-yellow-50 text-sm">Watch Ads</div>
+                                <div class="text-xs text-yellow-200/70">Up to 10</div>
+                            </div>
+                            <div class="rounded-2xl p-3 bg-gradient-to-br from-emerald-800/50 to-black/60 border border-yellow-900/40">
+                                <div class="w-9 h-9 rounded-full border border-yellow-100/20 flex items-center justify-center text-yellow-100"><i class="fas fa-check-square"></i></div>
+                                <div class="mt-2 font-bold text-yellow-50 text-sm">Tasks</div>
+                                <div class="text-xs text-yellow-200/70">20-200</div>
+                            </div>
+                            <div class="rounded-2xl p-3 bg-gradient-to-br from-purple-800/50 to-black/60 border border-yellow-900/40">
+                                <div class="w-9 h-9 rounded-full border border-yellow-100/20 flex items-center justify-center text-yellow-100"><i class="fas fa-users"></i></div>
+                                <div class="mt-2 font-bold text-yellow-50 text-sm">Refer</div>
+                                <div class="text-xs text-yellow-200/70">Up to 150</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Referral Link -->
+                    <div class="glow-card rounded-2xl p-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <div class="flex items-center gap-2 font-semibold text-yellow-50"><i class="fas fa-users text-purple-300"></i> Your Referral Link</div>
+                            <div class="text-yellow-400 font-bold text-sm">+150 Nectar</div>
+                        </div>
+                        <div class="flex items-center gap-2 bg-black/40 border border-yellow-900/40 rounded-xl px-3 py-2.5">
+                            <span id="refLink" class="truncate text-yellow-100/70 text-xs flex-1">https://t.me/NectarPayBot/play?startapp=ref_6202492881</span>
+                            <button onclick="copyLink()" class="text-yellow-300"><i class="fas fa-copy"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== ADS VIEW (Hidden) ===== -->
+            <div id="adsView" style="display: none;">
+                <div class="space-y-4">
+                    <div class="flex items-start gap-3">
+                        <button class="w-11 h-11 rounded-xl glow-card flex items-center justify-center"><i class="fas fa-arrow-left text-yellow-50/40"></i></button>
+                        <div>
+                            <div class="text-2xl font-black text-yellow-50">Earn</div>
+                            <div class="text-yellow-100/60 text-sm">Watch ads & visit websites</div>
+                        </div>
+                    </div>
+                    <div class="glow-card rounded-2xl p-4 flex justify-between">
+                        <div>
+                            <div class="text-yellow-100/50 text-xs tracking-widest">TODAY EARNED</div>
+                            <div class="text-yellow-400 font-black text-3xl"><span id="todayEarned">0</span> NECTAR</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-yellow-100/50 text-xs tracking-widest">AVAILABLE</div>
+                            <div class="text-emerald-400 font-black text-3xl"><span id="dailyRemaining">270</span> NECTAR</div>
+                        </div>
+                    </div>
+                    <div class="glow-card rounded-2xl px-4 py-3 flex justify-between items-center">
+                        <span class="text-yellow-100/70 text-sm">Daily reset in:</span>
+                        <span id="countdown" class="text-yellow-400 font-bold">24:00:00</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="setAdMode('ads')" id="adsModeBtn" class="py-3 rounded-2xl font-semibold btn-gold">📺 Watch Ads</button>
+                        <button onclick="setAdMode('visits')" id="visitsModeBtn" class="py-3 rounded-2xl font-semibold glow-card text-yellow-100 flex items-center justify-center gap-2"><i class="fas fa-globe"></i> Visit Sites</button>
+                    </div>
+                    <div id="adsList">
+                        <div class="rounded-2xl p-4 bg-gradient-to-br from-yellow-900/30 to-black/60 border border-yellow-900/40">
+                            <div class="flex items-center gap-3">
+                                <div class="text-4xl">📺</div>
+                                <div class="flex-1">
+                                    <div class="font-bold text-yellow-50 text-lg">Adsgram Reward</div>
+                                    <div class="text-yellow-300 font-semibold">+10 Nectar per ad</div>
+                                </div>
+                            </div>
+                            <div class="mt-3 flex justify-between text-xs text-yellow-100/70">
+                                <span><span id="adsgramWatched">0</span> / 5 ads</span>
+                                <span id="adsgramLeft">5 left</span>
+                            </div>
+                            <div class="h-1.5 rounded-full bg-black/40 mt-1.5 overflow-hidden">
+                                <div id="adsgramProgress" class="h-full bg-gradient-to-r from-yellow-400 to-orange-500" style="width: 0%;"></div>
+                            </div>
+                            <button onclick="watchAd('adsgram')" class="btn-gold w-full py-3 rounded-xl mt-3 flex items-center justify-center gap-2"><i class="fas fa-play"></i> Watch Ad — +10N</button>
+                        </div>
+                        <div class="rounded-2xl p-4 bg-gradient-to-br from-blue-900/40 to-black/60 border border-yellow-900/40 mt-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 rounded-xl bg-black/40 flex items-center justify-center"><i class="fas fa-bullseye text-red-400 text-2xl"></i></div>
+                                <div class="flex-1">
+                                    <div class="font-bold text-yellow-50 text-lg">AdsGram AI</div>
+                                    <div class="text-yellow-300 font-semibold">+8 Nectar per ad</div>
+                                </div>
+                            </div>
+                            <div class="mt-3 flex justify-between text-xs text-yellow-100/70">
+                                <span><span id="adsgramAiWatched">0</span> / 15 ads</span>
+                                <span id="adsgramAiLeft">15 left</span>
+                            </div>
+                            <div class="h-1.5 rounded-full bg-black/40 mt-1.5 overflow-hidden">
+                                <div id="adsgramAiProgress" class="h-full bg-gradient-to-r from-yellow-400 to-orange-500" style="width: 0%;"></div>
+                            </div>
+                            <button onclick="watchAd('adsgramai')" class="btn-gold w-full py-3 rounded-xl mt-3 flex items-center justify-center gap-2"><i class="fas fa-play"></i> Watch Ad — +8N</button>
+                        </div>
+                        <div class="rounded-2xl p-4 bg-gradient-to-br from-orange-900/40 to-black/60 border border-yellow-900/40 mt-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 rounded-xl bg-black/40 flex items-center justify-center"><i class="fas fa-fire text-orange-400 text-2xl"></i></div>
+                                <div class="flex-1">
+                                    <div class="font-bold text-yellow-50 text-lg">Monetag Rewarded</div>
+                                    <div class="text-yellow-300 font-semibold">+15 Nectar per ad</div>
+                                </div>
+                            </div>
+                            <div class="mt-3 flex justify-between text-xs text-yellow-100/70">
+                                <span><span id="monetagWatched">0</span> / 10 ads</span>
+                                <span id="monetagLeft">10 left</span>
+                            </div>
+                            <div class="h-1.5 rounded-full bg-black/40 mt-1.5 overflow-hidden">
+                                <div id="monetagProgress" class="h-full bg-gradient-to-r from-yellow-400 to-orange-500" style="width: 0%;"></div>
+                            </div>
+                            <button onclick="watchAd('monetag')" class="btn-gold w-full py-3 rounded-xl mt-3 flex items-center justify-center gap-2"><i class="fas fa-play"></i> Watch Ad — +15N</button>
+                        </div>
+                    </div>
+                    <div id="visitsList" style="display: none;">
+                        <div class="glow-card rounded-2xl p-4 flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-xl bg-blue-900/40 flex items-center justify-center"><i class="fas fa-globe text-blue-300 text-xl"></i></div>
+                            <div class="flex-1">
+                                <div class="font-bold text-yellow-50">Crypto News</div>
+                                <div class="text-xs text-yellow-100/60">Visit for 4s to earn +12 Nectar</div>
+                            </div>
+                            <button onclick="visitSite('v1')" class="px-3 py-2 rounded-xl text-sm font-semibold btn-gold">Visit</button>
+                        </div>
+                        <div class="glow-card rounded-2xl p-4 flex items-center gap-3 mt-4">
+                            <div class="w-12 h-12 rounded-xl bg-blue-900/40 flex items-center justify-center"><i class="fas fa-globe text-blue-300 text-xl"></i></div>
+                            <div class="flex-1">
+                                <div class="font-bold text-yellow-50">DeFi Portal</div>
+                                <div class="text-xs text-yellow-100/60">Visit for 4s to earn +15 Nectar</div>
+                            </div>
+                            <button onclick="visitSite('v2')" class="px-3 py-2 rounded-xl text-sm font-semibold btn-gold">Visit</button>
+                        </div>
+                        <div class="glow-card rounded-2xl p-4 flex items-center gap-3 mt-4">
+                            <div class="w-12 h-12 rounded-xl bg-blue-900/40 flex items-center justify-center"><i class="fas fa-globe text-blue-300 text-xl"></i></div>
+                            <div class="flex-1">
+                                <div class="font-bold text-yellow-50">Web3 Blog</div>
+                                <div class="text-xs text-yellow-100/60">Visit for 4s to earn +10 Nectar</div>
+                            </div>
+                            <button onclick="visitSite('v3')" class="px-3 py-2 rounded-xl text-sm font-semibold btn-gold">Visit</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== TASKS VIEW (Hidden) ===== -->
+            <div id="tasksView" style="display: none;">
+                <div class="space-y-4">
+                    <div class="flex items-start gap-3">
+                        <button class="w-11 h-11 rounded-xl glow-card flex items-center justify-center"><i class="fas fa-arrow-left text-yellow-50/40"></i></button>
+                        <div>
+                            <div class="text-2xl font-black text-yellow-50">Tasks</div>
+                            <div class="text-yellow-100/60 text-sm">Complete tasks to earn Nectar</div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick="setTaskCat('main')" id="taskMain" class="py-3 rounded-2xl font-semibold capitalize btn-gold">main</button>
+                        <button onclick="setTaskCat('partner')" id="taskPartner" class="py-3 rounded-2xl font-semibold capitalize glow-card text-yellow-100">partner</button>
+                        <button onclick="setTaskCat('community')" id="taskCommunity" class="py-3 rounded-2xl font-semibold capitalize glow-card text-yellow-100">community</button>
+                    </div>
+                    <div id="taskList">
+                        <!-- Tasks will be rendered here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== REFER VIEW (Hidden) ===== -->
+            <div id="referView" style="display: none;">
+                <div class="space-y-4">
+                    <div class="flex items-start gap-3">
+                        <button class="w-11 h-11 rounded-xl glow-card flex items-center justify-center"><i class="fas fa-arrow-left text-yellow-50/40"></i></button>
+                        <div>
+                            <div class="text-2xl font-black text-yellow-50">Refer & Earn</div>
+                            <div class="text-yellow-100/60 text-sm">Earn up to 150 Nectar per referral</div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div class="glow-card rounded-2xl p-4 text-center">
+                            <div class="text-3xl font-black text-yellow-50" id="totalRefs">0</div>
+                            <div class="text-yellow-100/60 text-xs">Total Refs</div>
+                        </div>
+                        <div class="glow-card rounded-2xl p-4 text-center">
+                            <div class="text-3xl font-black text-emerald-400" id="completedRefs">0</div>
+                            <div class="text-yellow-100/60 text-xs">Completed</div>
+                        </div>
+                        <div class="glow-card rounded-2xl p-4 text-center">
+                            <div class="text-3xl font-black text-yellow-400" id="refEarned">0</div>
+                            <div class="text-yellow-100/60 text-xs">Nectar Earned</div>
+                        </div>
+                    </div>
+                    <div class="glow-card rounded-2xl p-4">
+                        <div class="text-yellow-100/50 tracking-widest text-xs mb-2">YOUR REFERRAL LINK</div>
+                        <div class="bg-black/40 border border-yellow-900/40 rounded-xl px-3 py-3 text-yellow-100/80 text-xs truncate" id="refLinkDisplay">https://t.me/NectarPayBot/play?startapp=ref_6202492881</div>
+                        <div class="grid grid-cols-2 gap-2 mt-3">
+                            <button onclick="copyRefLink()" class="btn-gold py-3 rounded-xl flex items-center justify-center gap-2"><i class="fas fa-copy"></i> Copy Link</button>
+                            <button onclick="shareRefLink()" class="glow-card py-3 rounded-xl flex items-center justify-center gap-2 text-yellow-50 font-semibold"><i class="fas fa-share-alt"></i> Share</button>
+                        </div>
+                    </div>
+                    <div class="tracking-widest text-yellow-100/50 text-xs">REWARD STRUCTURE</div>
+                    <div class="glow-card rounded-2xl p-4 space-y-4">
+                        <div class="flex gap-3">
+                            <div class="w-8 h-8 rounded-full border-2 border-yellow-500 text-yellow-400 flex items-center justify-center font-bold">1</div>
+                            <div class="flex-1">
+                                <div class="flex justify-between"><span class="font-bold text-yellow-50">Friend joins</span><span class="text-yellow-400 font-bold">+25 Nectar</span></div>
+                                <div class="text-yellow-100/60 text-sm">Instant reward when they sign up</div>
+                            </div>
+                        </div>
+                        <div class="flex gap-3">
+                            <div class="w-8 h-8 rounded-full border-2 border-yellow-500 text-yellow-400 flex items-center justify-center font-bold">2</div>
+                            <div class="flex-1">
+                                <div class="flex justify-between"><span class="font-bold text-yellow-50">Watches 10 ads</span><span class="text-yellow-400 font-bold">+50 Nectar</span></div>
+                                <div class="text-yellow-100/60 text-sm">After first 10 ad watches</div>
+                            </div>
+                        </div>
+                        <div class="flex gap-3">
+                            <div class="w-8 h-8 rounded-full border-2 border-yellow-500 text-yellow-400 flex items-center justify-center font-bold">3</div>
+                            <div class="flex-1">
+                                <div class="flex justify-between"><span class="font-bold text-yellow-50">Day 2 milestone</span><span class="text-yellow-400 font-bold">+75 Nectar</span></div>
+                                <div class="text-yellow-100/60 text-sm">10 more ads on their 2nd day</div>
+                            </div>
+                        </div>
+                        <div class="border-t border-yellow-900/50 pt-3 flex justify-between items-center">
+                            <div>
+                                <div class="font-bold text-yellow-50">Total per referral</div>
+                                <div class="text-xs text-yellow-100/60">⚠ Referral must complete milestones within 48 hours</div>
+                            </div>
+                            <div class="text-2xl font-black gold-text">150 Nectar</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== PROFILE VIEW (Hidden) ===== -->
+            <div id="profileView" style="display: none;">
+                <div class="space-y-4">
+                    <div class="flex flex-col items-center pt-2">
+                        <div class="w-28 h-28 rounded-3xl bg-emerald-400 text-emerald-950 flex items-center justify-center font-black text-4xl">LJ</div>
+                        <div class="mt-3 text-2xl font-bold text-yellow-50">Lahiru Jayasekara</div>
+                        <div class="text-yellow-400">@Lahiru657</div>
+                        <div class="text-yellow-100/40 text-sm font-mono">ID: 6202492881</div>
+                    </div>
+                    <div class="glow-card rounded-2xl p-5 text-center">
+                        <div class="text-5xl font-black gold-text"><span id="profileNectar">0</span> <span class="text-2xl">🍯</span> <span class="text-2xl">NECTAR</span></div>
+                        <div class="text-yellow-100/60">≈ <span id="profileUsdt">0.0000</span> USDT</div>
+                    </div>
+                    <button onclick="showToast('💳 Wallet section')" class="w-full glow-card rounded-2xl p-4 flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-blue-900/40 flex items-center justify-center"><i class="fas fa-wallet text-blue-300 text-xl"></i></div>
+                        <div class="flex-1 text-left">
+                            <div class="text-yellow-100/60 text-xs">BEP20 Wallet</div>
+                            <div class="font-semibold text-yellow-50">Not connected</div>
+                        </div>
+                        <i class="fas fa-chevron-right text-yellow-100/40"></i>
+                    </button>
+                    <div>
+                        <div class="tracking-widest text-yellow-100/50 text-xs mb-2">FINANCE</div>
+                        <div class="glow-card rounded-2xl divide-y divide-yellow-900/40 overflow-hidden">
+                            <button onclick="showToast('💳 Wallet section')" class="w-full flex items-center gap-3 px-4 py-3.5 text-left">
+                                <div class="w-9 h-9 rounded-xl bg-black/40 flex items-center justify-center"><i class="fas fa-wallet text-blue-300"></i></div>
+                                <div class="flex-1 text-yellow-50 font-medium">Wallet</div>
+                                <i class="fas fa-chevron-right text-yellow-100/40"></i>
+                            </button>
+                            <button onclick="showToast('📜 Transactions')" class="w-full flex items-center gap-3 px-4 py-3.5 text-left">
+                                <div class="w-9 h-9 rounded-xl bg-black/40 flex items-center justify-center"><i class="fas fa-history text-emerald-300"></i></div>
+                                <div class="flex-1 text-yellow-50 font-medium">Transactions</div>
+                                <i class="fas fa-chevron-right text-yellow-100/40"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="tracking-widest text-yellow-100/50 text-xs mb-2">SOCIAL</div>
+                        <div class="glow-card rounded-2xl divide-y divide-yellow-900/40 overflow-hidden">
+                            <button onclick="showToast('👥 Switch to Refer tab')" class="w-full flex items-center gap-3 px-4 py-3.5 text-left">
+                                <div class="w-9 h-9 rounded-xl bg-black/40 flex items-center justify-center"><i class="fas fa-users text-purple-300"></i></div>
+                                <div class="flex-1 text-yellow-50 font-medium">Refer Friends</div>
+                                <i class="fas fa-chevron-right text-yellow-100/40"></i>
+                            </button>
+                            <button onclick="switchTab('leaderboard')" class="w-full flex items-center gap-3 px-4 py-3.5 text-left">
+                                <div class="w-9 h-9 rounded-xl bg-black/40 flex items-center justify-center"><i class="fas fa-trophy text-yellow-300"></i></div>
+                                <div class="flex-1 text-yellow-50 font-medium">Leaderboard</div>
+                                <i class="fas fa-chevron-right text-yellow-100/40"></i>
+                            </button>
+                            <button onclick="showToast('🏆 Achievements')" class="w-full flex items-center gap-3 px-4 py-3.5 text-left">
+                                <div class="w-9 h-9 rounded-xl bg-black/40 flex items-center justify-center"><i class="fas fa-award text-cyan-300"></i></div>
+                                <div class="flex-1 text-yellow-50 font-medium">Achievements</div>
+                                <i class="fas fa-chevron-right text-yellow-100/40"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="tracking-widest text-yellow-100/50 text-xs mb-2">SETTINGS</div>
+                        <div class="glow-card rounded-2xl divide-y divide-yellow-900/40 overflow-hidden">
+                            <button onclick="resetAccount()" class="w-full flex items-center gap-3 px-4 py-3.5 text-left">
+                                <div class="w-9 h-9 rounded-xl bg-black/40 flex items-center justify-center"><i class="fas fa-cog text-yellow-100/80"></i></div>
+                                <div class="flex-1 text-yellow-50 font-medium">Reset Account</div>
+                                <i class="fas fa-chevron-right text-yellow-100/40"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== LEADERBOARD VIEW (Hidden) ===== -->
+            <div id="leaderboardView" style="display: none;">
+                <div class="space-y-4">
+                    <div class="flex items-start gap-3">
+                        <button onclick="switchTab('home')" class="w-11 h-11 rounded-xl glow-card flex items-center justify-center"><i class="fas fa-arrow-left text-yellow-50"></i></button>
+                        <div>
+                            <div class="text-2xl font-black text-yellow-50">Leaderboard</div>
+                            <div class="text-yellow-100/60 text-sm">Top earners this week</div>
+                        </div>
+                    </div>
+                    <div id="leaderboardList">
+                        <!-- Will be rendered by JS -->
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- ========== BOTTOM NAVIGATION ========== -->
+    <nav class="bottom-nav" id="bottomNav">
         <button class="nav-item active" data-tab="home" onclick="switchTab('home')">
             <i class="fas fa-home"></i>
             <span>Home</span>
@@ -425,17 +689,41 @@
         </button>
     </nav>
 
+    <!-- ========== REDEEM MODAL ========== -->
+    <div id="redeemModal" class="modal-overlay">
+        <div class="modal-box" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center mb-3">
+                <div class="font-bold text-yellow-50">Enter Reward Code</div>
+                <button onclick="closeRedeem()"><i class="fas fa-times text-yellow-100/70"></i></button>
+            </div>
+            <input id="redeemInput" type="text" placeholder="e.g. WELCOME50" class="w-full bg-black/40 border border-yellow-900/50 rounded-xl px-4 py-3 text-yellow-50 outline-none focus:border-yellow-500 uppercase" style="text-transform: uppercase;" />
+            <button onclick="redeemCode()" class="btn-gold w-full py-3 rounded-xl mt-3">Redeem</button>
+            <div class="text-xs text-yellow-100/50 mt-2">Try: WELCOME50, NECTAR100, SWEETBEE</div>
+        </div>
+    </div>
+
 </div>
 
-<!-- ====== JAVASCRIPT ====== -->
+<!-- ========== JAVASCRIPT ========== -->
 <script>
-    // ============ STATE ============
-    let state = {
+    // =============================================
+    // STATE MANAGEMENT (Local Storage)
+    // =============================================
+    const STORE_KEY = 'nectarpay:v1';
+    const NECTAR_TO_USDT = 0.0001;
+    const DAILY_LIMIT = 270;
+    const REDEEM_CODES = {
+        'WELCOME50': 50,
+        'NECTAR100': 100,
+        'SWEETBEE': 25
+    };
+
+    let store = {
         nectar: 0,
-        username: "Lahiru657",
-        fullName: "Lahiru Jayasekara",
-        tgId: "6202492881",
-        wallet: "",
+        username: 'Lahiru657',
+        fullName: 'Lahiru Jayasekara',
+        tgId: '6202492881',
+        wallet: '',
         refs: 0,
         refsCompleted: 0,
         refEarned: 0,
@@ -453,95 +741,217 @@
         miningStart: 0,
         miningLevel: 1,
         achievements: [],
-        lastSpin: 0,
-        currentTab: 'home'
+        lastSpin: 0
     };
 
-    const NECTAR_TO_USDT = 0.0001;
-    const REDEEM_CODES = { "WELCOME50": 50, "NECTAR100": 100, "SWEETBEE": 25 };
-    const ACHIEVEMENTS = [
-        { id: "a1", title: "First Sip", desc: "Earn your first Nectar", reward: 5 },
-        { id: "a2", title: "Ad Rookie", desc: "Watch 10 ads", reward: 50 },
-        { id: "a3", title: "Task Hunter", desc: "Complete 5 tasks", reward: 100 },
-        { id: "a4", title: "Social Bee", desc: "Refer your first friend", reward: 25 },
-        { id: "a5", title: "Nectar Millionaire", desc: "Reach 10,000 Nectar", reward: 500 },
-        { id: "a6", title: "Streak Master", desc: "7-day daily streak", reward: 200 },
-    ];
+    let currentTab = 'home';
+    let currentTaskCat = 'main';
+    let adMode = 'ads';
 
-    // ============ TOAST ============
-    let toastTimeout;
-
-    function showToast(msg) {
-        const el = document.getElementById('toast');
-        el.textContent = msg;
-        el.classList.add('show');
-        clearTimeout(toastTimeout);
-        toastTimeout = setTimeout(() => el.classList.remove('show'), 2400);
-    }
-
-    // ============ STORAGE ============
-    function loadState() {
+    // Load from localStorage
+    function loadStore() {
         try {
-            const raw = localStorage.getItem('nectarpay:v1');
+            const raw = localStorage.getItem(STORE_KEY);
             if (raw) {
                 const parsed = JSON.parse(raw);
-                Object.assign(state, parsed);
-                if (state.todayDate !== new Date().toDateString()) {
-                    state.todayDate = new Date().toDateString();
-                    state.todayEarned = 0;
+                store = { ...store, ...parsed };
+                if (store.todayDate !== new Date().toDateString()) {
+                    store.todayDate = new Date().toDateString();
+                    store.todayEarned = 0;
                 }
             }
         } catch (e) {}
+        saveStore();
     }
 
-    function saveState() {
+    function saveStore() {
         try {
-            localStorage.setItem('nectarpay:v1', JSON.stringify(state));
+            localStorage.setItem(STORE_KEY, JSON.stringify(store));
         } catch (e) {}
     }
 
-    // ============ UPDATE UI ============
-    function updateUI() {
-        document.getElementById('balance').textContent = Math.floor(state.nectar);
-        const usdt = (state.nectar * NECTAR_TO_USDT).toFixed(4);
-        document.getElementById('usdt').textContent = usdt;
-        document.getElementById('usdt2').textContent = usdt;
-        updateAchievements();
-        saveState();
-    }
-
     function addNectar(amount, type) {
-        state.nectar += amount;
-        state.todayEarned += Math.max(0, amount);
-        state.txs.unshift({ id: Date.now().toString(), type, amount, ts: Date.now() });
-        if (state.txs.length > 100) state.txs.pop();
+        store.nectar += amount;
+        store.todayEarned += Math.max(0, amount);
+        store.txs.unshift({
+            id: Date.now().toString(),
+            type: type,
+            amount: amount,
+            ts: Date.now()
+        });
+        if (store.txs.length > 100) store.txs.pop();
+        saveStore();
         updateUI();
-        showToast(`+${amount} Nectar!`);
     }
 
-    // ============ DAILY BONUS ============
+    // =============================================
+    // TOAST SYSTEM
+    // =============================================
+    let toastTimeout;
+
+    function showToast(message) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.classList.add('show');
+        clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => {
+            toast.classList.remove('show');
+        }, 2400);
+    }
+
+    // =============================================
+    // LOADING SCREEN
+    // =============================================
+    function startLoading() {
+        let progress = 0;
+        const bar = document.getElementById('progressBar');
+        const text = document.getElementById('loadingText');
+
+        const iv = setInterval(() => {
+            progress += Math.random() * 14 + 6;
+            if (progress >= 100) {
+                progress = 100;
+                clearInterval(iv);
+                bar.style.width = '100%';
+                text.textContent = 'Loading Complete';
+                setTimeout(() => {
+                    document.getElementById('loadingScreen').style.display = 'none';
+                    document.getElementById('mainContent').style.display = 'block';
+                    loadStore();
+                    updateUI();
+                    startCountdown();
+                }, 400);
+            }
+            bar.style.width = progress + '%';
+        }, 220);
+    }
+
+    // =============================================
+    // COUNTDOWN
+    // =============================================
+    function startCountdown() {
+        setInterval(() => {
+            const now = new Date();
+            const end = new Date(now);
+            end.setHours(24, 0, 0, 0);
+            const diff = end.getTime() - now.getTime();
+            const h = String(Math.floor(diff / 3600000)).padStart(2, '0');
+            const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
+            const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+            const el = document.getElementById('countdown');
+            if (el) el.textContent = h + ':' + m + ':' + s;
+        }, 1000);
+    }
+
+    // =============================================
+    // TAB SWITCHING
+    // =============================================
+    function switchTab(tab) {
+        currentTab = tab;
+        // Update nav
+        document.querySelectorAll('.nav-item').forEach(el => {
+            el.classList.toggle('active', el.dataset.tab === tab);
+        });
+        // Hide all views
+        const views = ['homeView', 'adsView', 'tasksView', 'referView', 'profileView', 'leaderboardView'];
+        views.forEach(id => {
+            document.getElementById(id).style.display = 'none';
+        });
+        // Show selected view
+        if (tab === 'home') document.getElementById('homeView').style.display = 'block';
+        else if (tab === 'ads') document.getElementById('adsView').style.display = 'block';
+        else if (tab === 'tasks') { document.getElementById('tasksView').style.display = 'block';
+            renderTasks(); }
+        else if (tab === 'refer') document.getElementById('referView').style.display = 'block';
+        else if (tab === 'profile') document.getElementById('profileView').style.display = 'block';
+        else if (tab === 'leaderboard') { document.getElementById('leaderboardView').style.display = 'block';
+            renderLeaderboard(); }
+        updateUI();
+    }
+
+    // =============================================
+    // AD MODE
+    // =============================================
+    function setAdMode(mode) {
+        adMode = mode;
+        document.getElementById('adsModeBtn').className = mode === 'ads' ? 'py-3 rounded-2xl font-semibold btn-gold' :
+            'py-3 rounded-2xl font-semibold glow-card text-yellow-100';
+        document.getElementById('visitsModeBtn').className = mode === 'visits' ? 'py-3 rounded-2xl font-semibold btn-gold flex items-center justify-center gap-2' :
+            'py-3 rounded-2xl font-semibold glow-card text-yellow-100 flex items-center justify-center gap-2';
+        document.getElementById('adsList').style.display = mode === 'ads' ? 'block' : 'none';
+        document.getElementById('visitsList').style.display = mode === 'visits' ? 'block' : 'none';
+    }
+
+    // =============================================
+    // WATCH AD
+    // =============================================
+    function watchAd(type) {
+        const reward = type === 'adsgram' ? 10 : type === 'adsgramai' ? 8 : 15;
+        const cap = type === 'adsgram' ? 5 : type === 'adsgramai' ? 15 : 10;
+        const key = type === 'adsgram' ? 'adsgramWatched' : type === 'adsgramai' ? 'adsgramAiWatched' : 'monetagWatched';
+        const remaining = DAILY_LIMIT - store.todayEarned;
+
+        if (remaining <= 0) { showToast('Daily limit reached. Come back tomorrow.'); return; }
+        if (store[key] >= cap) { showToast('No ads left in this pack today.'); return; }
+
+        // Simulate ad watch
+        showToast('📺 Watching ad...');
+        setTimeout(() => {
+            store[key] += 1;
+            addNectar(reward, type + ' ad');
+            showToast('+ ' + reward + ' Nectar!');
+        }, 1500);
+    }
+
+    // =============================================
+    // VISIT SITE
+    // =============================================
+    function visitSite(id) {
+        const sites = {
+            v1: { name: 'Crypto News', reward: 12, url: 'https://coindesk.com' },
+            v2: { name: 'DeFi Portal', reward: 15, url: 'https://defipulse.com' },
+            v3: { name: 'Web3 Blog', reward: 10, url: 'https://web3.foundation' }
+        };
+        const site = sites[id];
+        if (!site) return;
+        if (store.visitsDone.includes(id)) { showToast('Already visited today.'); return; }
+        if (DAILY_LIMIT - store.todayEarned <= 0) { showToast('Daily limit reached.'); return; }
+
+        window.open(site.url, '_blank');
+        showToast('🌐 Visiting ' + site.name + '...');
+        setTimeout(() => {
+            store.visitsDone.push(id);
+            addNectar(site.reward, 'Visit: ' + site.name);
+            showToast('+ ' + site.reward + ' Nectar for visiting ' + site.name);
+        }, 4000);
+    }
+
+    // =============================================
+    // DAILY CLAIM
+    // =============================================
     function claimDaily() {
         const now = Date.now();
-        if (now - state.lastBonus < 24 * 3600 * 1000) {
+        if (now - store.lastBonus < 24 * 3600 * 1000) {
             showToast('⏱ Daily bonus already claimed. Come back tomorrow.');
             return;
         }
-        const streak = (now - state.lastBonus < 48 * 3600 * 1000) ? state.streak + 1 : 1;
+        const streak = (now - store.lastBonus < 48 * 3600 * 1000) ? store.streak + 1 : 1;
         const reward = 20 + Math.min(streak, 7) * 5;
-        state.lastBonus = now;
-        state.streak = streak;
-        addNectar(reward, `Daily bonus (day ${streak})`);
-        showToast(`🎁 +${reward} Nectar! Streak ${streak}🔥`);
+        store.lastBonus = now;
+        store.streak = streak;
+        addNectar(reward, 'Daily bonus (day ' + streak + ')');
+        showToast('🎁 +' + reward + ' Nectar! Streak ' + streak + '🔥');
     }
 
-    // ============ REDEEM CODE ============
-    function showRedeemModal() {
+    // =============================================
+    // REDEEM CODE
+    // =============================================
+    function openRedeem() {
         document.getElementById('redeemModal').classList.add('show');
         document.getElementById('redeemInput').value = '';
-        document.getElementById('redeemInput').focus();
     }
 
-    function closeRedeemModal() {
+    function closeRedeem() {
         document.getElementById('redeemModal').classList.remove('show');
     }
 
@@ -549,233 +959,241 @@
         const input = document.getElementById('redeemInput');
         const code = input.value.trim().toUpperCase();
         if (!code) return;
-        if (state.redeemed.includes(code)) {
-            showToast('Code already used');
-            return;
-        }
+        if (store.redeemed.includes(code)) { showToast('Code already used'); return; }
         if (REDEEM_CODES[code]) {
             const amt = REDEEM_CODES[code];
-            state.redeemed.push(code);
-            addNectar(amt, `Reward code ${code}`);
-            closeRedeemModal();
+            store.redeemed.push(code);
+            addNectar(amt, 'Reward code ' + code);
+            showToast('🎉 Redeemed +' + amt + ' Nectar');
+            closeRedeem();
         } else {
             showToast('❌ Invalid code');
         }
     }
 
-    // ============ COPY LINK ============
+    // =============================================
+    // COPY / SHARE
+    // =============================================
     function copyLink() {
-        const text = document.getElementById('refLink').textContent;
-        navigator.clipboard?.writeText(text);
-        showToast('Copied!');
+        const link = 'https://t.me/NectarPayBot/play?startapp=ref_' + store.tgId;
+        navigator.clipboard.writeText(link).then(() => showToast('Copied!')).catch(() => {});
     }
 
-    // ============ SPIN WHEEL ============
-    let isSpinning = false;
-    let spinRotation = 0;
-
-    function spinWheel() {
-        if (isSpinning) return;
-        const now = Date.now();
-        if (now - state.lastSpin < 6 * 3600 * 1000) {
-            showToast('Next spin available in a few hours');
-            return;
-        }
-        isSpinning = true;
-        document.getElementById('spinBtn').disabled = true;
-        document.getElementById('spinBtn').textContent = 'Spinning...';
-
-        const rewards = [5, 25, 10, 50, 15, 100, 20, 200];
-        const idx = Math.floor(Math.random() * rewards.length);
-        const target = 360 * 6 + (360 - idx * (360 / rewards.length));
-        spinRotation += target;
-
-        const wheel = document.getElementById('spinWheel');
-        wheel.style.transform = `rotate(${spinRotation}deg)`;
-
-        setTimeout(() => {
-            isSpinning = false;
-            state.lastSpin = Date.now();
-            addNectar(rewards[idx], `Spin wheel +${rewards[idx]}`);
-            document.getElementById('spinBtn').disabled = false;
-            document.getElementById('spinBtn').textContent = 'SPIN!';
-        }, 3800);
+    function copyRefLink() {
+        const link = 'https://t.me/NectarPayBot/play?startapp=ref_' + store.tgId;
+        navigator.clipboard.writeText(link).then(() => showToast('Copied!')).catch(() => {});
     }
 
-    // ============ MINING ============
-    let miningInterval;
-
-    function updateMining() {
-        const now = Date.now();
-        const rate = state.miningLevel;
-        const active = state.miningStart > 0;
-        const elapsed = active ? (now - state.miningStart) / 3600000 : 0;
-        const pending = Math.min(elapsed * rate, rate * 8);
-        const cap = rate * 8;
-
-        document.getElementById('miningLevel').textContent = state.miningLevel;
-        document.getElementById('miningRate').textContent = rate;
-        document.getElementById('pendingMining').textContent = pending.toFixed(1);
-        document.getElementById('miningCap').textContent = cap;
-        document.getElementById('miningProgress').style.width = `${(pending / cap) * 100}%`;
-
-        if (active) {
-            document.getElementById('startMiningBtn').classList.add('hidden');
-            document.getElementById('claimMiningBtn').classList.remove('hidden');
+    function shareRefLink() {
+        const link = 'https://t.me/NectarPayBot/play?startapp=ref_' + store.tgId;
+        if (navigator.share) {
+            navigator.share({ title: 'NectarPay', url: link }).catch(() => {});
         } else {
-            document.getElementById('startMiningBtn').classList.remove('hidden');
-            document.getElementById('claimMiningBtn').classList.add('hidden');
+            navigator.clipboard.writeText(link).then(() => showToast('Copied share link')).catch(() => {});
         }
     }
 
-    function startMining() {
-        state.miningStart = Date.now();
-        showToast('⛏ Mining started');
-        updateMining();
-        saveState();
-    }
+    // =============================================
+    // TASKS
+    // =============================================
+    const TASKS_DATA = {
+        main: [
+            { id: 'm1', title: 'NectarPay | Community 🐝', desc: 'Join our community channel', handle: '@nectarpay',
+                reward: 10, url: 'https://t.me/nectarpay' },
+            { id: 'm2', title: 'NectarPay | Payment 🐝', desc: '🔴 Join our payment channel', handle: '@nectarpaypay',
+                reward: 10, url: 'https://t.me/nectarpaypay' },
+            { id: 'm3', title: 'Follow on X', desc: 'Follow @NectarPayApp on X', handle: '@NectarPayApp', reward: 15,
+                url: 'https://x.com/NectarPayApp' },
+        ],
+        partner: [
+            { id: 'p1', title: 'HoneyDex Swap', desc: 'Try our partner DEX', handle: '@honeydex', reward: 50,
+                url: 'https://t.me/honeydex' },
+            { id: 'p2', title: 'BeeVault Wallet', desc: 'Download partner wallet', handle: '@beevault', reward: 80,
+                url: 'https://t.me/beevault' },
+        ],
+        community: [
+            { id: 'c1', title: 'Share NectarPay Story', desc: 'Share our story on your channel', handle: '@yourchannel',
+                reward: 30, url: 'https://t.me/share/url?url=https://t.me/NectarPayBot' },
+            { id: 'c2', title: 'Invite 5 friends', desc: 'Bring 5 friends to community', handle: 'invite', reward: 100,
+                url: 'https://t.me/nectarpay' },
+        ]
+    };
 
-    function claimMining() {
-        const rate = state.miningLevel;
-        const elapsed = (Date.now() - state.miningStart) / 3600000;
-        const pending = Math.min(elapsed * rate, rate * 8);
-        const amt = Math.floor(pending);
-        if (amt <= 0) {
-            showToast('Nothing to claim yet');
-            return;
-        }
-        state.miningStart = Date.now();
-        addNectar(amt, `Mining claim +${amt}`);
-        updateMining();
-        saveState();
-    }
-
-    function upgradeMining() {
-        const cost = state.miningLevel * 500;
-        if (state.nectar < cost) {
-            showToast(`Need ${cost} Nectar`);
-            return;
-        }
-        state.nectar -= cost;
-        state.miningLevel += 1;
-        state.txs.unshift({ id: Date.now().toString(), type: `Mining upgrade L${state.miningLevel}`, amount: -cost, ts: Date.now() });
-        updateUI();
-        updateMining();
-        saveState();
-        showToast('⚡ Upgraded!');
-    }
-
-    // ============ ACHIEVEMENTS ============
-    function updateAchievements() {
-        const container = document.getElementById('achievementsList');
-        container.innerHTML = '';
-        ACHIEVEMENTS.forEach(a => {
-            let done = false;
-            if (a.id === 'a1') done = state.nectar > 0;
-            else if (a.id === 'a2') done = state.adsgramWatched + state.monetagWatched + state.adsgramAiWatched >= 10;
-            else if (a.id === 'a3') done = state.tasksDone.length >= 5;
-            else if (a.id === 'a4') done = state.refs >= 1;
-            else if (a.id === 'a5') done = state.nectar >= 10000;
-            else if (a.id === 'a6') done = state.streak >= 7;
-
-            const div = document.createElement('div');
-            div.className = `glow-card rounded-2xl p-4 flex items-center gap-3 ${done ? 'border-emerald-500/50' : ''}`;
-            div.innerHTML = `
-                <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl ${done ? 'bg-emerald-900/50' : 'bg-yellow-900/30'}">${done ? '🏆' : '🔒'}</div>
-                <div class="flex-1">
-                    <div class="font-bold text-yellow-50">${a.title}</div>
-                    <div class="text-xs text-yellow-100/60">${a.desc}</div>
-                </div>
-                <div class="font-bold ${done ? 'text-emerald-400' : 'text-yellow-100/40'}">+${a.reward}N</div>
-            `;
-            container.appendChild(div);
-        });
-    }
-
-    // ============ TAB SWITCHING ============
-    function switchTab(tab) {
-        state.currentTab = tab;
-
-        // Update nav
-        document.querySelectorAll('.nav-item').forEach(el => {
-            el.classList.toggle('active', el.dataset.tab === tab);
-        });
-
-        // Show/hide sections
-        const sections = ['home', 'ads', 'tasks', 'refer', 'profile', 'spin', 'mining', 'achievements'];
-        sections.forEach(s => {
-            const el = document.getElementById(`${s}-section`);
+    function setTaskCat(cat) {
+        currentTaskCat = cat;
+        ['main', 'partner', 'community'].forEach(c => {
+            const el = document.getElementById('task' + c.charAt(0).toUpperCase() + c.slice(1));
             if (el) {
-                if (s === tab) {
-                    el.classList.remove('hidden');
-                } else {
-                    el.classList.add('hidden');
-                }
+                el.className = c === cat ? 'py-3 rounded-2xl font-semibold capitalize btn-gold' :
+                    'py-3 rounded-2xl font-semibold capitalize glow-card text-yellow-100';
             }
         });
+        renderTasks();
+    }
 
-        // Show home content by default
-        const mainContent = document.getElementById('main-content');
-        const homeContent = mainContent.querySelectorAll('.space-y-5 > div:not(.hidden)');
-        // Hide all special sections
-        document.querySelectorAll('#spin-section, #mining-section, #achievements-section').forEach(el => {
-            el.classList.add('hidden');
-        });
+    function renderTasks() {
+        const container = document.getElementById('taskList');
+        const tasks = TASKS_DATA[currentTaskCat] || [];
+        container.innerHTML = tasks.map(t => {
+            const done = store.tasksDone.includes(t.id);
+            return `
+                <div class="glow-card rounded-2xl p-4">
+                    <div class="flex gap-3">
+                        <div class="w-14 h-14 rounded-xl bg-yellow-900/40 border border-yellow-700/40 flex items-center justify-center text-2xl">🐝</div>
+                        <div class="flex-1">
+                            <div class="flex justify-between">
+                                <div class="font-bold text-yellow-50">${t.title}</div>
+                                <div class="text-yellow-400 font-bold">+${t.reward}N</div>
+                            </div>
+                            <div class="text-yellow-100/70 text-sm">${t.desc}</div>
+                            <div class="text-blue-400 text-sm">${t.handle}</div>
+                        </div>
+                    </div>
+                    <button onclick="doTask('${t.id}')" ${done ? 'disabled' : ''} class="w-full mt-3 py-2.5 rounded-xl font-semibold flex items-center justify-center gap-2 ${done ? 'bg-emerald-900/40 text-emerald-300' : 'btn-gold'}">
+                        ${done ? '<i class="fas fa-check"></i> Completed' : '<i class="fas fa-external-link-alt"></i> Open & Earn +' + t.reward + 'N'}
+                    </button>
+                </div>
+            `;
+        }).join('');
+    }
 
-        // For home tab, show regular content
-        if (tab === 'home') {
-            document.querySelectorAll('#main-content > div:not(#spin-section):not(#mining-section):not(#achievements-section)').forEach(el => {
-                el.style.display = '';
-            });
-        } else if (tab === 'spin') {
-            document.querySelectorAll('#main-content > div:not(#spin-section)').forEach(el => {
-                if (el.id !== 'spin-section') el.style.display = 'none';
-            });
-            document.getElementById('spin-section').classList.remove('hidden');
-        } else if (tab === 'mining') {
-            document.querySelectorAll('#main-content > div:not(#mining-section)').forEach(el => {
-                if (el.id !== 'mining-section') el.style.display = 'none';
-            });
-            document.getElementById('mining-section').classList.remove('hidden');
-            updateMining();
-        } else if (tab === 'achievements') {
-            document.querySelectorAll('#main-content > div:not(#achievements-section)').forEach(el => {
-                if (el.id !== 'achievements-section') el.style.display = 'none';
-            });
-            document.getElementById('achievements-section').classList.remove('hidden');
-            updateAchievements();
-        } else {
-            // For other tabs (ads, tasks, refer, profile)
-            document.querySelectorAll('#main-content > div:not(#spin-section):not(#mining-section):not(#achievements-section)').forEach(el => {
-                el.style.display = '';
-            });
-            // Hide special sections
-            document.getElementById('spin-section').classList.add('hidden');
-            document.getElementById('mining-section').classList.add('hidden');
-            document.getElementById('achievements-section').classList.add('hidden');
-            showToast(`${tab.charAt(0).toUpperCase() + tab.slice(1)} tab - Coming soon!`);
+    function doTask(id) {
+        if (store.tasksDone.includes(id)) return;
+        const tasks = [...TASKS_DATA.main, ...TASKS_DATA.partner, ...TASKS_DATA.community];
+        const task = tasks.find(t => t.id === id);
+        if (!task) return;
+        window.open(task.url, '_blank');
+        showToast('📝 Opening task...');
+        setTimeout(() => {
+            store.tasksDone.push(id);
+            addNectar(task.reward, 'Task: ' + task.title);
+            showToast('✅ Task done! +' + task.reward + ' Nectar');
+            renderTasks();
+        }, 3500);
+    }
+
+    // =============================================
+    // LEADERBOARD
+    // =============================================
+    function renderLeaderboard() {
+        const fake = [
+            { name: 'QueenBee', score: 5000 },
+            { name: 'HoneyKing', score: 4620 },
+            { name: 'GoldSwarm', score: 4240 },
+            { name: 'NectarFox', score: 3860 },
+            { name: 'BuzzLord', score: 3480 },
+            { name: 'PollenPro', score: 3100 },
+            { name: 'WaxWizard', score: 2720 },
+            { name: 'HiveHero', score: 2340 },
+            { name: 'SweetSam', score: 1960 },
+            { name: 'AmberAce', score: 1580 }
+        ];
+        const all = [...fake, { name: '@' + store.username + ' (You)', score: Math.floor(store.nectar) }]
+            .sort((a, b) => b.score - a.score);
+
+        const container = document.getElementById('leaderboardList');
+        container.innerHTML = all.map((u, i) => `
+            <div class="glow-card rounded-2xl p-3 flex items-center gap-3 ${u.name.includes('You') ? 'border-yellow-500/60' : ''}">
+                <div class="w-10 h-10 rounded-full flex items-center justify-center font-black ${i < 3 ? 'bg-yellow-400 text-yellow-950' : 'bg-yellow-900/40 text-yellow-200'}">${i + 1}</div>
+                <div class="flex-1 text-yellow-50 font-medium">${u.name}</div>
+                <div class="text-yellow-400 font-bold">${u.score}N</div>
+            </div>
+        `).join('');
+    }
+
+    // =============================================
+    // RESET ACCOUNT
+    // =============================================
+    function resetAccount() {
+        if (confirm('Reset all local data?')) {
+            localStorage.removeItem(STORE_KEY);
+            location.reload();
         }
     }
 
-    // ============ INIT ============
-    loadState();
-    updateUI();
-    updateMining();
+    // =============================================
+    // UPDATE UI
+    // =============================================
+    function updateUI() {
+        // Home
+        const nectarEl = document.getElementById('nectarBalance');
+        const usdtEl = document.getElementById('usdtBalance');
+        const usdtVal = document.getElementById('usdtValue');
+        if (nectarEl) nectarEl.textContent = Math.floor(store.nectar);
+        const usdt = (store.nectar * NECTAR_TO_USDT).toFixed(4);
+        if (usdtEl) usdtEl.textContent = usdt;
+        if (usdtVal) usdtVal.textContent = usdt;
 
-    // Mining interval
-    setInterval(updateMining, 1000);
+        // Ads
+        const todayEl = document.getElementById('todayEarned');
+        const remainingEl = document.getElementById('dailyRemaining');
+        if (todayEl) todayEl.textContent = store.todayEarned;
+        if (remainingEl) remainingEl.textContent = Math.max(0, DAILY_LIMIT - store.todayEarned);
 
-    // Click outside modal to close
-    document.getElementById('redeemModal').addEventListener('click', function(e) {
-        if (e.target === this) closeRedeemModal();
+        // Ad progress
+        const adsgramW = document.getElementById('adsgramWatched');
+        const adsgramL = document.getElementById('adsgramLeft');
+        const adsgramP = document.getElementById('adsgramProgress');
+        if (adsgramW) adsgramW.textContent = store.adsgramWatched;
+        if (adsgramL) adsgramL.textContent = Math.max(0, 5 - store.adsgramWatched) + ' left';
+        if (adsgramP) adsgramP.style.width = (store.adsgramWatched / 5 * 100) + '%';
+
+        const aiW = document.getElementById('adsgramAiWatched');
+        const aiL = document.getElementById('adsgramAiLeft');
+        const aiP = document.getElementById('adsgramAiProgress');
+        if (aiW) aiW.textContent = store.adsgramAiWatched;
+        if (aiL) aiL.textContent = Math.max(0, 15 - store.adsgramAiWatched) + ' left';
+        if (aiP) aiP.style.width = (store.adsgramAiWatched / 15 * 100) + '%';
+
+        const monW = document.getElementById('monetagWatched');
+        const monL = document.getElementById('monetagLeft');
+        const monP = document.getElementById('monetagProgress');
+        if (monW) monW.textContent = store.monetagWatched;
+        if (monL) monL.textContent = Math.max(0, 10 - store.monetagWatched) + ' left';
+        if (monP) monP.style.width = (store.monetagWatched / 10 * 100) + '%';
+
+        // Refer
+        const totalRefs = document.getElementById('totalRefs');
+        const completedRefs = document.getElementById('completedRefs');
+        const refEarned = document.getElementById('refEarned');
+        if (totalRefs) totalRefs.textContent = store.refs;
+        if (completedRefs) completedRefs.textContent = store.refsCompleted;
+        if (refEarned) refEarned.textContent = store.refEarned;
+
+        // Profile
+        const pNectar = document.getElementById('profileNectar');
+        const pUsdt = document.getElementById('profileUsdt');
+        if (pNectar) pNectar.textContent = Math.floor(store.nectar);
+        if (pUsdt) pUsdt.textContent = usdt;
+
+        // Ref link
+        const refLink = document.getElementById('refLink');
+        const refLinkDisplay = document.getElementById('refLinkDisplay');
+        const link = 'https://t.me/NectarPayBot/play?startapp=ref_' + store.tgId;
+        if (refLink) refLink.textContent = link;
+        if (refLinkDisplay) refLinkDisplay.textContent = link;
+    }
+
+    // =============================================
+    // INIT
+    // =============================================
+    document.addEventListener('DOMContentLoaded', () => {
+        // Set default views
+        document.getElementById('homeView').style.display = 'block';
+        document.getElementById('adsView').style.display = 'none';
+        document.getElementById('tasksView').style.display = 'none';
+        document.getElementById('referView').style.display = 'none';
+        document.getElementById('profileView').style.display = 'none';
+        document.getElementById('leaderboardView').style.display = 'none';
+
+        // Start loading
+        startLoading();
+
+        // Modal click outside
+        document.getElementById('redeemModal').addEventListener('click', function(e) {
+            if (e.target === this) closeRedeem();
+        });
     });
-
-    // Enter key for redeem
-    document.getElementById('redeemInput').addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') redeemCode();
-    });
-
-    console.log('🐝 NectarPay loaded successfully!');
 </script>
 
 </body>
