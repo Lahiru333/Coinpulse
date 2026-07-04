@@ -1,598 +1,959 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-  <meta name="theme-color" content="#0b0b1e" />
-  <title>CoinPulse — Earn USDT</title>
-  <meta name="description" content="CoinPulse Telegram Mini App: watch ads, complete tasks, and earn USDT rewards." />
-  <link rel="icon" href="/favicon.ico" />
-  <style>
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-html, body { height: 100%; overflow-x: hidden; }
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
-  background: radial-gradient(1200px 800px at 20% -10%, #1e1b6b 0%, transparent 60%),
-              radial-gradient(1000px 700px at 90% 10%, #4b21a6 0%, transparent 60%),
-              radial-gradient(900px 900px at 50% 100%, #0a1a5c 0%, transparent 60%),
-              #05061a;
-  color: #ecebff; min-height: 100vh;
-  padding-bottom: env(safe-area-inset-bottom); overscroll-behavior: none;
-}
-.hidden { display: none !important; }
-.muted { color: #a4a3c9; font-size: 13px; }
-.center { text-align: center; }
-.loader { position: fixed; inset: 0; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(160deg, #0a0b2b 0%, #1a1054 100%); animation: fadeIn .4s ease; }
-.loader-logo { position: relative; width: 96px; height: 96px; }
-.pulse-ring { position: absolute; inset: 0; border-radius: 50%; background: linear-gradient(135deg, #4f7cff, #a855f7); animation: pulse 1.6s ease-in-out infinite; filter: blur(2px); }
-.pulse-core { position: absolute; inset: 12px; border-radius: 50%; background: linear-gradient(135deg, #4f7cff, #a855f7); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 26px; color: #fff; box-shadow: 0 10px 40px rgba(120, 90, 255, .5); }
-.loader-text { margin-top: 22px; font-size: 26px; font-weight: 700; background: linear-gradient(90deg, #67a2ff, #c084fc); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.loader-sub { margin-top: 6px; color: #a4a3c9; font-size: 13px; }
-@keyframes pulse { 0%,100% { transform: scale(1); opacity: .9 } 50% { transform: scale(1.15); opacity: .5 } }
-@keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
-@keyframes slideUp { from { transform: translateY(20px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
-.app { max-width: 520px; margin: 0 auto; padding: 12px 14px 96px; animation: fadeIn .4s ease; }
-.glass { background: rgba(255,255,255,0.06); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border: 1px solid rgba(255,255,255,0.10); border-radius: 18px; }
-.gradient-border { position: relative; background: linear-gradient(rgba(20,20,50,0.6), rgba(20,20,50,0.6)) padding-box, linear-gradient(135deg, #4f7cff, #a855f7) border-box; border: 1.5px solid transparent; }
-.topbar { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; margin-bottom: 14px; }
-.user { display: flex; align-items: center; gap: 10px; }
-.avatar { width: 42px; height: 42px; border-radius: 50%; border: 2px solid transparent; background: linear-gradient(#0a0b2b, #0a0b2b) padding-box, linear-gradient(135deg, #4f7cff, #a855f7) border-box; object-fit: cover; }
-.user-info { display: flex; flex-direction: column; }
-.hello { font-size: 11px; color: #a4a3c9; }
-.username { font-weight: 600; font-size: 14px; }
-.icon-btn { width: 38px; height: 38px; border-radius: 12px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); color: #ecebff; font-size: 18px; cursor: pointer; transition: transform .15s, background .2s; }
-.icon-btn:active { transform: scale(0.94); }
-.pages { position: relative; }
-.page { display: none; animation: slideUp .35s ease; }
-.page.active { display: block; }
-.section-title { margin: 18px 4px 10px; font-size: 13px; text-transform: uppercase; letter-spacing: 1.2px; color: #a4a3c9; font-weight: 600; }
-.balance-card { padding: 20px; text-align: center; }
-.balance-card .label { font-size: 12px; color: #a4a3c9; text-transform: uppercase; letter-spacing: 1px; }
-.balance { margin-top: 10px; font-size: 34px; font-weight: 800; background: linear-gradient(90deg, #67a2ff, #c084fc); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.balance .unit { font-size: 14px; margin-left: 6px; color: #a4a3c9; -webkit-text-fill-color: #a4a3c9; }
-.mini-stats { margin-top: 14px; display: flex; justify-content: space-around; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 12px; }
-.mini-stats div { display: flex; flex-direction: column; align-items: center; }
-.mini-stats span { font-weight: 700; font-size: 14px; color: #ecebff; }
-.mini-stats small { color: #a4a3c9; font-size: 11px; margin-top: 2px; }
-.stat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 12px; }
-.stat { padding: 14px; text-align: center; display: flex; flex-direction: column; gap: 4px; }
-.stat span { font-size: 20px; font-weight: 700; }
-.stat small { color: #a4a3c9; font-size: 11px; }
-.btn { width: 100%; padding: 12px 14px; border-radius: 14px; border: none; font-weight: 600; font-size: 14px; cursor: pointer; background: rgba(255,255,255,0.06); color: #ecebff; border: 1px solid rgba(255,255,255,0.1); transition: transform .15s ease, box-shadow .2s ease, opacity .2s; margin-top: 8px; }
-.btn.small { width: auto; padding: 8px 14px; font-size: 12px; margin-top: 0; }
-.btn.full { width: 100%; }
-.btn:active { transform: scale(0.97); }
-.btn.primary { background: linear-gradient(135deg, #4f7cff, #a855f7); border: none; box-shadow: 0 8px 24px rgba(120,90,255,0.35); }
-.btn.primary:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; }
-.btn.destructive { background: linear-gradient(135deg, #ef4444, #b91c1c); }
-.quick-actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-.action-btn { padding: 14px 10px; border-radius: 14px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: #ecebff; font-weight: 600; font-size: 13px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; transition: transform .15s; }
-.action-btn:active { transform: scale(0.96); }
-.action-btn.primary { background: linear-gradient(135deg, #4f7cff, #a855f7); box-shadow: 0 8px 24px rgba(120,90,255,.35); }
-.timer { font-size: 10px; color: #a4a3c9; margin-top: 2px; }
-.tasks { display: flex; flex-direction: column; gap: 12px; }
-.task-card { padding: 16px; }
-.task-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-.task-title { font-weight: 700; font-size: 15px; }
-.task-reward { font-size: 12px; padding: 4px 10px; border-radius: 999px; background: linear-gradient(135deg, rgba(79,124,255,.25), rgba(168,85,247,.25)); border: 1px solid rgba(168,85,247,.4); }
-.progress { background: rgba(255,255,255,0.08); border-radius: 999px; overflow: hidden; height: 8px; margin: 10px 0; }
-.progress-fill { height: 100%; background: linear-gradient(90deg, #4f7cff, #a855f7); transition: width .5s ease; border-radius: 999px; }
-.task-meta { display: flex; justify-content: space-between; font-size: 12px; color: #a4a3c9; margin-bottom: 10px; }
-.task-actions { display: flex; gap: 8px; }
-.task-actions .btn { margin-top: 0; }
-.badge-complete { display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; background: linear-gradient(135deg, #10b981, #059669); color: white; }
-.card { padding: 16px; }
-.history { display: flex; flex-direction: column; gap: 8px; }
-.history-item { display: flex; justify-content: space-between; padding: 12px 14px; background: rgba(255,255,255,0.04); border-radius: 12px; border: 1px solid rgba(255,255,255,0.06); font-size: 13px; }
-.history-item .amt.pos { color: #4ade80; }
-.history-item .amt.neg { color: #f87171; }
-.history-item small { display: block; color: #a4a3c9; font-size: 10px; margin-top: 2px; }
-.ref-stats { display: flex; justify-content: space-around; margin: 14px 0; }
-.ref-stats div { text-align: center; }
-.ref-stats span { display: block; font-weight: 700; font-size: 18px; }
-.ref-stats small { color: #a4a3c9; font-size: 11px; }
-.ref-link { display: flex; gap: 6px; margin-bottom: 8px; }
-.ref-link input { flex: 1; padding: 10px; border-radius: 10px; background: rgba(0,0,0,0.3); color: #ecebff; border: 1px solid rgba(255,255,255,0.1); font-size: 12px; }
-.achievements { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-.ach { padding: 14px 8px; text-align: center; border-radius: 16px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); transition: transform .2s; }
-.ach.unlocked { background: linear-gradient(135deg, rgba(79,124,255,.2), rgba(168,85,247,.2)); border-color: rgba(168,85,247,.5); box-shadow: 0 8px 24px rgba(120,90,255,.15); }
-.ach .icon { font-size: 24px; }
-.ach .name { font-size: 10px; margin-top: 6px; color: #d0cff5; }
-.ach.locked .icon { filter: grayscale(1); opacity: .4; }
-.leaderboard { display: flex; flex-direction: column; gap: 8px; }
-.lb-row { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); }
-.lb-row.me { border-color: rgba(168,85,247,.6); background: linear-gradient(135deg, rgba(79,124,255,.15), rgba(168,85,247,.15)); }
-.lb-rank { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; background: rgba(255,255,255,0.08); }
-.lb-rank.top { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #1a1054; }
-.lb-info { flex: 1; }
-.lb-info .n { font-weight: 600; font-size: 13px; }
-.lb-info .s { font-size: 11px; color: #a4a3c9; }
-.lb-bal { font-weight: 700; font-size: 13px; color: #67a2ff; }
-.setting-row { display: flex; justify-content: space-between; align-items: center; }
-.setting-row select { background: rgba(0,0,0,0.3); color: #ecebff; border: 1px solid rgba(255,255,255,0.1); padding: 8px 10px; border-radius: 10px; }
-.switch { position: relative; display: inline-block; width: 46px; height: 26px; }
-.switch input { display: none; }
-.switch .slider { position: absolute; inset: 0; cursor: pointer; background: rgba(255,255,255,0.15); border-radius: 999px; transition: .3s; }
-.switch .slider::before { content: ""; position: absolute; height: 20px; width: 20px; left: 3px; top: 3px; background: white; border-radius: 50%; transition: .3s; }
-.switch input:checked + .slider { background: linear-gradient(135deg, #4f7cff, #a855f7); }
-.switch input:checked + .slider::before { transform: translateX(20px); }
-.admin-stats { display: flex; justify-content: space-around; margin-bottom: 14px; }
-.admin-stats div { text-align: center; }
-.admin-stats span { display: block; font-weight: 700; font-size: 18px; }
-.admin-stats small { color: #a4a3c9; font-size: 11px; }
-.bottom-nav { position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%); width: calc(100% - 24px); max-width: 500px; display: grid; grid-template-columns: repeat(5, 1fr); padding: 8px; z-index: 100; border-radius: 22px; }
-.nav-btn { background: transparent; border: none; color: #a4a3c9; font-size: 10px; font-weight: 600; padding: 8px 4px; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; border-radius: 14px; transition: all .2s; }
-.nav-btn span { font-size: 20px; }
-.nav-btn.active { color: #fff; background: linear-gradient(135deg, rgba(79,124,255,.25), rgba(168,85,247,.25)); }
-.toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); padding: 12px 20px; border-radius: 14px; background: rgba(20,20,50,0.95); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.15); color: white; font-size: 13px; font-weight: 500; z-index: 9998; opacity: 0; transition: all .35s cubic-bezier(.2,.9,.2,1); max-width: 90%; text-align: center; }
-.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-.toast.success { border-color: rgba(74,222,128,.5); }
-.toast.error { border-color: rgba(248,113,113,.5); }
-.modal { position: fixed; inset: 0; z-index: 9990; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; padding: 20px; animation: fadeIn .2s ease; }
-.modal-content { padding: 24px; width: 100%; max-width: 360px; }
-.modal-content h3 { margin-bottom: 14px; text-align: center; font-size: 18px; }
-.wheel-wrap { position: relative; margin: 20px auto; width: 240px; height: 240px; }
-.wheel-pointer { position: absolute; top: -6px; left: 50%; transform: translateX(-50%); font-size: 24px; color: #a855f7; z-index: 2; filter: drop-shadow(0 4px 8px rgba(168,85,247,.5)); }
-.wheel { width: 240px; height: 240px; border-radius: 50%; background: conic-gradient(#4f7cff 0deg 60deg, #a855f7 60deg 120deg, #67a2ff 120deg 180deg, #c084fc 180deg 240deg, #4f7cff 240deg 300deg, #a855f7 300deg 360deg); transition: transform 4s cubic-bezier(.15,.85,.25,1); box-shadow: 0 0 40px rgba(120,90,255,.35), inset 0 0 20px rgba(0,0,0,.4); border: 4px solid rgba(255,255,255,0.1); }
-@media (max-width: 360px) { .balance { font-size: 28px; } .stat span { font-size: 17px; } }
-  </style>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
-</head>
-<body>
-  <div id="loader" class="loader">
-    <div class="loader-logo"><div class="pulse-ring"></div><div class="pulse-core">CP</div></div>
-    <div class="loader-text">CoinPulse</div>
-    <div class="loader-sub">Loading your dashboard…</div>
-  </div>
-
-  <div id="app" class="app hidden">
-    <header class="topbar glass">
-      <div class="user">
-        <img id="avatar" src="https://api.dicebear.com/7.x/thumbs/svg?seed=CoinPulse" alt="avatar" class="avatar" />
-        <div class="user-info"><span class="hello">Welcome</span><span id="username" class="username">@guest</span></div>
-      </div>
-      <button id="adminTrigger" class="icon-btn" aria-label="menu">⚙</button>
-    </header>
-
-    <main class="pages">
-      <section id="page-home" class="page active">
-        <div class="balance-card glass gradient-border">
-          <span class="label">Total USDT Balance</span>
-          <div class="balance"><span id="balance">0.00000000</span><span class="unit">USDT</span></div>
-          <div class="mini-stats">
-            <div><span id="todayEarnings">0.00000000</span><small>Today</small></div>
-            <div><span id="lifetimeMini">0.00000000</span><small>Lifetime</small></div>
-          </div>
-        </div>
-        <div class="stat-grid">
-          <div class="stat glass"><span id="totalAds">0</span><small>Ads Watched</small></div>
-          <div class="stat glass"><span id="tasksDone">0</span><small>Tasks Done</small></div>
-          <div class="stat glass"><span id="refCountHome">0</span><small>Referrals</small></div>
-          <div class="stat glass"><span id="achievementsCount">0</span><small>Badges</small></div>
-        </div>
-        <div class="section-title">Quick Actions</div>
-        <div class="quick-actions">
-          <button class="action-btn primary" data-nav="tasks">▶ Watch Ad</button>
-          <button class="action-btn" id="dailyBonusBtn">🎁 Daily Bonus <span id="bonusTimer" class="timer"></span></button>
-          <button class="action-btn" id="spinBtn">🎡 Spin Wheel</button>
-          <button class="action-btn" data-nav="wallet">💰 Wallet</button>
-        </div>
-        <div class="section-title">Achievements</div>
-        <div id="achievementsList" class="achievements"></div>
-      </section>
-
-      <section id="page-tasks" class="page">
-        <div class="section-title">Rewarded Tasks</div>
-        <div id="tasksList" class="tasks"></div>
-        <div class="section-title">Referral</div>
-        <div class="glass card">
-          <p class="muted">Invite friends and earn <b>0.0002 USDT</b> per referral.</p>
-          <div class="ref-stats">
-            <div><span id="refCount">0</span><small>Referrals</small></div>
-            <div><span id="refEarnings">0.00000000</span><small>Earned</small></div>
-          </div>
-          <div class="ref-link"><input id="refLink" readonly /><button id="copyRef" class="btn small">Copy</button></div>
-          <button id="shareRef" class="btn primary full">Share on Telegram</button>
-        </div>
-      </section>
-
-      <section id="page-wallet" class="page">
-        <div class="balance-card glass gradient-border">
-          <span class="label">Current Balance</span>
-          <div class="balance"><span id="walletBalance">0.00000000</span><span class="unit">USDT</span></div>
-        </div>
-        <div class="stat-grid">
-          <div class="stat glass"><span id="lifetime">0.00000000</span><small>Lifetime Earnings</small></div>
-          <div class="stat glass"><span id="claimed">0.00000000</span><small>Claimed Rewards</small></div>
-        </div>
-        <button id="withdrawBtn" class="btn primary full">Withdraw (min 1 USDT)</button>
-        <div class="section-title">History</div>
-        <div id="historyList" class="history"></div>
-      </section>
-
-      <section id="page-leaderboard" class="page">
-        <div class="section-title">Top Earners</div>
-        <div id="leaderboard" class="leaderboard"></div>
-      </section>
-
-      <section id="page-settings" class="page">
-        <div class="section-title">Settings</div>
-        <div class="glass card setting-row"><span>Dark Mode</span><label class="switch"><input type="checkbox" id="darkToggle" checked><span class="slider"></span></label></div>
-        <div class="glass card setting-row"><span>Language</span>
-          <select id="langSelect"><option value="en">English</option><option value="es">Español</option><option value="ru">Русский</option><option value="ar">العربية</option><option value="hi">हिन्दी</option></select>
-        </div>
-        <button class="btn full" onclick="window.open('https://t.me/', '_blank')">💬 Telegram Support</button>
-        <button class="btn full" id="privacyBtn">Privacy Policy</button>
-        <button class="btn full" id="termsBtn">Terms of Service</button>
-        <p class="muted center">CoinPulse v1.0.0</p>
-      </section>
-
-      <section id="page-admin" class="page">
-        <div class="section-title">Admin Panel</div>
-        <div class="glass card">
-          <div class="admin-stats">
-            <div><span id="adminUsers">1</span><small>Users</small></div>
-            <div><span id="adminBalance">0</span><small>Balance</small></div>
-            <div><span id="adminAds">0</span><small>Ads</small></div>
-          </div>
-          <button class="btn full" id="resetBalance">Reset Balance</button>
-          <button class="btn full" id="resetTasks">Reset Tasks</button>
-          <button class="btn full destructive" id="resetAll">Reset Everything</button>
-        </div>
-      </section>
-    </main>
-
-    <nav class="bottom-nav glass">
-      <button class="nav-btn active" data-nav="home"><span>🏠</span>Home</button>
-      <button class="nav-btn" data-nav="tasks"><span>✅</span>Tasks</button>
-      <button class="nav-btn" data-nav="wallet"><span>💎</span>Wallet</button>
-      <button class="nav-btn" data-nav="leaderboard"><span>🏆</span>Top</button>
-      <button class="nav-btn" data-nav="settings"><span>⚙</span>Settings</button>
-    </nav>
-  </div>
-
-  <div id="toast" class="toast"></div>
-
-  <div id="spinModal" class="modal hidden">
-    <div class="modal-content glass">
-      <h3>Daily Spin</h3>
-      <div class="wheel-wrap"><div class="wheel-pointer">▼</div><div id="wheel" class="wheel"></div></div>
-      <button id="spinStart" class="btn primary full">Spin Now</button>
-      <button class="btn full" onclick="document.getElementById('spinModal').classList.add('hidden')">Close</button>
+import { createFileRoute } from "@tanstack/react-router";
+// No head() here: the home route inherits title/description/og/twitter from
+// __root.tsx, and ships no og:image so serve-time hosting can inject the
+// project's social preview (explicit og:image or latest screenshot).
+export const Route = createFileRoute("/")({
+  component: Index,
+});
+// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
+function Index() {
+  return (
+    <div
+      className="flex min-h-screen items-center justify-center"
+      style={{ backgroundColor: "#fcfbf8" }}
+    >
+      <img
+        data-lovable-blank-page-placeholder="REMOVE_THIS"
+        src="https://cdn.gpteng.co/blank-app-v1.svg"
+        alt="Your app will live here!"
+      />
     </div>
-  </div>
-
-<script>
-/* Telegram WebApp wrapper */
-(function () {
-  "use strict";
-  const TG = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
-  const Telegram = {
-    available: !!TG, raw: TG,
-    init() {
-      if (!TG) return;
-      try {
-        TG.ready(); TG.expand();
-        if (TG.setHeaderColor) TG.setHeaderColor("#0b0b1e");
-        if (TG.setBackgroundColor) TG.setBackgroundColor("#05061a");
-        if (TG.enableClosingConfirmation) TG.enableClosingConfirmation();
-      } catch (e) { console.warn("TG init:", e); }
-    },
-    getUser() {
-      if (!TG || !TG.initDataUnsafe || !TG.initDataUnsafe.user) return { id: "guest", username: "guest", first_name: "Guest", photo_url: null };
-      return TG.initDataUnsafe.user;
-    },
-    getStartParam() { return TG && TG.initDataUnsafe ? TG.initDataUnsafe.start_param || "" : ""; },
-    haptic(type = "light") {
-      if (!TG || !TG.HapticFeedback) return;
-      try {
-        if (["success", "error", "warning"].includes(type)) TG.HapticFeedback.notificationOccurred(type);
-        else TG.HapticFeedback.impactOccurred(type);
-      } catch (_) {}
-    },
-    share(url, text = "") {
-      const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
-      if (TG && TG.openTelegramLink) TG.openTelegramLink(shareUrl);
-      else window.open(shareUrl, "_blank");
-    },
-    close() { if (TG) TG.close(); },
+  );
+}
+import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  Home, Play, CheckSquare, Users, User, Bell, X, ChevronDown,
+  Gift, Zap, Wallet, Trophy, Copy, Share2, ArrowLeft, Globe,
+  Tv, Target, Sparkles, Pickaxe, Flame, Award, History, Settings,
+  ChevronRight, Check, ExternalLink,
+} from "lucide-react";
+export const Route = createFileRoute("/")({ component: App });
+/* ============ Types ============ */
+type TabKey = "home" | "ads" | "tasks" | "refer" | "profile";
+type SubView = null | "earn" | "tasks" | "refer" | "wallet" | "transactions" | "leaderboard" | "spin" | "mining" | "achievements";
+type Tx = { id: string; type: string; amount: number; ts: number };
+type Store = {
+  nectar: number;
+  username: string;
+  fullName: string;
+  tgId: string;
+  wallet: string;
+  refs: number;
+  refsCompleted: number;
+  refEarned: number;
+  todayEarned: number;
+  todayDate: string;
+  adsgramWatched: number;
+  monetagWatched: number;
+  adsgramAiWatched: number;
+  tasksDone: string[];
+  visitsDone: string[];
+  lastBonus: number;
+  streak: number;
+  redeemed: string[];
+  txs: Tx[];
+  miningStart: number;
+  miningLevel: number;
+  achievements: string[];
+  lastSpin: number;
+};
+const NECTAR_TO_USDT = 0.0001; // 10,000 nectar = 1 USDT
+const DAILY_LIMIT = 270;
+const REDEEM_CODES: Record<string, number> = {
+  "WELCOME50": 50,
+  "NECTAR100": 100,
+  "SWEETBEE": 25,
+};
+const DEFAULT_STORE: Store = {
+  nectar: 0,
+  username: "Lahiru657",
+  fullName: "Lahiru Jayasekara",
+  tgId: "6202492881",
+  wallet: "",
+  refs: 0, refsCompleted: 0, refEarned: 0,
+  todayEarned: 0, todayDate: new Date().toDateString(),
+  adsgramWatched: 0, monetagWatched: 0, adsgramAiWatched: 0,
+  tasksDone: [], visitsDone: [],
+  lastBonus: 0, streak: 0,
+  redeemed: [],
+  txs: [],
+  miningStart: 0, miningLevel: 1,
+  achievements: [],
+  lastSpin: 0,
+};
+/* ============ Storage hook ============ */
+function useStore() {
+  const [s, setS] = useState<Store>(DEFAULT_STORE);
+  const loaded = useRef(false);
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("nectarpay:v1");
+      if (raw) {
+        const parsed = { ...DEFAULT_STORE, ...JSON.parse(raw) };
+        if (parsed.todayDate !== new Date().toDateString()) {
+          parsed.todayDate = new Date().toDateString();
+          parsed.todayEarned = 0;
+        }
+        setS(parsed);
+      }
+    } catch {}
+    loaded.current = true;
+  }, []);
+  useEffect(() => {
+    if (loaded.current) localStorage.setItem("nectarpay:v1", JSON.stringify(s));
+  }, [s]);
+  return [s, setS] as const;
+}
+/* ============ Toast ============ */
+function useToast() {
+  const [msg, setMsg] = useState<string | null>(null);
+  const t = useRef<any>(null);
+  const show = (m: string) => {
+    setMsg(m);
+    clearTimeout(t.current);
+    t.current = setTimeout(() => setMsg(null), 2400);
   };
-  window.CPTelegram = Telegram;
-})();
-
-/* AdsGram SDK — Block ID 36912 */
-(function () {
-  "use strict";
-  const BLOCK_ID = "36912";
-  let adController = null, isLoading = false, lastCallTs = 0;
-  const COOLDOWN_MS = 1500;
-  function initController() {
-    if (adController) return adController;
-    if (typeof window.Adsgram === "undefined" || typeof window.Adsgram.init !== "function") { console.warn("[AdsGram] SDK not loaded"); return null; }
-    try { adController = window.Adsgram.init({ blockId: BLOCK_ID }); }
-    catch (e) { console.error("[AdsGram] init failed:", e); adController = null; }
-    return adController;
+  const node = msg ? (
+    <div className="fixed left-1/2 -translate-x-1/2 top-4 z-[100] px-4 py-2 rounded-full glow-card text-sm text-yellow-100 backdrop-blur">
+      {msg}
+    </div>
+  ) : null;
+  return { show, node };
+}
+/* ============ Ad helpers ============ */
+declare global {
+  interface Window {
+    Adsgram?: { init: (o: { blockId: string }) => { show: () => Promise<any> } };
+    show_11239209?: () => Promise<void>;
   }
-  function showRewardedAd() {
-    return new Promise((resolve) => {
-      const now = Date.now();
-      if (isLoading) return resolve({ status: "error", error: "Ad already loading" });
-      if (now - lastCallTs < COOLDOWN_MS) return resolve({ status: "cooldown", error: "Please wait…" });
-      lastCallTs = now;
-      const controller = initController();
-      if (!controller) return resolve({ status: "error", error: "AdsGram SDK unavailable" });
-      isLoading = true; let rewarded = false;
-      try {
-        controller.show().then(() => {
-          isLoading = false;
-          if (rewarded) resolve({ status: "success" });
-          else resolve({ status: "error", error: "Ad closed before reward" });
-        }).catch((err) => { isLoading = false; resolve({ status: "error", error: (err && err.description) || "Ad failed" }); });
-      } catch (e) { isLoading = false; return resolve({ status: "error", error: e.message || "Ad failed" }); }
-      try {
-        const onReward = () => { rewarded = true; };
-        controller.addEventListener && controller.addEventListener("onReward", onReward);
-      } catch (_) {}
-    });
+}
+const ADSGRAM_ID = "36912";
+let adsgramController: any = null;
+function getAdsgram() {
+  if (adsgramController) return adsgramController;
+  if (typeof window !== "undefined" && window.Adsgram) {
+    adsgramController = window.Adsgram.init({ blockId: ADSGRAM_ID });
+    return adsgramController;
   }
-  window.CPAdsGram = { showRewardedAd, BLOCK_ID };
-})();
-
-/* CoinPulse main app */
-(function () {
-  "use strict";
-  const STORAGE_KEY = "coinpulse:v1";
-  const TASKS = [
-    { id: "t50",  title: "Watch 50 Ads",  target: 50,  reward: 0.0001 },
-    { id: "t100", title: "Watch 100 Ads", target: 100, reward: 0.0008 },
-    { id: "t500", title: "Watch 500 Ads", target: 500, reward: 0.0010 },
+  return null;
+}
+async function showAdsgramAd(): Promise<boolean> {
+  const c = getAdsgram();
+  if (!c) return false;
+  try { await c.show(); return true; } catch { return false; }
+}
+async function showMonetagAd(): Promise<boolean> {
+  if (typeof window === "undefined" || !window.show_11239209) return false;
+  try { await window.show_11239209(); return true; } catch { return false; }
+}
+/* ============ App ============ */
+function App() {
+  const [loading, setLoading] = useState(true);
+  const [progress, setProgress] = useState(0);
+  const [tab, setTab] = useState<TabKey>("home");
+  const [sub, setSub] = useState<SubView>(null);
+  const [store, setStore] = useStore();
+  const toast = useToast();
+  useEffect(() => {
+    let p = 0;
+    const iv = setInterval(() => {
+      p += Math.random() * 14 + 6;
+      if (p >= 100) { p = 100; clearInterval(iv); setTimeout(() => setLoading(false), 400); }
+      setProgress(p);
+    }, 220);
+    return () => clearInterval(iv);
+  }, []);
+  const addNectar = (amount: number, type: string) => {
+    setStore(s => ({
+      ...s,
+      nectar: s.nectar + amount,
+      todayEarned: s.todayEarned + Math.max(0, amount),
+      txs: [{ id: crypto.randomUUID(), type, amount, ts: Date.now() }, ...s.txs].slice(0, 100),
+    }));
+  };
+  const usdt = (store.nectar * NECTAR_TO_USDT).toFixed(4);
+  const refLink = `https://t.me/NectarPayBot/play?startapp=ref_${store.tgId}`;
+  if (loading) return <LoadingScreen progress={progress} />;
+  return (
+    <div className="hex-bg min-h-screen text-yellow-50 pb-24 max-w-md mx-auto relative">
+      <TopBar />
+      {toast.node}
+      <main className="px-4 pt-4">
+        {sub === null && tab === "home" && (
+          <HomeView store={store} usdt={usdt} refLink={refLink} onQuick={setSub} toast={toast} setStore={setStore} addNectar={addNectar} />
+        )}
+        {sub === null && tab === "ads" && (
+          <AdsView store={store} setStore={setStore} addNectar={addNectar} toast={toast} />
+        )}
+        {sub === null && tab === "tasks" && (
+          <TasksView store={store} setStore={setStore} addNectar={addNectar} toast={toast} />
+        )}
+        {sub === null && tab === "refer" && (
+          <ReferView store={store} refLink={refLink} toast={toast} />
+        )}
+        {sub === null && tab === "profile" && (
+          <ProfileView store={store} setStore={setStore} usdt={usdt} onSub={setSub} toast={toast} />
+        )}
+        {sub === "wallet" && <WalletView store={store} setStore={setStore} onBack={() => setSub(null)} toast={toast} />}
+        {sub === "transactions" && <TxView store={store} onBack={() => setSub(null)} />}
+        {sub === "leaderboard" && <LeaderboardView store={store} onBack={() => setSub(null)} />}
+        {sub === "spin" && <SpinView store={store} setStore={setStore} addNectar={addNectar} onBack={() => setSub(null)} toast={toast} />}
+        {sub === "mining" && <MiningView store={store} setStore={setStore} addNectar={addNectar} onBack={() => setSub(null)} toast={toast} />}
+        {sub === "achievements" && <AchievementsView store={store} onBack={() => setSub(null)} />}
+      </main>
+      <BottomNav tab={tab} onTab={(t) => { setTab(t); setSub(null); }} />
+    </div>
+  );
+}
+/* ============ Loading ============ */
+function LoadingScreen({ progress }: { progress: number }) {
+  return (
+    <div className="hex-bg min-h-screen flex flex-col items-center justify-between py-16 max-w-md mx-auto">
+      <TopBar />
+      <div className="flex flex-col items-center flex-1 justify-center">
+        <div className="relative w-40 h-40 rounded-full border-4 border-yellow-500/70 flex items-center justify-center floaty" style={{
+          background: "radial-gradient(circle at 30% 30%, #422006, #1a1205)",
+          boxShadow: "0 0 60px rgba(245,158,11,0.55)"
+        }}>
+          <div className="absolute inset-2 rounded-full opacity-30 spin-slow" style={{
+            backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='60' height='52' viewBox='0 0 60 52'><path d='M15 1 L45 1 L59 26 L45 51 L15 51 L1 26 Z' fill='none' stroke='%23fde047' stroke-width='1.5'/></svg>\")"
+          }}/>
+          <div className="text-6xl">🍯</div>
+          <div className="absolute -right-1 bottom-2 w-11 h-11 rounded-full bg-emerald-500 flex items-center justify-center text-white font-bold text-lg shadow-lg">₮</div>
+        </div>
+        <h1 className="mt-8 text-5xl font-black gold-text tracking-tight">NectarPay</h1>
+        <p className="text-yellow-200/70 tracking-[0.3em] text-xs mt-2">EARN USDT</p>
+        <div className="flex gap-6 mt-8">
+          <MiniIcon icon={<Play size={20}/>} label="Watch Ads" />
+          <MiniIcon icon={<Check size={20}/>} label="Do Tasks" />
+          <MiniIcon icon={<Users size={20}/>} label="Refer & Earn" />
+        </div>
+      </div>
+      <div className="w-full px-8">
+        <div className="h-2 rounded-full bg-yellow-900/40 overflow-hidden">
+          <div className="h-full rounded-full transition-all duration-200" style={{
+            width: `${progress}%`,
+            background: "linear-gradient(90deg, #fde047, #f59e0b)",
+            boxShadow: "0 0 12px #f59e0b",
+          }}/>
+        </div>
+        <div className="text-center text-yellow-200/70 mt-3 text-sm">
+          {progress < 100 ? "Loading..." : "Loading Complete"}
+        </div>
+      </div>
+    </div>
+  );
+}
+function MiniIcon({ icon, label }: { icon: React.ReactNode; label: string }) {
+  return (
+    <div className="flex flex-col items-center gap-1.5">
+      <div className="w-12 h-12 rounded-xl bg-yellow-900/40 border border-yellow-700/40 flex items-center justify-center text-yellow-300">{icon}</div>
+      <div className="text-[11px] text-yellow-200/70">{label}</div>
+    </div>
+  );
+}
+/* ============ TopBar ============ */
+function TopBar() {
+  return (
+    <div className="flex items-center justify-between px-3 py-3 border-b border-yellow-900/40 bg-[#0b0904]/80 backdrop-blur">
+      <button className="p-1.5 text-yellow-50/80"><X size={20}/></button>
+      <div className="flex items-center gap-2 font-semibold text-yellow-50">
+        <span className="text-xl">🐝</span> NectarPay
+      </div>
+      <div className="flex items-center gap-2 text-yellow-50/70">
+        <ChevronDown size={18}/>
+        <div className="text-lg leading-none">⋮</div>
+      </div>
+    </div>
+  );
+}
+/* ============ Bottom Nav ============ */
+function BottomNav({ tab, onTab }: { tab: TabKey; onTab: (t: TabKey) => void }) {
+  const items: { k: TabKey; icon: any; label: string }[] = [
+    { k: "home", icon: Home, label: "Home" },
+    { k: "ads", icon: Play, label: "Ads" },
+    { k: "tasks", icon: CheckSquare, label: "Tasks" },
+    { k: "refer", icon: Users, label: "Refer" },
+    { k: "profile", icon: User, label: "Profile" },
   ];
-  const DAILY_BONUS = 0.00005, REF_REWARD = 0.0002, MIN_WITHDRAW = 1;
-  const SPIN_REWARDS = [0.00002, 0.00005, 0.0001, 0, 0.00002, 0.00005];
-  const ACHIEVEMENTS = [
-    { id: "ads50",  name: "50 Ads",     icon: "🥉", check: (s) => s.adsWatched >= 50 },
-    { id: "ads100", name: "100 Ads",    icon: "🥈", check: (s) => s.adsWatched >= 100 },
-    { id: "ads500", name: "500 Ads",    icon: "🥇", check: (s) => s.adsWatched >= 500 },
-    { id: "daily",  name: "Daily Bonus",icon: "🎁", check: (s) => (s.dailyClaims || 0) >= 1 },
-    { id: "ref10",  name: "10 Friends", icon: "🤝", check: (s) => (s.refCount || 0) >= 10 },
-  ];
-  const DAY_MS = 24 * 60 * 60 * 1000;
-  const defaultState = () => ({
-    balance: 0, lifetime: 0, claimed: 0, adsWatched: 0, todayEarnings: 0,
-    todayKey: new Date().toDateString(),
-    tasks: { t50: { progress: 0, claimed: false }, t100: { progress: 0, claimed: false }, t500: { progress: 0, claimed: false } },
-    tasksDone: 0, achievements: [], dailyClaims: 0, lastDaily: 0, lastSpin: 0,
-    refCount: 0, refEarnings: 0, history: [], settings: { dark: true, lang: "en" }, _sig: "",
-  });
-  let state = load();
-  function sign(s) { const str = `${s.balance}|${s.lifetime}|${s.adsWatched}|${s.claimed}`; let h = 0; for (let i = 0; i < str.length; i++) h = ((h << 5) - h + str.charCodeAt(i)) | 0; return String(h); }
-  function save() { state._sig = sign(state); try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (_) {} }
-  function load() {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return defaultState();
-      const parsed = JSON.parse(raw);
-      const base = Object.assign(defaultState(), parsed);
-      base.tasks = Object.assign(defaultState().tasks, parsed.tasks || {});
-      base.settings = Object.assign(defaultState().settings, parsed.settings || {});
-      if (parsed._sig && parsed._sig !== sign(parsed)) base.balance = 0;
-      const today = new Date().toDateString();
-      if (base.todayKey !== today) { base.todayKey = today; base.todayEarnings = 0; }
-      return base;
-    } catch (e) { return defaultState(); }
-  }
-  const $ = (sel) => document.querySelector(sel);
-  const fmt = (n) => Number(n || 0).toFixed(8);
-  const fmt2 = (n) => Number(n || 0).toFixed(4);
-  function toast(msg, type = "") {
-    const el = $("#toast"); el.textContent = msg; el.className = `toast show ${type}`;
-    clearTimeout(toast._t); toast._t = setTimeout(() => el.classList.remove("show"), 2400);
-  }
-  function addHistory(label, amount) { state.history.unshift({ label, amount, ts: Date.now() }); if (state.history.length > 50) state.history.length = 50; }
-  function credit(amount, label) {
-    if (typeof amount !== "number" || amount <= 0) return;
-    state.balance = +(state.balance + amount).toFixed(8);
-    state.lifetime = +(state.lifetime + amount).toFixed(8);
-    state.claimed = +(state.claimed + amount).toFixed(8);
-    state.todayEarnings = +(state.todayEarnings + amount).toFixed(8);
-    addHistory(label, amount); checkAchievements(); save();
-  }
-  function checkAchievements() {
-    let u = false;
-    ACHIEVEMENTS.forEach((a) => { if (!state.achievements.includes(a.id) && a.check(state)) { state.achievements.push(a.id); u = true; toast(`🏆 ${a.name}`, "success"); } });
-    if (u) save();
-  }
-  function renderAll() { renderUser(); renderBalance(); renderTasks(); renderWallet(); renderAchievements(); renderLeaderboard(); renderReferral(); renderDailyTimer(); }
-  function renderUser() {
-    const u = window.CPTelegram.getUser();
-    $("#username").textContent = "@" + (u.username || u.first_name || "guest");
-    $("#avatar").src = u.photo_url || `https://api.dicebear.com/7.x/thumbs/svg?seed=${encodeURIComponent(u.username || u.id)}`;
-  }
-  function renderBalance() {
-    $("#balance").textContent = fmt(state.balance);
-    $("#walletBalance").textContent = fmt(state.balance);
-    $("#lifetime").textContent = fmt(state.lifetime);
-    $("#lifetimeMini").textContent = fmt(state.lifetime);
-    $("#claimed").textContent = fmt(state.claimed);
-    $("#todayEarnings").textContent = fmt(state.todayEarnings);
-    $("#totalAds").textContent = state.adsWatched;
-    $("#tasksDone").textContent = state.tasksDone;
-    $("#refCountHome").textContent = state.refCount;
-    $("#achievementsCount").textContent = state.achievements.length;
-  }
-  function renderTasks() {
-    const c = $("#tasksList"); c.innerHTML = "";
-    TASKS.forEach((task) => {
-      const t = state.tasks[task.id];
-      const progress = Math.min(t.progress, task.target);
-      const pct = (progress / task.target) * 100;
-      const complete = t.claimed, canClaim = progress >= task.target && !complete;
-      const card = document.createElement("div");
-      card.className = "task-card glass";
-      card.innerHTML = `
-        <div class="task-head"><div class="task-title">${task.title}</div><div class="task-reward">+${fmt(task.reward)} USDT</div></div>
-        <div class="progress"><div class="progress-fill" style="width:${pct}%"></div></div>
-        <div class="task-meta"><span>${progress} / ${task.target} ads</span><span>${Math.max(0, task.target - progress)} remaining</span></div>
-        <div class="task-actions">${complete ? `<span class="badge-complete">✓ Completed</span>` : `<button class="btn primary" data-watch="${task.id}">▶ Watch Ad</button><button class="btn" data-claim="${task.id}" ${canClaim ? "" : "disabled"}>Claim</button>`}</div>`;
-      c.appendChild(card);
-    });
-    c.querySelectorAll("[data-watch]").forEach((b) => b.addEventListener("click", () => watchAdFor(b.dataset.watch, b)));
-    c.querySelectorAll("[data-claim]").forEach((b) => b.addEventListener("click", () => claimTask(b.dataset.claim, b)));
-  }
-  function renderWallet() {
-    const list = $("#historyList");
-    if (!state.history.length) { list.innerHTML = `<div class="history-item"><span class="muted">No activity yet</span></div>`; return; }
-    list.innerHTML = state.history.map((h) => {
-      const cls = h.amount >= 0 ? "pos" : "neg";
-      const s = h.amount >= 0 ? "+" : "";
-      return `<div class="history-item"><div>${h.label}<small>${new Date(h.ts).toLocaleString()}</small></div><div class="amt ${cls}">${s}${fmt(h.amount)} USDT</div></div>`;
-    }).join("");
-  }
-  function renderAchievements() {
-    $("#achievementsList").innerHTML = ACHIEVEMENTS.map((a) => {
-      const u = state.achievements.includes(a.id);
-      return `<div class="ach ${u ? "unlocked" : "locked"}"><div class="icon">${a.icon}</div><div class="name">${a.name}</div></div>`;
-    }).join("");
-  }
-  function renderLeaderboard() {
-    const mock = [
-      { n: "@cryptoking", b: 2.451, a: 12503 }, { n: "@satoshi_jr", b: 1.982, a: 9421 },
-      { n: "@moonwalker", b: 1.457, a: 7203 }, { n: "@ada_lovelace", b: 0.982, a: 5312 },
-      { n: "@degen_life", b: 0.641, a: 3251 }, { n: "@hodl_master", b: 0.412, a: 2103 },
-      { n: "@yieldfarmer", b: 0.199, a: 1121 }, { n: "@nftcollector", b: 0.077, a: 542 },
-    ];
-    const u = window.CPTelegram.getUser();
-    const me = { n: "@" + (u.username || u.first_name || "you"), b: state.balance, a: state.adsWatched, me: true };
-    const rows = [...mock, me].sort((a, b) => b.b - a.b);
-    $("#leaderboard").innerHTML = rows.map((r, i) => `
-      <div class="lb-row ${r.me ? "me" : ""}">
-        <div class="lb-rank ${i < 3 ? "top" : ""}">${i + 1}</div>
-        <div class="lb-info"><div class="n">${r.n}${r.me ? " (you)" : ""}</div><div class="s">${r.a} ads watched</div></div>
-        <div class="lb-bal">${fmt2(r.b)}</div>
-      </div>`).join("");
-  }
-  function renderReferral() {
-    const u = window.CPTelegram.getUser();
-    $("#refLink").value = `https://t.me/CoinPulseBot?start=ref_${u.id || "guest"}`;
-    $("#refCount").textContent = state.refCount;
-    $("#refEarnings").textContent = fmt(state.refEarnings);
-  }
-  let dailyTicker = null;
-  function renderDailyTimer() {
-    const btn = $("#dailyBonusBtn"), timer = $("#bonusTimer");
-    const update = () => {
-      const rem = state.lastDaily + DAY_MS - Date.now();
-      if (rem <= 0) { timer.textContent = "Ready!"; btn.disabled = false; }
-      else { const h = Math.floor(rem / 3600000), m = Math.floor((rem % 3600000) / 60000), s = Math.floor((rem % 60000) / 1000); timer.textContent = `${h}h ${m}m ${s}s`; btn.disabled = true; }
-    };
-    update(); if (dailyTicker) clearInterval(dailyTicker); dailyTicker = setInterval(update, 1000);
-  }
-  const adLocks = new Set();
-  async function watchAdFor(taskId, btn) {
-    if (adLocks.has(taskId)) return;
-    adLocks.add(taskId); window.CPTelegram.haptic("light");
-    const orig = btn.textContent; btn.disabled = true; btn.textContent = "Loading ad…";
-    try {
-      const res = await window.CPAdsGram.showRewardedAd();
-      if (res.status === "success") {
-        state.adsWatched += 1;
-        TASKS.forEach((task) => { const t = state.tasks[task.id]; if (!t.claimed && t.progress < task.target) t.progress += 1; });
-        save(); renderTasks(); renderBalance();
-        window.CPTelegram.haptic("success"); toast("✓ Ad watched successfully!", "success");
-      } else if (res.status === "cooldown") toast(res.error || "Please wait…", "error");
-      else { window.CPTelegram.haptic("error"); toast("✗ " + (res.error || "Ad not completed."), "error"); }
-    } catch (e) { toast("✗ Ad error: " + (e.message || "unknown"), "error"); }
-    finally { adLocks.delete(taskId); btn.disabled = false; btn.textContent = orig; }
-  }
-  function claimTask(taskId, btn) {
-    const task = TASKS.find((x) => x.id === taskId), t = state.tasks[taskId];
-    if (!task || !t) return;
-    if (t.claimed) { toast("Already claimed", "error"); return; }
-    if (t.progress < task.target) { toast("Not enough ads watched", "error"); return; }
-    btn.disabled = true; t.claimed = true; state.tasksDone += 1;
-    credit(task.reward, `Task: ${task.title}`);
-    window.CPTelegram.haptic("success"); toast(`+${fmt(task.reward)} USDT claimed!`, "success");
-    renderTasks(); renderBalance();
-  }
-  function claimDaily() {
+  return (
+    <nav className="fixed bottom-0 inset-x-0 max-w-md mx-auto bg-[#0b0904]/95 backdrop-blur border-t border-yellow-900/50">
+      <div className="grid grid-cols-5">
+        {items.map(it => {
+          const I = it.icon; const active = tab === it.k;
+          return (
+            <button key={it.k} onClick={() => onTab(it.k)} className="flex flex-col items-center py-2.5 gap-1">
+              <I size={20} className={active ? "text-yellow-400" : "text-yellow-100/50"} style={active ? {filter:"drop-shadow(0 0 6px #f59e0b)"} : {}}/>
+              <span className={`text-[11px] ${active ? "text-yellow-400 font-semibold" : "text-yellow-100/50"}`}>{it.label}</span>
+            </button>
+          );
+        })}
+      </div>
+    </nav>
+  );
+}
+/* ============ HOME ============ */
+function HomeView({ store, usdt, refLink, onQuick, toast, setStore, addNectar }: any) {
+  const initials = store.fullName.split(" ").map((n:string)=>n[0]).slice(0,2).join("");
+  const claimDaily = () => {
     const now = Date.now();
-    if (now - state.lastDaily < DAY_MS) { toast("Daily bonus not ready", "error"); return; }
-    state.lastDaily = now; state.dailyClaims = (state.dailyClaims || 0) + 1;
-    credit(DAILY_BONUS, "Daily Bonus");
-    window.CPTelegram.haptic("success"); toast(`+${fmt(DAILY_BONUS)} USDT bonus!`, "success");
-    renderBalance(); renderDailyTimer();
-  }
-  function withdraw() {
-    if (state.balance < MIN_WITHDRAW) { toast(`Minimum withdrawal is ${MIN_WITHDRAW} USDT`, "error"); return; }
-    const amount = state.balance; state.balance = 0;
-    addHistory("Withdrawal", -amount); save();
-    renderBalance(); renderWallet(); toast("Withdrawal requested!", "success");
-  }
-  function openSpin() { $("#spinModal").classList.remove("hidden"); }
-  function doSpin() {
-    const now = Date.now();
-    if (now - state.lastSpin < DAY_MS) { const rem = state.lastSpin + DAY_MS - now; toast(`Come back in ${Math.floor(rem/3600000)}h`, "error"); return; }
-    const btn = $("#spinStart"); btn.disabled = true;
-    const idx = Math.floor(Math.random() * SPIN_REWARDS.length);
-    const reward = SPIN_REWARDS[idx], deg = 1440 + idx * 60 + 30;
-    $("#wheel").style.transform = `rotate(${deg}deg)`;
-    setTimeout(() => {
-      state.lastSpin = now;
-      if (reward > 0) { credit(reward, "Daily Spin"); toast(`🎉 Won ${fmt(reward)} USDT!`, "success"); }
-      else { save(); toast("Try again tomorrow!", ""); }
-      renderBalance(); btn.disabled = false;
-    }, 4200);
-  }
-  function nav(target) {
-    document.querySelectorAll(".page").forEach((p) => p.classList.remove("active"));
-    document.querySelectorAll(".nav-btn").forEach((b) => b.classList.remove("active"));
-    const page = document.getElementById(`page-${target}`); if (page) page.classList.add("active");
-    const btn = document.querySelector(`.nav-btn[data-nav="${target}"]`); if (btn) btn.classList.add("active");
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
-  let adminTaps = 0, adminTimer = null;
-  function adminTap() {
-    adminTaps += 1; clearTimeout(adminTimer);
-    adminTimer = setTimeout(() => (adminTaps = 0), 1500);
-    if (adminTaps >= 5) { adminTaps = 0; nav("admin"); renderAdmin(); toast("Admin unlocked", "success"); }
-  }
-  function renderAdmin() { $("#adminUsers").textContent = 1; $("#adminBalance").textContent = fmt(state.balance); $("#adminAds").textContent = state.adsWatched; }
-  function bootReferral() {
-    const sp = window.CPTelegram.getStartParam();
-    if (sp && sp.startsWith("ref_") && !localStorage.getItem("cp:refClaimed")) {
-      localStorage.setItem("cp:refClaimed", sp);
-      state.refCount += 1; state.refEarnings = +(state.refEarnings + REF_REWARD).toFixed(8);
-      credit(REF_REWARD, "Referral Bonus"); toast("+Referral bonus!", "success");
+    if (now - store.lastBonus < 24*3600*1000) {
+      toast.show("⏱ Daily bonus already claimed. Come back tomorrow.");
+      return;
     }
-  }
-  function bindUI() {
-    document.querySelectorAll("[data-nav]").forEach((el) => el.addEventListener("click", () => nav(el.dataset.nav)));
-    $("#dailyBonusBtn").addEventListener("click", claimDaily);
-    $("#spinBtn").addEventListener("click", openSpin);
-    $("#spinStart").addEventListener("click", doSpin);
-    $("#withdrawBtn").addEventListener("click", withdraw);
-    $("#copyRef").addEventListener("click", () => { const i = $("#refLink"); i.select(); navigator.clipboard.writeText(i.value).then(() => toast("Link copied!", "success")); });
-    $("#shareRef").addEventListener("click", () => { const i = $("#refLink"); window.CPTelegram.share(i.value, "Join CoinPulse & earn USDT!"); });
-    $("#adminTrigger").addEventListener("click", adminTap);
-    $("#avatar").addEventListener("click", adminTap);
-    $("#darkToggle").addEventListener("change", (e) => { state.settings.dark = e.target.checked; document.body.style.filter = e.target.checked ? "" : "invert(1) hue-rotate(180deg)"; save(); });
-    $("#langSelect").addEventListener("change", (e) => { state.settings.lang = e.target.value; save(); toast("Language saved", "success"); });
-    $("#privacyBtn").addEventListener("click", () => alert("Privacy Policy: CoinPulse only stores data locally on your device."));
-    $("#termsBtn").addEventListener("click", () => alert("Terms of Service: Rewards are for entertainment. Use responsibly."));
-    $("#resetBalance").addEventListener("click", () => { state.balance = 0; save(); renderAll(); toast("Balance reset", "success"); });
-    $("#resetTasks").addEventListener("click", () => { Object.keys(state.tasks).forEach((k) => { state.tasks[k] = { progress: 0, claimed: false }; }); state.tasksDone = 0; save(); renderAll(); toast("Tasks reset", "success"); });
-    $("#resetAll").addEventListener("click", () => { if (!confirm("Reset ALL data?")) return; localStorage.removeItem(STORAGE_KEY); localStorage.removeItem("cp:refClaimed"); state = defaultState(); save(); renderAll(); toast("Everything reset", "success"); });
-    $("#darkToggle").checked = state.settings.dark !== false;
-    $("#langSelect").value = state.settings.lang || "en";
-  }
-  function boot() {
-    window.CPTelegram.init(); bootReferral(); bindUI(); renderAll();
-    setTimeout(() => { $("#loader").style.display = "none"; $("#app").classList.remove("hidden"); }, 900);
-  }
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
-  else boot();
-})();
-</script>
-</body>
-</html>
+    const streak = (now - store.lastBonus < 48*3600*1000) ? store.streak + 1 : 1;
+    const reward = 20 + Math.min(streak, 7) * 5;
+    setStore((s:Store) => ({ ...s, lastBonus: now, streak }));
+    addNectar(reward, `Daily bonus (day ${streak})`);
+    toast.show(`🎁 +${reward} Nectar! Streak ${streak}🔥`);
+  };
+  const [code, setCode] = useState("");
+  const [showRedeem, setShowRedeem] = useState(false);
+  const redeem = () => {
+    const c = code.trim().toUpperCase();
+    if (!c) return;
+    if (store.redeemed.includes(c)) { toast.show("Code already used"); return; }
+    if (REDEEM_CODES[c]) {
+      const amt = REDEEM_CODES[c];
+      setStore((s:Store) => ({ ...s, redeemed: [...s.redeemed, c] }));
+      addNectar(amt, `Reward code ${c}`);
+      toast.show(`🎉 Redeemed +${amt} Nectar`);
+      setCode(""); setShowRedeem(false);
+    } else toast.show("❌ Invalid code");
+  };
+  return (
+    <div className="space-y-5">
+      <div className="flex items-center gap-3">
+        <div className="w-14 h-14 rounded-2xl bg-emerald-400 text-emerald-950 flex items-center justify-center font-bold text-lg relative">
+          {initials}
+          <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-400 border-2 border-[#0e0b06]"/>
+        </div>
+        <div className="flex-1">
+          <div className="text-yellow-100/60 text-sm">Welcome back</div>
+          <div className="text-yellow-400 font-semibold">@{store.username}</div>
+        </div>
+        <button className="w-11 h-11 rounded-xl glow-card flex items-center justify-center"><Bell size={18}/></button>
+      </div>
+      <div className="glow-card rounded-3xl p-5 text-center">
+        <div className="tracking-[0.3em] text-yellow-100/50 text-xs">YOUR BALANCE</div>
+        <div className="mt-2 flex items-baseline justify-center gap-2">
+          <span className="text-6xl font-black gold-text">{store.nectar.toFixed(0)}</span>
+          <span className="text-2xl">🍯</span>
+          <span className="text-2xl font-bold gold-text">NECTAR</span>
+        </div>
+        <div className="text-yellow-100/60 text-sm mt-1">≈ {usdt} USDT</div>
+        <div className="mt-4 border-t border-yellow-900/50 pt-3 grid grid-cols-2 divide-x divide-yellow-900/50">
+          <div>
+            <div className="text-yellow-100/50 text-xs">USDT Value</div>
+            <div className="text-emerald-400 font-bold">{usdt} USDT</div>
+          </div>
+          <div>
+            <div className="text-yellow-100/50 text-xs">Telegram ID</div>
+            <div className="text-yellow-50">{store.tgId}</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div className="tracking-[0.2em] text-yellow-100/50 text-xs mb-2">QUICK ACTIONS</div>
+        <div className="grid grid-cols-4 gap-2">
+          <QuickAction icon={<Gift size={22}/>} label="Daily" color="bg-emerald-900/40 text-emerald-300" onClick={claimDaily}/>
+          <QuickAction icon={<Zap size={22}/>} label="Reward Code" color="bg-purple-900/40 text-purple-300" onClick={() => setShowRedeem(true)}/>
+          <QuickAction icon={<Wallet size={22}/>} label="Withdraw" color="bg-blue-900/40 text-blue-300" onClick={() => onQuick("wallet")}/>
+          <QuickAction icon={<Trophy size={22}/>} label="Leaders" color="bg-yellow-900/40 text-yellow-300" onClick={() => onQuick("leaderboard")}/>
+        </div>
+        <div className="grid grid-cols-3 gap-2 mt-2">
+          <QuickAction icon={<Sparkles size={22}/>} label="Spin Wheel" color="bg-pink-900/40 text-pink-300" onClick={() => onQuick("spin")}/>
+          <QuickAction icon={<Pickaxe size={22}/>} label="Mining" color="bg-orange-900/40 text-orange-300" onClick={() => onQuick("mining")}/>
+          <QuickAction icon={<Award size={22}/>} label="Achievements" color="bg-cyan-900/40 text-cyan-300" onClick={() => onQuick("achievements")}/>
+        </div>
+      </div>
+      <div>
+        <div className="tracking-[0.2em] text-yellow-100/50 text-xs mb-2">EARN MORE</div>
+        <div className="grid grid-cols-3 gap-2">
+          <BigCard tint="from-blue-800/50" icon={<Play size={22}/>} title="Watch Ads" sub="Up to 10 Nectar"/>
+          <BigCard tint="from-emerald-800/50" icon={<CheckSquare size={22}/>} title="Tasks" sub="20-200 Nectar"/>
+          <BigCard tint="from-purple-800/50" icon={<Users size={22}/>} title="Refer" sub="Up to 150 Nectar"/>
+        </div>
+      </div>
+      <div className="glow-card rounded-2xl p-4">
+        <div className="flex justify-between items-center mb-2">
+          <div className="flex items-center gap-2 font-semibold"><Users size={18} className="text-purple-300"/> Your Referral Link</div>
+          <div className="text-yellow-400 font-bold text-sm">+150 Nectar</div>
+        </div>
+        <div className="flex items-center gap-2 bg-black/40 border border-yellow-900/40 rounded-xl px-3 py-2.5">
+          <span className="truncate text-yellow-100/70 text-xs flex-1">{refLink}</span>
+          <button onClick={() => { navigator.clipboard?.writeText(refLink); toast.show("Copied!"); }} className="text-yellow-300"><Copy size={16}/></button>
+        </div>
+      </div>
+      {showRedeem && (
+        <Modal onClose={() => setShowRedeem(false)} title="Enter Reward Code">
+          <input value={code} onChange={e=>setCode(e.target.value)} placeholder="e.g. WELCOME50"
+            className="w-full bg-black/40 border border-yellow-900/50 rounded-xl px-4 py-3 text-yellow-50 outline-none focus:border-yellow-500 uppercase"/>
+          <button onClick={redeem} className="btn-gold w-full py-3 rounded-xl mt-3">Redeem</button>
+          <div className="text-xs text-yellow-100/50 mt-2">Try: WELCOME50, NECTAR100, SWEETBEE</div>
+        </Modal>
+      )}
+    </div>
+  );
+}
+function QuickAction({ icon, label, color, onClick }: any) {
+  return (
+    <button onClick={onClick} className="glow-card rounded-2xl py-3 flex flex-col items-center gap-1.5 active:scale-95 transition">
+      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${color}`}>{icon}</div>
+      <div className="text-xs text-yellow-50 font-medium">{label}</div>
+    </button>
+  );
+}
+function BigCard({ tint, icon, title, sub }: any) {
+  return (
+    <div className={`rounded-2xl p-3 bg-gradient-to-br ${tint} to-black/60 border border-yellow-900/40`}>
+      <div className="w-9 h-9 rounded-full border border-yellow-100/20 flex items-center justify-center text-yellow-100">{icon}</div>
+      <div className="mt-2 font-bold text-yellow-50 text-sm">{title}</div>
+      <div className="text-xs text-yellow-200/70">{sub}</div>
+    </div>
+  );
+}
+/* ============ Modal ============ */
+function Modal({ children, onClose, title }: any) {
+  return (
+    <div className="fixed inset-0 z-[90] bg-black/70 flex items-center justify-center p-4" onClick={onClose}>
+      <div className="glow-card rounded-2xl p-5 w-full max-w-sm" onClick={e=>e.stopPropagation()}>
+        <div className="flex justify-between items-center mb-3">
+          <div className="font-bold text-yellow-50">{title}</div>
+          <button onClick={onClose}><X size={20} className="text-yellow-100/70"/></button>
+        </div>
+        {children}
+      </div>
+    </div>
+  );
+}
+/* ============ ADS ============ */
+function AdsView({ store, setStore, addNectar, toast }: any) {
+  const [mode, setMode] = useState<"ads"|"visits">("ads");
+  const [loading, setLoading] = useState<string | null>(null);
+  const remaining = Math.max(0, DAILY_LIMIT - store.todayEarned);
+  const resetIn = useCountdown();
+  const watchAd = async (kind: "adsgram" | "monetag" | "adsgramai", reward: number, cap: number, key: keyof Store) => {
+    if (remaining <= 0) { toast.show("Daily limit reached. Come back tomorrow."); return; }
+    if ((store[key] as number) >= cap) { toast.show("No ads left in this pack today."); return; }
+    setLoading(kind);
+    let ok = false;
+    if (kind === "monetag") ok = await showMonetagAd();
+    else ok = await showAdsgramAd();
+    setLoading(null);
+    if (!ok) {
+      // fallback simulation so user still gets progress in dev
+      await new Promise(r => setTimeout(r, 1200));
+      ok = true;
+      toast.show("Ad simulated (SDK unavailable)");
+    }
+    if (ok) {
+      setStore((s: Store) => ({ ...s, [key]: (s[key] as number) + 1 }));
+      addNectar(reward, `${kind === "monetag" ? "Monetag" : kind === "adsgramai" ? "AdsGram AI" : "Adsgram"} ad`);
+      toast.show(`+${reward} Nectar!`);
+    }
+  };
+  const visitSite = (id: string, name: string, reward: number, url: string) => {
+    if (remaining <= 0) return toast.show("Daily limit reached.");
+    if (store.visitsDone.includes(id)) return toast.show("Already visited today.");
+    window.open(url, "_blank");
+    setTimeout(() => {
+      setStore((s: Store) => ({ ...s, visitsDone: [...s.visitsDone, id] }));
+      addNectar(reward, `Visit: ${name}`);
+      toast.show(`+${reward} Nectar for visiting ${name}`);
+    }, 4000);
+  };
+  return (
+    <div className="space-y-4">
+      <SubHeader title="Earn" subtitle="Watch ads & visit websites"/>
+      <div className="glow-card rounded-2xl p-4 flex justify-between">
+        <div>
+          <div className="text-yellow-100/50 text-xs tracking-widest">TODAY EARNED</div>
+          <div className="text-yellow-400 font-black text-3xl">{store.todayEarned} NECTAR</div>
+        </div>
+        <div className="text-right">
+          <div className="text-yellow-100/50 text-xs tracking-widest">AVAILABLE</div>
+          <div className="text-emerald-400 font-black text-3xl">{remaining} NECTAR</div>
+        </div>
+      </div>
+      <div className="glow-card rounded-2xl px-4 py-3 flex justify-between items-center">
+        <span className="text-yellow-100/70 text-sm">Daily reset in:</span>
+        <span className="text-yellow-400 font-bold">{resetIn}</span>
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        <button onClick={() => setMode("ads")} className={`py-3 rounded-2xl font-semibold ${mode==="ads" ? "btn-gold" : "glow-card text-yellow-100"}`}>📺 Watch Ads</button>
+        <button onClick={() => setMode("visits")} className={`py-3 rounded-2xl font-semibold flex items-center justify-center gap-2 ${mode==="visits" ? "btn-gold" : "glow-card text-yellow-100"}`}><Globe size={16}/> Visit Sites</button>
+      </div>
+      {mode === "ads" ? (
+        <>
+          <AdCard icon="📺" title="Adsgram Reward" reward={10} watched={store.adsgramWatched} cap={5}
+            loading={loading==="adsgram"}
+            onWatch={() => watchAd("adsgram", 10, 5, "adsgramWatched")}/>
+          <AdCard icon={<Target className="text-red-400" size={28}/>} title="AdsGram AI" reward={8} watched={store.adsgramAiWatched} cap={15}
+            loading={loading==="adsgramai"} tint="from-blue-900/40"
+            onWatch={() => watchAd("adsgramai", 8, 15, "adsgramAiWatched")}/>
+          <AdCard icon={<Flame className="text-orange-400" size={28}/>} title="Monetag Rewarded" reward={15} watched={store.monetagWatched} cap={10}
+            loading={loading==="monetag"} tint="from-orange-900/40"
+            onWatch={() => watchAd("monetag", 15, 10, "monetagWatched")}/>
+        </>
+      ) : (
+        <>
+          {[
+            { id: "v1", name: "Crypto News", url: "https://coindesk.com", reward: 12 },
+            { id: "v2", name: "DeFi Portal", url: "https://defipulse.com", reward: 15 },
+            { id: "v3", name: "Web3 Blog", url: "https://web3.foundation", reward: 10 },
+          ].map(v => (
+            <div key={v.id} className="glow-card rounded-2xl p-4 flex items-center gap-3">
+              <div className="w-12 h-12 rounded-xl bg-blue-900/40 flex items-center justify-center"><Globe className="text-blue-300" size={22}/></div>
+              <div className="flex-1">
+                <div className="font-bold text-yellow-50">{v.name}</div>
+                <div className="text-xs text-yellow-100/60">Visit for 4s to earn +{v.reward} Nectar</div>
+              </div>
+              <button onClick={() => visitSite(v.id, v.name, v.reward, v.url)} disabled={store.visitsDone.includes(v.id)}
+                className={`px-3 py-2 rounded-xl text-sm font-semibold ${store.visitsDone.includes(v.id) ? "bg-emerald-900/40 text-emerald-300" : "btn-gold"}`}>
+                {store.visitsDone.includes(v.id) ? "Done" : "Visit"}
+              </button>
+            </div>
+          ))}
+        </>
+      )}
+    </div>
+  );
+}
+function AdCard({ icon, title, reward, watched, cap, onWatch, loading, tint = "from-yellow-900/30" }: any) {
+  const left = Math.max(0, cap - watched);
+  const pct = (watched / cap) * 100;
+  return (
+    <div className={`rounded-2xl p-4 bg-gradient-to-br ${tint} to-black/60 border border-yellow-900/40`}>
+      <div className="flex items-center gap-3">
+        {typeof icon === "string" ? <div className="text-4xl">{icon}</div> : <div className="w-12 h-12 rounded-xl bg-black/40 flex items-center justify-center">{icon}</div>}
+        <div className="flex-1">
+          <div className="font-bold text-yellow-50 text-lg">{title}</div>
+          <div className="text-yellow-300 font-semibold">+{reward} Nectar per ad</div>
+        </div>
+      </div>
+      <div className="mt-3 flex justify-between text-xs text-yellow-100/70">
+        <span>{watched} / {cap} ads</span>
+        <span>{left} left</span>
+      </div>
+      <div className="h-1.5 rounded-full bg-black/40 mt-1.5 overflow-hidden">
+        <div className="h-full bg-gradient-to-r from-yellow-400 to-orange-500" style={{ width: `${pct}%` }}/>
+      </div>
+      <button onClick={onWatch} disabled={left <= 0 || loading} className="btn-gold w-full py-3 rounded-xl mt-3 flex items-center justify-center gap-2 disabled:opacity-50">
+        <Play size={18}/> {loading ? "Loading ad..." : left <= 0 ? "All watched today" : `Watch Ad — +${reward}N`}
+      </button>
+    </div>
+  );
+}
+function useCountdown() {
+  const [t, setT] = useState("");
+  useEffect(() => {
+    const upd = () => {
+      const now = new Date();
+      const end = new Date(now); end.setHours(24,0,0,0);
+      const d = end.getTime() - now.getTime();
+      const h = Math.floor(d/3600000);
+      const m = Math.floor((d%3600000)/60000);
+      const s = Math.floor((d%60000)/1000);
+      setT(`${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`);
+    };
+    upd(); const iv = setInterval(upd, 1000); return () => clearInterval(iv);
+  }, []);
+  return t;
+}
+function SubHeader({ title, subtitle, onBack }: { title: string; subtitle?: string; onBack?: () => void }) {
+  return (
+    <div className="flex items-start gap-3">
+      {onBack && <button onClick={onBack} className="w-11 h-11 rounded-xl glow-card flex items-center justify-center"><ArrowLeft size={18}/></button>}
+      {!onBack && <button className="w-11 h-11 rounded-xl glow-card flex items-center justify-center"><ArrowLeft size={18} className="opacity-40"/></button>}
+      <div>
+        <div className="text-2xl font-black text-yellow-50">{title}</div>
+        {subtitle && <div className="text-yellow-100/60 text-sm">{subtitle}</div>}
+      </div>
+    </div>
+  );
+}
+/* ============ TASKS ============ */
+const TASKS = {
+  main: [
+    { id: "m1", title: "NectarPay | Community 🐝", desc: "Join our community channel", handle: "@nectarpay", reward: 10, url: "https://t.me/nectarpay" },
+    { id: "m2", title: "NectarPay | Payment 🐝", desc: "🔴 Join our payment channel", handle: "@nectarpaypay", reward: 10, url: "https://t.me/nectarpaypay" },
+    { id: "m3", title: "Follow on X", desc: "Follow @NectarPayApp on X", handle: "@NectarPayApp", reward: 15, url: "https://x.com/NectarPayApp" },
+  ],
+  partner: [
+    { id: "p1", title: "HoneyDex Swap", desc: "Try our partner DEX", handle: "@honeydex", reward: 50, url: "https://t.me/honeydex" },
+    { id: "p2", title: "BeeVault Wallet", desc: "Download partner wallet", handle: "@beevault", reward: 80, url: "https://t.me/beevault" },
+  ],
+  community: [
+    { id: "c1", title: "Share NectarPay Story", desc: "Share our story on your channel", handle: "@yourchannel", reward: 30, url: "https://t.me/share/url?url=https://t.me/NectarPayBot" },
+    { id: "c2", title: "Invite 5 friends", desc: "Bring 5 friends to community", handle: "invite", reward: 100, url: "https://t.me/nectarpay" },
+  ],
+};
+function TasksView({ store, setStore, addNectar, toast }: any) {
+  const [cat, setCat] = useState<"main"|"partner"|"community">("main");
+  const doTask = (t: any) => {
+    if (store.tasksDone.includes(t.id)) return;
+    window.open(t.url, "_blank");
+    setTimeout(() => {
+      setStore((s: Store) => ({ ...s, tasksDone: [...s.tasksDone, t.id] }));
+      addNectar(t.reward, `Task: ${t.title}`);
+      toast.show(`✅ Task done! +${t.reward} Nectar`);
+    }, 3500);
+  };
+  return (
+    <div className="space-y-4">
+      <SubHeader title="Tasks" subtitle="Complete tasks to earn Nectar"/>
+      <div className="grid grid-cols-3 gap-2">
+        {(["main","partner","community"] as const).map(c => (
+          <button key={c} onClick={() => setCat(c)} className={`py-3 rounded-2xl font-semibold capitalize ${cat===c ? "btn-gold" : "glow-card text-yellow-100"}`}>{c}</button>
+        ))}
+      </div>
+      {TASKS[cat].map(t => {
+        const done = store.tasksDone.includes(t.id);
+        return (
+          <div key={t.id} className="glow-card rounded-2xl p-4">
+            <div className="flex gap-3">
+              <div className="w-14 h-14 rounded-xl bg-yellow-900/40 border border-yellow-700/40 flex items-center justify-center text-2xl">🐝</div>
+              <div className="flex-1">
+                <div className="flex justify-between">
+                  <div className="font-bold text-yellow-50">{t.title}</div>
+                  <div className="text-yellow-400 font-bold">+{t.reward}N</div>
+                </div>
+                <div className="text-yellow-100/70 text-sm">{t.desc}</div>
+                <div className="text-blue-400 text-sm">{t.handle}</div>
+              </div>
+            </div>
+            <button onClick={() => doTask(t)} disabled={done} className={`w-full mt-3 py-2.5 rounded-xl font-semibold flex items-center justify-center gap-2 ${done ? "bg-emerald-900/40 text-emerald-300" : "btn-gold"}`}>
+              {done ? <><Check size={16}/> Completed</> : <><ExternalLink size={16}/> Open & Earn +{t.reward}N</>}
+            </button>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+/* ============ REFER ============ */
+function ReferView({ store, refLink, toast }: any) {
+  const share = async () => {
+    if (navigator.share) { try { await navigator.share({ title: "NectarPay", url: refLink }); } catch {} }
+    else { navigator.clipboard?.writeText(refLink); toast.show("Copied share link"); }
+  };
+  return (
+    <div className="space-y-4">
+      <SubHeader title="Refer & Earn" subtitle="Earn up to 150 Nectar per referral"/>
+      <div className="grid grid-cols-3 gap-2">
+        <Stat n={store.refs} label="Total Refs" color="text-yellow-50"/>
+        <Stat n={store.refsCompleted} label="Completed" color="text-emerald-400"/>
+        <Stat n={store.refEarned} label="Nectar Earned" color="text-yellow-400"/>
+      </div>
+      <div className="glow-card rounded-2xl p-4">
+        <div className="text-yellow-100/50 tracking-widest text-xs mb-2">YOUR REFERRAL LINK</div>
+        <div className="bg-black/40 border border-yellow-900/40 rounded-xl px-3 py-3 text-yellow-100/80 text-xs truncate">{refLink}</div>
+        <div className="grid grid-cols-2 gap-2 mt-3">
+          <button onClick={() => { navigator.clipboard?.writeText(refLink); toast.show("Copied!"); }} className="btn-gold py-3 rounded-xl flex items-center justify-center gap-2"><Copy size={16}/> Copy Link</button>
+          <button onClick={share} className="glow-card py-3 rounded-xl flex items-center justify-center gap-2 text-yellow-50 font-semibold"><Share2 size={16}/> Share</button>
+        </div>
+      </div>
+      <div className="tracking-widest text-yellow-100/50 text-xs">REWARD STRUCTURE</div>
+      <div className="glow-card rounded-2xl p-4 space-y-4">
+        {[
+          {n:1, title:"Friend joins", reward:"+25 Nectar", sub:"Instant reward when they sign up"},
+          {n:2, title:"Watches 10 ads", reward:"+50 Nectar", sub:"After first 10 ad watches"},
+          {n:3, title:"Day 2 milestone", reward:"+75 Nectar", sub:"10 more ads on their 2nd day"},
+        ].map(r => (
+          <div key={r.n} className="flex gap-3">
+            <div className="w-8 h-8 rounded-full border-2 border-yellow-500 text-yellow-400 flex items-center justify-center font-bold">{r.n}</div>
+            <div className="flex-1">
+              <div className="flex justify-between"><span className="font-bold text-yellow-50">{r.title}</span><span className="text-yellow-400 font-bold">{r.reward}</span></div>
+              <div className="text-yellow-100/60 text-sm">{r.sub}</div>
+            </div>
+          </div>
+        ))}
+        <div className="border-t border-yellow-900/50 pt-3 flex justify-between items-center">
+          <div>
+            <div className="font-bold text-yellow-50">Total per referral</div>
+            <div className="text-xs text-yellow-100/60">⚠ Referral must complete milestones within 48 hours</div>
+          </div>
+          <div className="text-2xl font-black gold-text">150 Nectar</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+function Stat({ n, label, color }: any) {
+  return (
+    <div className="glow-card rounded-2xl p-4 text-center">
+      <div className={`text-3xl font-black ${color}`}>{n}</div>
+      <div className="text-yellow-100/60 text-xs">{label}</div>
+    </div>
+  );
+}
+/* ============ PROFILE ============ */
+function ProfileView({ store, setStore, usdt, onSub, toast }: any) {
+  const initials = store.fullName.split(" ").map((n:string)=>n[0]).slice(0,2).join("");
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-col items-center pt-2">
+        <div className="w-28 h-28 rounded-3xl bg-emerald-400 text-emerald-950 flex items-center justify-center font-black text-4xl">{initials}</div>
+        <div className="mt-3 text-2xl font-bold text-yellow-50">{store.fullName}</div>
+        <div className="text-yellow-400">@{store.username}</div>
+        <div className="text-yellow-100/40 text-sm font-mono">ID: {store.tgId}</div>
+      </div>
+      <div className="glow-card rounded-2xl p-5 text-center">
+        <div className="text-5xl font-black gold-text">{store.nectar.toFixed(0)} <span className="text-2xl">🍯</span> <span className="text-2xl">NECTAR</span></div>
+        <div className="text-yellow-100/60">≈ {usdt} USDT</div>
+      </div>
+      <button onClick={() => onSub("wallet")} className="w-full glow-card rounded-2xl p-4 flex items-center gap-3">
+        <div className="w-10 h-10 rounded-xl bg-blue-900/40 flex items-center justify-center"><Wallet className="text-blue-300" size={20}/></div>
+        <div className="flex-1 text-left">
+          <div className="text-yellow-100/60 text-xs">BEP20 Wallet</div>
+          <div className="font-semibold text-yellow-50">{store.wallet ? store.wallet.slice(0,6)+"..."+store.wallet.slice(-4) : "Not connected"}</div>
+        </div>
+        <ChevronRight className="text-yellow-100/40" size={18}/>
+      </button>
+      <Section title="FINANCE">
+        <Row icon={<Wallet size={18} className="text-blue-300"/>} label="Wallet" onClick={()=>onSub("wallet")}/>
+        <Row icon={<History size={18} className="text-emerald-300"/>} label="Transactions" onClick={()=>onSub("transactions")}/>
+      </Section>
+      <Section title="SOCIAL">
+        <Row icon={<Users size={18} className="text-purple-300"/>} label="Refer Friends" onClick={()=>toast.show("Switch to Refer tab")}/>
+        <Row icon={<Trophy size={18} className="text-yellow-300"/>} label="Leaderboard" onClick={()=>onSub("leaderboard")}/>
+        <Row icon={<Award size={18} className="text-cyan-300"/>} label="Achievements" onClick={()=>onSub("achievements")}/>
+      </Section>
+      <Section title="SETTINGS">
+        <Row icon={<Settings size={18} className="text-yellow-100/80"/>} label="Reset Account" onClick={() => {
+          if (confirm("Reset all local data?")) { localStorage.removeItem("nectarpay:v1"); location.reload(); }
+        }}/>
+      </Section>
+    </div>
+  );
+}
+function Section({ title, children }: any) {
+  return (
+    <div>
+      <div className="tracking-widest text-yellow-100/50 text-xs mb-2">{title}</div>
+      <div className="glow-card rounded-2xl divide-y divide-yellow-900/40 overflow-hidden">{children}</div>
+    </div>
+  );
+}
+function Row({ icon, label, onClick }: any) {
+  return (
+    <button onClick={onClick} className="w-full flex items-center gap-3 px-4 py-3.5 text-left">
+      <div className="w-9 h-9 rounded-xl bg-black/40 flex items-center justify-center">{icon}</div>
+      <div className="flex-1 text-yellow-50 font-medium">{label}</div>
+      <ChevronRight className="text-yellow-100/40" size={18}/>
+    </button>
+  );
+}
+/* ============ Wallet / Withdraw ============ */
+function WalletView({ store, setStore, onBack, toast }: any) {
+  const [wallet, setWallet] = useState(store.wallet);
+  const [amount, setAmount] = useState("");
+  const MIN = 10000;
+  const save = () => {
+    if (!/^0x[a-fA-F0-9]{40}$/.test(wallet)) return toast.show("Invalid BEP20 address");
+    setStore((s: Store) => ({ ...s, wallet }));
+    toast.show("Wallet saved");
+  };
+  const withdraw = () => {
+    const a = Number(amount);
+    if (!store.wallet) return toast.show("Connect wallet first");
+    if (!a || a < MIN) return toast.show(`Minimum ${MIN} Nectar`);
+    if (a > store.nectar) return toast.show("Insufficient balance");
+    setStore((s: Store) => ({
+      ...s,
+      nectar: s.nectar - a,
+      txs: [{ id: crypto.randomUUID(), type: `Withdraw ${(a*NECTAR_TO_USDT).toFixed(4)} USDT`, amount: -a, ts: Date.now() }, ...s.txs],
+    }));
+    setAmount(""); toast.show("Withdraw request submitted");
+  };
+  return (
+    <div className="space-y-4">
+      <SubHeader title="Wallet" subtitle="Connect BEP20 & withdraw" onBack={onBack}/>
+      <div className="glow-card rounded-2xl p-4">
+        <div className="text-yellow-100/60 text-sm mb-2">BEP20 Address</div>
+        <input value={wallet} onChange={e=>setWallet(e.target.value)} placeholder="0x..." className="w-full bg-black/40 border border-yellow-900/50 rounded-xl px-3 py-3 text-yellow-50 outline-none focus:border-yellow-500"/>
+        <button onClick={save} className="btn-gold w-full py-3 rounded-xl mt-3">Save Wallet</button>
+      </div>
+      <div className="glow-card rounded-2xl p-4">
+        <div className="flex justify-between text-sm mb-2">
+          <span className="text-yellow-100/60">Balance</span>
+          <span className="text-yellow-400 font-bold">{store.nectar.toFixed(0)} Nectar</span>
+        </div>
+        <input value={amount} onChange={e=>setAmount(e.target.value)} type="number" placeholder={`Min ${MIN} Nectar`} className="w-full bg-black/40 border border-yellow-900/50 rounded-xl px-3 py-3 text-yellow-50 outline-none focus:border-yellow-500"/>
+        <div className="text-xs text-yellow-100/60 mt-1">≈ {(Number(amount||0)*NECTAR_TO_USDT).toFixed(4)} USDT</div>
+        <button onClick={withdraw} className="btn-gold w-full py-3 rounded-xl mt-3">Withdraw</button>
+      </div>
+    </div>
+  );
+}
+/* ============ Transactions ============ */
+function TxView({ store, onBack }: any) {
+  return (
+    <div className="space-y-4">
+      <SubHeader title="Transactions" subtitle="Your earning history" onBack={onBack}/>
+      {store.txs.length === 0 && <div className="glow-card rounded-2xl p-8 text-center text-yellow-100/60">No transactions yet. Start earning!</div>}
+      {store.txs.map((t: Tx) => (
+        <div key={t.id} className="glow-card rounded-2xl p-3 flex justify-between items-center">
+          <div>
+            <div className="text-yellow-50 font-medium">{t.type}</div>
+            <div className="text-xs text-yellow-100/50">{new Date(t.ts).toLocaleString()}</div>
+          </div>
+          <div className={`font-bold ${t.amount >= 0 ? "text-emerald-400" : "text-red-400"}`}>{t.amount >= 0 ? "+" : ""}{t.amount}N</div>
+        </div>
+      ))}
+    </div>
+  );
+}
+/* ============ Leaderboard ============ */
+function LeaderboardView({ store, onBack }: any) {
+  const fake = useMemo(() => {
+    const names = ["QueenBee","HoneyKing","GoldSwarm","NectarFox","BuzzLord","PollenPro","WaxWizard","HiveHero","SweetSam","AmberAce"];
+    return names.map((n,i) => ({ name: n, score: 5000 - i*380 + Math.floor(Math.random()*120) }));
+  }, []);
+  const all = [...fake, { name: `@${store.username} (You)`, score: Math.floor(store.nectar) }]
+    .sort((a,b) => b.score - a.score);
+  return (
+    <div className="space-y-4">
+      <SubHeader title="Leaderboard" subtitle="Top earners this week" onBack={onBack}/>
+      {all.map((u,i) => (
+        <div key={u.name} className={`glow-card rounded-2xl p-3 flex items-center gap-3 ${u.name.includes("You") ? "border-yellow-500/60" : ""}`}>
+          <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black ${i<3 ? "bg-yellow-400 text-yellow-950" : "bg-yellow-900/40 text-yellow-200"}`}>{i+1}</div>
+          <div className="flex-1 text-yellow-50 font-medium">{u.name}</div>
+          <div className="text-yellow-400 font-bold">{u.score}N</div>
+        </div>
+      ))}
+    </div>
+  );
+}
+/* ============ Spin Wheel ============ */
+function SpinView({ store, setStore, addNectar, onBack, toast }: any) {
+  const [rot, setRot] = useState(0);
+  const [spinning, setSpinning] = useState(false);
+  const rewards = [5, 25, 10, 50, 15, 100, 20, 200];
+  const canSpin = Date.now() - store.lastSpin > 6*3600*1000;
+  const spin = async () => {
+    if (!canSpin) return toast.show("Next spin available in a few hours");
+    setSpinning(true);
+    const idx = Math.floor(Math.random() * rewards.length);
+    const target = 360*6 + (360 - idx * (360/rewards.length));
+    setRot(rot + target);
+    await new Promise(r => setTimeout(r, 3600));
+    setSpinning(false);
+    setStore((s: Store) => ({ ...s, lastSpin: Date.now() }));
+    addNectar(rewards[idx], `Spin wheel +${rewards[idx]}`);
+    toast.show(`🎡 You won ${rewards[idx]} Nectar!`);
+  };
+  return (
+    <div className="space-y-4">
+      <SubHeader title="Spin Wheel" subtitle="Free spin every 6 hours" onBack={onBack}/>
+      <div className="relative w-72 h-72 mx-auto">
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-t-[16px] border-l-transparent border-r-transparent border-t-yellow-400 z-10"/>
+        <div className="w-full h-full rounded-full border-4 border-yellow-400 relative overflow-hidden transition-transform duration-[3500ms]" style={{
+          transform: `rotate(${rot}deg)`,
+          background: `conic-gradient(${rewards.map((r,i) => {
+            const colors = ["#f59e0b","#dc2626","#f59e0b","#059669","#f59e0b","#7c3aed","#f59e0b","#0891b2"];
+            const step = 360/rewards.length;
+            return `${colors[i]} ${i*step}deg ${(i+1)*step}deg`;
+          }).join(",")})`,
+        }}>
+          {rewards.map((r,i) => {
+            const step = 360/rewards.length;
+            return (
+              <div key={i} className="absolute inset-0 flex items-start justify-center pt-6 text-white font-black" style={{ transform: `rotate(${i*step + step/2}deg)` }}>
+                {r}
+              </div>
+            );
+          })}
+        </div>
+        <div className="absolute inset-0 m-auto w-16 h-16 rounded-full bg-yellow-950 border-4 border-yellow-400 flex items-center justify-center text-2xl">🍯</div>
+      </div>
+      <button onClick={spin} disabled={spinning || !canSpin} className="btn-gold w-full py-4 rounded-2xl text-lg disabled:opacity-50">
+        {spinning ? "Spinning..." : canSpin ? "SPIN!" : "Come back later"}
+      </button>
+    </div>
+  );
+}
+/* ============ Mining ============ */
+function MiningView({ store, setStore, addNectar, onBack, toast }: any) {
+  const [now, setNow] = useState(Date.now());
+  useEffect(() => { const iv = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(iv); }, []);
+  const rate = store.miningLevel; // nectar per hour
+  const active = store.miningStart > 0;
+  const elapsed = active ? (now - store.miningStart) / 3600000 : 0;
+  const pending = Math.min(elapsed * rate, rate * 8); // cap 8h
+  const cap = rate * 8;
+  const start = () => {
+    setStore((s: Store) => ({ ...s, miningStart: Date.now() }));
+    toast.show("⛏ Mining started");
+  };
+  const claim = () => {
+    const amt = Math.floor(pending);
+    if (amt <= 0) return toast.show("Nothing to claim yet");
+    setStore((s: Store) => ({ ...s, miningStart: Date.now() }));
+    addNectar(amt, `Mining claim +${amt}`);
+    toast.show(`+${amt} Nectar claimed!`);
+  };
+  const upgrade = () => {
+    const cost = store.miningLevel * 500;
+    if (store.nectar < cost) return toast.show(`Need ${cost} Nectar`);
+    setStore((s: Store) => ({ ...s, nectar: s.nectar - cost, miningLevel: s.miningLevel + 1,
+      txs: [{ id: crypto.randomUUID(), type: `Mining upgrade L${s.miningLevel+1}`, amount: -cost, ts: Date.now() }, ...s.txs] }));
+    toast.show("⚡ Upgraded!");
+  };
+  return (
+    <div className="space-y-4">
+      <SubHeader title="Nectar Mining" subtitle="Passive earning while you're away" onBack={onBack}/>
+      <div className="glow-card rounded-2xl p-5 text-center">
+        <div className="text-6xl mb-2">⛏</div>
+        <div className="text-yellow-100/60 text-sm">Level {store.miningLevel} • {rate} Nectar/hour</div>
+        <div className="mt-4 text-5xl font-black gold-text">{pending.toFixed(1)}</div>
+        <div className="text-yellow-100/60 text-sm">Pending (cap {cap})</div>
+        <div className="h-2 rounded-full bg-black/50 mt-3 overflow-hidden">
+          <div className="h-full bg-gradient-to-r from-orange-400 to-yellow-400" style={{ width: `${(pending/cap)*100}%` }}/>
+        </div>
+        <div className="grid grid-cols-2 gap-2 mt-4">
+          {!active ? (
+            <button onClick={start} className="btn-gold py-3 rounded-xl col-span-2">Start Mining</button>
+          ) : (
+            <button onClick={claim} className="btn-gold py-3 rounded-xl">Claim</button>
+          )}
+          <button onClick={upgrade} className={`py-3 rounded-xl font-semibold glow-card text-yellow-100 ${active ? "" : "col-span-2"}`}>
+            Upgrade ({store.miningLevel * 500}N)
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+/* ============ Achievements ============ */
+const ACHIEVEMENTS = [
+  { id: "a1", title: "First Sip", desc: "Earn your first Nectar", check: (s: Store) => s.nectar > 0, reward: 5 },
+  { id: "a2", title: "Ad Rookie", desc: "Watch 10 ads", check: (s: Store) => s.adsgramWatched + s.monetagWatched + s.adsgramAiWatched >= 10, reward: 50 },
+  { id: "a3", title: "Task Hunter", desc: "Complete 5 tasks", check: (s: Store) => s.tasksDone.length >= 5, reward: 100 },
+  { id: "a4", title: "Social Bee", desc: "Refer your first friend", check: (s: Store) => s.refs >= 1, reward: 25 },
+  { id: "a5", title: "Nectar Millionaire", desc: "Reach 10,000 Nectar", check: (s: Store) => s.nectar >= 10000, reward: 500 },
+  { id: "a6", title: "Streak Master", desc: "7-day daily streak", check: (s: Store) => s.streak >= 7, reward: 200 },
+];
+function AchievementsView({ store, onBack }: any) {
+  return (
+    <div className="space-y-3">
+      <SubHeader title="Achievements" subtitle="Milestones & rewards" onBack={onBack}/>
+      {ACHIEVEMENTS.map(a => {
+        const done = a.check(store);
+        return (
+          <div key={a.id} className={`glow-card rounded-2xl p-4 flex items-center gap-3 ${done ? "border-emerald-500/50" : ""}`}>
+            <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl ${done ? "bg-emerald-900/50" : "bg-yellow-900/30"}`}>
+              {done ? "🏆" : "🔒"}
+            </div>
+            <div className="flex-1">
+              <div className="font-bold text-yellow-50">{a.title}</div>
+              <div className="text-xs text-yellow-100/60">{a.desc}</div>
+            </div>
+            <div className={`font-bold ${done ? "text-emerald-400" : "text-yellow-100/40"}`}>+{a.reward}N</div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
