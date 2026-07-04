@@ -1,958 +1,782 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useRef, useState } from "react";
-import {
-  Home, Play, CheckSquare, Users, User, Bell, X, ChevronDown,
-  Gift, Zap, Wallet, Trophy, Copy, Share2, ArrowLeft, Globe,
-  Tv, Target, Sparkles, Pickaxe, Flame, Award, History, Settings,
-  ChevronRight, Check, ExternalLink,
-} from "lucide-react";
-
-/* ============ Types ============ */
-type TabKey = "home" | "ads" | "tasks" | "refer" | "profile";
-type SubView = null | "earn" | "tasks" | "refer" | "wallet" | "transactions" | "leaderboard" | "spin" | "mining" | "achievements";
-type Tx = { id: string; type: string; amount: number; ts: number };
-type Store = {
-  nectar: number;
-  username: string;
-  fullName: string;
-  tgId: string;
-  wallet: string;
-  refs: number;
-  refsCompleted: number;
-  refEarned: number;
-  todayEarned: number;
-  todayDate: string;
-  adsgramWatched: number;
-  monetagWatched: number;
-  adsgramAiWatched: number;
-  tasksDone: string[];
-  visitsDone: string[];
-  lastBonus: number;
-  streak: number;
-  redeemed: string[];
-  txs: Tx[];
-  miningStart: number;
-  miningLevel: number;
-  achievements: string[];
-  lastSpin: number;
-};
-const NECTAR_TO_USDT = 0.0001;
-const DAILY_LIMIT = 270;
-const REDEEM_CODES: Record<string, number> = {
-  "WELCOME50": 50,
-  "NECTAR100": 100,
-  "SWEETBEE": 25,
-};
-const DEFAULT_STORE: Store = {
-  nectar: 0,
-  username: "Lahiru657",
-  fullName: "Lahiru Jayasekara",
-  tgId: "6202492881",
-  wallet: "",
-  refs: 0, refsCompleted: 0, refEarned: 0,
-  todayEarned: 0, todayDate: new Date().toDateString(),
-  adsgramWatched: 0, monetagWatched: 0, adsgramAiWatched: 0,
-  tasksDone: [], visitsDone: [],
-  lastBonus: 0, streak: 0,
-  redeemed: [],
-  txs: [],
-  miningStart: 0, miningLevel: 1,
-  achievements: [],
-  lastSpin: 0,
-};
-
-/* ============ Storage hook ============ */
-function useStore() {
-  const [s, setS] = useState<Store>(DEFAULT_STORE);
-  const loaded = useRef(false);
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem("nectarpay:v1");
-      if (raw) {
-        const parsed = { ...DEFAULT_STORE, ...JSON.parse(raw) };
-        if (parsed.todayDate !== new Date().toDateString()) {
-          parsed.todayDate = new Date().toDateString();
-          parsed.todayEarned = 0;
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NectarPay - Earn USDT</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0b0904;
+            color: #fef9e7;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
         }
-        setS(parsed);
-      }
-    } catch {}
-    loaded.current = true;
-  }, []);
-  useEffect(() => {
-    if (loaded.current) localStorage.setItem("nectarpay:v1", JSON.stringify(s));
-  }, [s]);
-  return [s, setS] as const;
-}
 
-/* ============ Toast ============ */
-function useToast() {
-  const [msg, setMsg] = useState<string | null>(null);
-  const t = useRef<any>(null);
-  const show = (m: string) => {
-    setMsg(m);
-    clearTimeout(t.current);
-    t.current = setTimeout(() => setMsg(null), 2400);
-  };
-  const node = msg ? (
-    <div className="fixed left-1/2 -translate-x-1/2 top-4 z-[100] px-4 py-2 rounded-full glow-card text-sm text-yellow-100 backdrop-blur">
-      {msg}
+        .app-container {
+            max-width: 420px;
+            width: 100%;
+            min-height: 100vh;
+            background: radial-gradient(ellipse at 30% 20%, #1a1205, #0b0904);
+            padding: 0 0 80px;
+            position: relative;
+        }
+
+        .hex-bg {
+            background-image: 
+                linear-gradient(30deg, rgba(245,158,11,0.03) 12%, transparent 12.5%, transparent 87%, rgba(245,158,11,0.03) 87.5%),
+                linear-gradient(150deg, rgba(245,158,11,0.03) 12%, transparent 12.5%, transparent 87%, rgba(245,158,11,0.03) 87.5%);
+            background-size: 80px 140px;
+            background-position: 0 0, 40px 70px;
+        }
+
+        .gold-text {
+            background: linear-gradient(135deg, #fde047, #f59e0b, #d97706);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .glow-card {
+            background: rgba(20, 15, 8, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(245, 158, 11, 0.15);
+            box-shadow: 0 4px 30px rgba(245, 158, 11, 0.05);
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, #fde047, #f59e0b);
+            color: #1a1205;
+            font-weight: 700;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-gold:hover { transform: scale(0.98); box-shadow: 0 0 25px rgba(245,158,11,0.3); }
+        .btn-gold:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        @keyframes floaty {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        .floaty { animation: floaty 3s ease-in-out infinite; }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: 420px;
+            width: 100%;
+            background: rgba(11, 9, 4, 0.95);
+            backdrop-filter: blur(12px);
+            border-top: 1px solid rgba(245, 158, 11, 0.2);
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            padding: 8px 0 12px;
+            z-index: 50;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            background: none;
+            border: none;
+            color: rgba(254, 249, 231, 0.4);
+            font-size: 10px;
+            cursor: pointer;
+            padding: 4px 0;
+            transition: color 0.2s;
+        }
+        .nav-item.active { color: #fbbf24; }
+        .nav-item.active i { filter: drop-shadow(0 0 6px rgba(245,158,11,0.4)); }
+        .nav-item i { font-size: 20px; }
+
+        .toast {
+            position: fixed;
+            top: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            padding: 10px 24px;
+            border-radius: 9999px;
+            background: rgba(20, 15, 8, 0.95);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            color: #fef9e7;
+            font-size: 14px;
+            display: none;
+            max-width: 90%;
+            text-align: center;
+        }
+        .toast.show { display: block; }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 90;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal-content {
+            background: rgba(20,15,8,0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(245,158,11,0.2);
+            border-radius: 16px;
+            padding: 20px;
+            width: 100%;
+            max-width: 380px;
+        }
+
+        .spin-wheel {
+            width: 100%;
+            aspect-ratio: 1/1;
+            border-radius: 50%;
+            border: 4px solid #fbbf24;
+            position: relative;
+            overflow: hidden;
+            transition: transform 3.5s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+        }
+        .spin-pointer {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 20px solid #fbbf24;
+            z-index: 10;
+        }
+        .spin-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: #422006;
+            border: 4px solid #fbbf24;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            z-index: 5;
+        }
+        .spin-slice {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding-top: 20px;
+            font-weight: 900;
+            color: white;
+            font-size: 18px;
+        }
+
+        @media (max-width: 420px) {
+            .app-container { padding: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="app" class="app-container hex-bg">
+
+    <!-- ===== TOP BAR ===== -->
+    <div class="flex items-center justify-between px-4 py-3 border-b border-yellow-900/40 bg-[#0b0904]/80 backdrop-blur sticky top-0 z-40">
+        <button class="text-yellow-50/80 text-xl"><i class="fas fa-times"></i></button>
+        <div class="flex items-center gap-2 font-semibold text-yellow-50">
+            <span class="text-2xl">🐝</span> NectarPay
+        </div>
+        <div class="flex items-center gap-2 text-yellow-50/70">
+            <i class="fas fa-chevron-down"></i>
+            <span class="text-xl">⋮</span>
+        </div>
     </div>
-  ) : null;
-  return { show, node };
-}
 
-/* ============ Ad helpers ============ */
-declare global {
-  interface Window {
-    Adsgram?: { init: (o: { blockId: string }) => { show: () => Promise<any> } };
-    show_11239209?: () => Promise<void>;
-  }
-}
-const ADSGRAM_ID = "36912";
-let adsgramController: any = null;
-function getAdsgram() {
-  if (adsgramController) return adsgramController;
-  if (typeof window !== "undefined" && window.Adsgram) {
-    adsgramController = window.Adsgram.init({ blockId: ADSGRAM_ID });
-    return adsgramController;
-  }
-  return null;
-}
-async function showAdsgramAd(): Promise<boolean> {
-  const c = getAdsgram();
-  if (!c) return false;
-  try { await c.show(); return true; } catch { return false; }
-}
-async function showMonetagAd(): Promise<boolean> {
-  if (typeof window === "undefined" || !window.show_11239209) return false;
-  try { await window.show_11239209(); return true; } catch { return false; }
-}
+    <!-- ===== TOAST ===== -->
+    <div id="toast" class="toast"></div>
 
-/* ============ App ============ */
-export const Route = createFileRoute("/")({ component: App });
+    <!-- ===== MAIN CONTENT ===== -->
+    <main id="main-content" class="px-4 pt-4 space-y-5 pb-6">
 
-function App() {
-  const [loading, setLoading] = useState(true);
-  const [progress, setProgress] = useState(0);
-  const [tab, setTab] = useState<TabKey>("home");
-  const [sub, setSub] = useState<SubView>(null);
-  const [store, setStore] = useStore();
-  const toast = useToast();
-  useEffect(() => {
-    let p = 0;
-    const iv = setInterval(() => {
-      p += Math.random() * 14 + 6;
-      if (p >= 100) { p = 100; clearInterval(iv); setTimeout(() => setLoading(false), 400); }
-      setProgress(p);
-    }, 220);
-    return () => clearInterval(iv);
-  }, []);
-  const addNectar = (amount: number, type: string) => {
-    setStore(s => ({
-      ...s,
-      nectar: s.nectar + amount,
-      todayEarned: s.todayEarned + Math.max(0, amount),
-      txs: [{ id: crypto.randomUUID(), type, amount, ts: Date.now() }, ...s.txs].slice(0, 100),
-    }));
-  };
-  const usdt = (store.nectar * NECTAR_TO_USDT).toFixed(4);
-  const refLink = `https://t.me/NectarPayBot/play?startapp=ref_${store.tgId}`;
-  if (loading) return <LoadingScreen progress={progress} />;
-  return (
-    <div className="hex-bg min-h-screen text-yellow-50 pb-24 max-w-md mx-auto relative">
-      <TopBar />
-      {toast.node}
-      <main className="px-4 pt-4">
-        {sub === null && tab === "home" && (
-          <HomeView store={store} usdt={usdt} refLink={refLink} onQuick={setSub} toast={toast} setStore={setStore} addNectar={addNectar} />
-        )}
-        {sub === null && tab === "ads" && (
-          <AdsView store={store} setStore={setStore} addNectar={addNectar} toast={toast} />
-        )}
-        {sub === null && tab === "tasks" && (
-          <TasksView store={store} setStore={setStore} addNectar={addNectar} toast={toast} />
-        )}
-        {sub === null && tab === "refer" && (
-          <ReferView store={store} refLink={refLink} toast={toast} />
-        )}
-        {sub === null && tab === "profile" && (
-          <ProfileView store={store} setStore={setStore} usdt={usdt} onSub={setSub} toast={toast} />
-        )}
-        {sub === "wallet" && <WalletView store={store} setStore={setStore} onBack={() => setSub(null)} toast={toast} />}
-        {sub === "transactions" && <TxView store={store} onBack={() => setSub(null)} />}
-        {sub === "leaderboard" && <LeaderboardView store={store} onBack={() => setSub(null)} />}
-        {sub === "spin" && <SpinView store={store} setStore={setStore} addNectar={addNectar} onBack={() => setSub(null)} toast={toast} />}
-        {sub === "mining" && <MiningView store={store} setStore={setStore} addNectar={addNectar} onBack={() => setSub(null)} toast={toast} />}
-        {sub === "achievements" && <AchievementsView store={store} onBack={() => setSub(null)} />}
-      </main>
-      <BottomNav tab={tab} onTab={(t) => { setTab(t); setSub(null); }} />
-    </div>
-  );
-}
-
-/* ============ Loading ============ */
-function LoadingScreen({ progress }: { progress: number }) {
-  return (
-    <div className="hex-bg min-h-screen flex flex-col items-center justify-between py-16 max-w-md mx-auto">
-      <TopBar />
-      <div className="flex flex-col items-center flex-1 justify-center">
-        <div className="relative w-40 h-40 rounded-full border-4 border-yellow-500/70 flex items-center justify-center floaty" style={{
-          background: "radial-gradient(circle at 30% 30%, #422006, #1a1205)",
-          boxShadow: "0 0 60px rgba(245,158,11,0.55)"
-        }}>
-          <div className="absolute inset-2 rounded-full opacity-30 spin-slow" style={{
-            backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='60' height='52' viewBox='0 0 60 52'><path d='M15 1 L45 1 L59 26 L45 51 L15 51 L1 26 Z' fill='none' stroke='%23fde047' stroke-width='1.5'/></svg>\")"
-          }}/>
-          <div className="text-6xl">🍯</div>
-          <div className="absolute -right-1 bottom-2 w-11 h-11 rounded-full bg-emerald-500 flex items-center justify-center text-white font-bold text-lg shadow-lg">₮</div>
-        </div>
-        <h1 className="mt-8 text-5xl font-black gold-text tracking-tight">NectarPay</h1>
-        <p className="text-yellow-200/70 tracking-[0.3em] text-xs mt-2">EARN USDT</p>
-        <div className="flex gap-6 mt-8">
-          <MiniIcon icon={<Play size={20}/>} label="Watch Ads" />
-          <MiniIcon icon={<Check size={20}/>} label="Do Tasks" />
-          <MiniIcon icon={<Users size={20}/>} label="Refer & Earn" />
-        </div>
-      </div>
-      <div className="w-full px-8">
-        <div className="h-2 rounded-full bg-yellow-900/40 overflow-hidden">
-          <div className="h-full rounded-full transition-all duration-200" style={{
-            width: `${progress}%`,
-            background: "linear-gradient(90deg, #fde047, #f59e0b)",
-            boxShadow: "0 0 12px #f59e0b",
-          }}/>
-        </div>
-        <div className="text-center text-yellow-200/70 mt-3 text-sm">
-          {progress < 100 ? "Loading..." : "Loading Complete"}
-        </div>
-      </div>
-    </div>
-  );
-}
-function MiniIcon({ icon, label }: { icon: React.ReactNode; label: string }) {
-  return (
-    <div className="flex flex-col items-center gap-1.5">
-      <div className="w-12 h-12 rounded-xl bg-yellow-900/40 border border-yellow-700/40 flex items-center justify-center text-yellow-300">{icon}</div>
-      <div className="text-[11px] text-yellow-200/70">{label}</div>
-    </div>
-  );
-}
-
-/* ============ TopBar ============ */
-function TopBar() {
-  return (
-    <div className="flex items-center justify-between px-3 py-3 border-b border-yellow-900/40 bg-[#0b0904]/80 backdrop-blur">
-      <button className="p-1.5 text-yellow-50/80"><X size={20}/></button>
-      <div className="flex items-center gap-2 font-semibold text-yellow-50">
-        <span className="text-xl">🐝</span> NectarPay
-      </div>
-      <div className="flex items-center gap-2 text-yellow-50/70">
-        <ChevronDown size={18}/>
-        <div className="text-lg leading-none">⋮</div>
-      </div>
-    </div>
-  );
-}
-
-/* ============ Bottom Nav ============ */
-function BottomNav({ tab, onTab }: { tab: TabKey; onTab: (t: TabKey) => void }) {
-  const items: { k: TabKey; icon: any; label: string }[] = [
-    { k: "home", icon: Home, label: "Home" },
-    { k: "ads", icon: Play, label: "Ads" },
-    { k: "tasks", icon: CheckSquare, label: "Tasks" },
-    { k: "refer", icon: Users, label: "Refer" },
-    { k: "profile", icon: User, label: "Profile" },
-  ];
-  return (
-    <nav className="fixed bottom-0 inset-x-0 max-w-md mx-auto bg-[#0b0904]/95 backdrop-blur border-t border-yellow-900/50">
-      <div className="grid grid-cols-5">
-        {items.map(it => {
-          const I = it.icon; const active = tab === it.k;
-          return (
-            <button key={it.k} onClick={() => onTab(it.k)} className="flex flex-col items-center py-2.5 gap-1">
-              <I size={20} className={active ? "text-yellow-400" : "text-yellow-100/50"} style={active ? {filter:"drop-shadow(0 0 6px #f59e0b)"} : {}}/>
-              <span className={`text-[11px] ${active ? "text-yellow-400 font-semibold" : "text-yellow-100/50"}`}>{it.label}</span>
-            </button>
-          );
-        })}
-      </div>
-    </nav>
-  );
-}
-
-/* ============ HOME ============ */
-function HomeView({ store, usdt, refLink, onQuick, toast, setStore, addNectar }: any) {
-  const initials = store.fullName.split(" ").map((n:string)=>n[0]).slice(0,2).join("");
-  const claimDaily = () => {
-    const now = Date.now();
-    if (now - store.lastBonus < 24*3600*1000) {
-      toast.show("⏱ Daily bonus already claimed. Come back tomorrow.");
-      return;
-    }
-    const streak = (now - store.lastBonus < 48*3600*1000) ? store.streak + 1 : 1;
-    const reward = 20 + Math.min(streak, 7) * 5;
-    setStore((s:Store) => ({ ...s, lastBonus: now, streak }));
-    addNectar(reward, `Daily bonus (day ${streak})`);
-    toast.show(`🎁 +${reward} Nectar! Streak ${streak}🔥`);
-  };
-  const [code, setCode] = useState("");
-  const [showRedeem, setShowRedeem] = useState(false);
-  const redeem = () => {
-    const c = code.trim().toUpperCase();
-    if (!c) return;
-    if (store.redeemed.includes(c)) { toast.show("Code already used"); return; }
-    if (REDEEM_CODES[c]) {
-      const amt = REDEEM_CODES[c];
-      setStore((s:Store) => ({ ...s, redeemed: [...s.redeemed, c] }));
-      addNectar(amt, `Reward code ${c}`);
-      toast.show(`🎉 Redeemed +${amt} Nectar`);
-      setCode(""); setShowRedeem(false);
-    } else toast.show("❌ Invalid code");
-  };
-  return (
-    <div className="space-y-5">
-      <div className="flex items-center gap-3">
-        <div className="w-14 h-14 rounded-2xl bg-emerald-400 text-emerald-950 flex items-center justify-center font-bold text-lg relative">
-          {initials}
-          <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-400 border-2 border-[#0e0b06]"/>
-        </div>
-        <div className="flex-1">
-          <div className="text-yellow-100/60 text-sm">Welcome back</div>
-          <div className="text-yellow-400 font-semibold">@{store.username}</div>
-        </div>
-        <button className="w-11 h-11 rounded-xl glow-card flex items-center justify-center"><Bell size={18}/></button>
-      </div>
-      <div className="glow-card rounded-3xl p-5 text-center">
-        <div className="tracking-[0.3em] text-yellow-100/50 text-xs">YOUR BALANCE</div>
-        <div className="mt-2 flex items-baseline justify-center gap-2">
-          <span className="text-6xl font-black gold-text">{store.nectar.toFixed(0)}</span>
-          <span className="text-2xl">🍯</span>
-          <span className="text-2xl font-bold gold-text">NECTAR</span>
-        </div>
-        <div className="text-yellow-100/60 text-sm mt-1">≈ {usdt} USDT</div>
-        <div className="mt-4 border-t border-yellow-900/50 pt-3 grid grid-cols-2 divide-x divide-yellow-900/50">
-          <div>
-            <div className="text-yellow-100/50 text-xs">USDT Value</div>
-            <div className="text-emerald-400 font-bold">{usdt} USDT</div>
-          </div>
-          <div>
-            <div className="text-yellow-100/50 text-xs">Telegram ID</div>
-            <div className="text-yellow-50">{store.tgId}</div>
-          </div>
-        </div>
-      </div>
-      <div>
-        <div className="tracking-[0.2em] text-yellow-100/50 text-xs mb-2">QUICK ACTIONS</div>
-        <div className="grid grid-cols-4 gap-2">
-          <QuickAction icon={<Gift size={22}/>} label="Daily" color="bg-emerald-900/40 text-emerald-300" onClick={claimDaily}/>
-          <QuickAction icon={<Zap size={22}/>} label="Reward Code" color="bg-purple-900/40 text-purple-300" onClick={() => setShowRedeem(true)}/>
-          <QuickAction icon={<Wallet size={22}/>} label="Withdraw" color="bg-blue-900/40 text-blue-300" onClick={() => onQuick("wallet")}/>
-          <QuickAction icon={<Trophy size={22}/>} label="Leaders" color="bg-yellow-900/40 text-yellow-300" onClick={() => onQuick("leaderboard")}/>
-        </div>
-        <div className="grid grid-cols-3 gap-2 mt-2">
-          <QuickAction icon={<Sparkles size={22}/>} label="Spin Wheel" color="bg-pink-900/40 text-pink-300" onClick={() => onQuick("spin")}/>
-          <QuickAction icon={<Pickaxe size={22}/>} label="Mining" color="bg-orange-900/40 text-orange-300" onClick={() => onQuick("mining")}/>
-          <QuickAction icon={<Award size={22}/>} label="Achievements" color="bg-cyan-900/40 text-cyan-300" onClick={() => onQuick("achievements")}/>
-        </div>
-      </div>
-      <div>
-        <div className="tracking-[0.2em] text-yellow-100/50 text-xs mb-2">EARN MORE</div>
-        <div className="grid grid-cols-3 gap-2">
-          <BigCard tint="from-blue-800/50" icon={<Play size={22}/>} title="Watch Ads" sub="Up to 10 Nectar"/>
-          <BigCard tint="from-emerald-800/50" icon={<CheckSquare size={22}/>} title="Tasks" sub="20-200 Nectar"/>
-          <BigCard tint="from-purple-800/50" icon={<Users size={22}/>} title="Refer" sub="Up to 150 Nectar"/>
-        </div>
-      </div>
-      <div className="glow-card rounded-2xl p-4">
-        <div className="flex justify-between items-center mb-2">
-          <div className="flex items-center gap-2 font-semibold"><Users size={18} className="text-purple-300"/> Your Referral Link</div>
-          <div className="text-yellow-400 font-bold text-sm">+150 Nectar</div>
-        </div>
-        <div className="flex items-center gap-2 bg-black/40 border border-yellow-900/40 rounded-xl px-3 py-2.5">
-          <span className="truncate text-yellow-100/70 text-xs flex-1">{refLink}</span>
-          <button onClick={() => { navigator.clipboard?.writeText(refLink); toast.show("Copied!"); }} className="text-yellow-300"><Copy size={16}/></button>
-        </div>
-      </div>
-      {showRedeem && (
-        <Modal onClose={() => setShowRedeem(false)} title="Enter Reward Code">
-          <input value={code} onChange={e=>setCode(e.target.value)} placeholder="e.g. WELCOME50"
-            className="w-full bg-black/40 border border-yellow-900/50 rounded-xl px-4 py-3 text-yellow-50 outline-none focus:border-yellow-500 uppercase"/>
-          <button onClick={redeem} className="btn-gold w-full py-3 rounded-xl mt-3">Redeem</button>
-          <div className="text-xs text-yellow-100/50 mt-2">Try: WELCOME50, NECTAR100, SWEETBEE</div>
-        </Modal>
-      )}
-    </div>
-  );
-}
-function QuickAction({ icon, label, color, onClick }: any) {
-  return (
-    <button onClick={onClick} className="glow-card rounded-2xl py-3 flex flex-col items-center gap-1.5 active:scale-95 transition">
-      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${color}`}>{icon}</div>
-      <div className="text-xs text-yellow-50 font-medium">{label}</div>
-    </button>
-  );
-}
-function BigCard({ tint, icon, title, sub }: any) {
-  return (
-    <div className={`rounded-2xl p-3 bg-gradient-to-br ${tint} to-black/60 border border-yellow-900/40`}>
-      <div className="w-9 h-9 rounded-full border border-yellow-100/20 flex items-center justify-center text-yellow-100">{icon}</div>
-      <div className="mt-2 font-bold text-yellow-50 text-sm">{title}</div>
-      <div className="text-xs text-yellow-200/70">{sub}</div>
-    </div>
-  );
-}
-
-/* ============ Modal ============ */
-function Modal({ children, onClose, title }: any) {
-  return (
-    <div className="fixed inset-0 z-[90] bg-black/70 flex items-center justify-center p-4" onClick={onClose}>
-      <div className="glow-card rounded-2xl p-5 w-full max-w-sm" onClick={e=>e.stopPropagation()}>
-        <div className="flex justify-between items-center mb-3">
-          <div className="font-bold text-yellow-50">{title}</div>
-          <button onClick={onClose}><X size={20} className="text-yellow-100/70"/></button>
-        </div>
-        {children}
-      </div>
-    </div>
-  );
-}
-
-/* ============ ADS ============ */
-function AdsView({ store, setStore, addNectar, toast }: any) {
-  const [mode, setMode] = useState<"ads"|"visits">("ads");
-  const [loading, setLoading] = useState<string | null>(null);
-  const remaining = Math.max(0, DAILY_LIMIT - store.todayEarned);
-  const resetIn = useCountdown();
-  const watchAd = async (kind: "adsgram" | "monetag" | "adsgramai", reward: number, cap: number, key: keyof Store) => {
-    if (remaining <= 0) { toast.show("Daily limit reached. Come back tomorrow."); return; }
-    if ((store[key] as number) >= cap) { toast.show("No ads left in this pack today."); return; }
-    setLoading(kind);
-    let ok = false;
-    if (kind === "monetag") ok = await showMonetagAd();
-    else ok = await showAdsgramAd();
-    setLoading(null);
-    if (!ok) {
-      await new Promise(r => setTimeout(r, 1200));
-      ok = true;
-      toast.show("Ad simulated (SDK unavailable)");
-    }
-    if (ok) {
-      setStore((s: Store) => ({ ...s, [key]: (s[key] as number) + 1 }));
-      addNectar(reward, `${kind === "monetag" ? "Monetag" : kind === "adsgramai" ? "AdsGram AI" : "Adsgram"} ad`);
-      toast.show(`+${reward} Nectar!`);
-    }
-  };
-  const visitSite = (id: string, name: string, reward: number, url: string) => {
-    if (remaining <= 0) return toast.show("Daily limit reached.");
-    if (store.visitsDone.includes(id)) return toast.show("Already visited today.");
-    window.open(url, "_blank");
-    setTimeout(() => {
-      setStore((s: Store) => ({ ...s, visitsDone: [...s.visitsDone, id] }));
-      addNectar(reward, `Visit: ${name}`);
-      toast.show(`+${reward} Nectar for visiting ${name}`);
-    }, 4000);
-  };
-  return (
-    <div className="space-y-4">
-      <SubHeader title="Earn" subtitle="Watch ads & visit websites"/>
-      <div className="glow-card rounded-2xl p-4 flex justify-between">
-        <div>
-          <div className="text-yellow-100/50 text-xs tracking-widest">TODAY EARNED</div>
-          <div className="text-yellow-400 font-black text-3xl">{store.todayEarned} NECTAR</div>
-        </div>
-        <div className="text-right">
-          <div className="text-yellow-100/50 text-xs tracking-widest">AVAILABLE</div>
-          <div className="text-emerald-400 font-black text-3xl">{remaining} NECTAR</div>
-        </div>
-      </div>
-      <div className="glow-card rounded-2xl px-4 py-3 flex justify-between items-center">
-        <span className="text-yellow-100/70 text-sm">Daily reset in:</span>
-        <span className="text-yellow-400 font-bold">{resetIn}</span>
-      </div>
-      <div className="grid grid-cols-2 gap-2">
-        <button onClick={() => setMode("ads")} className={`py-3 rounded-2xl font-semibold ${mode==="ads" ? "btn-gold" : "glow-card text-yellow-100"}`}>📺 Watch Ads</button>
-        <button onClick={() => setMode("visits")} className={`py-3 rounded-2xl font-semibold flex items-center justify-center gap-2 ${mode==="visits" ? "btn-gold" : "glow-card text-yellow-100"}`}><Globe size={16}/> Visit Sites</button>
-      </div>
-      {mode === "ads" ? (
-        <>
-          <AdCard icon="📺" title="Adsgram Reward" reward={10} watched={store.adsgramWatched} cap={5}
-            loading={loading==="adsgram"}
-            onWatch={() => watchAd("adsgram", 10, 5, "adsgramWatched")}/>
-          <AdCard icon={<Target className="text-red-400" size={28}/>} title="AdsGram AI" reward={8} watched={store.adsgramAiWatched} cap={15}
-            loading={loading==="adsgramai"} tint="from-blue-900/40"
-            onWatch={() => watchAd("adsgramai", 8, 15, "adsgramAiWatched")}/>
-          <AdCard icon={<Flame className="text-orange-400" size={28}/>} title="Monetag Rewarded" reward={15} watched={store.monetagWatched} cap={10}
-            loading={loading==="monetag"} tint="from-orange-900/40"
-            onWatch={() => watchAd("monetag", 15, 10, "monetagWatched")}/>
-        </>
-      ) : (
-        <>
-          {[
-            { id: "v1", name: "Crypto News", url: "https://coindesk.com", reward: 12 },
-            { id: "v2", name: "DeFi Portal", url: "https://defipulse.com", reward: 15 },
-            { id: "v3", name: "Web3 Blog", url: "https://web3.foundation", reward: 10 },
-          ].map(v => (
-            <div key={v.id} className="glow-card rounded-2xl p-4 flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-blue-900/40 flex items-center justify-center"><Globe className="text-blue-300" size={22}/></div>
-              <div className="flex-1">
-                <div className="font-bold text-yellow-50">{v.name}</div>
-                <div className="text-xs text-yellow-100/60">Visit for 4s to earn +{v.reward} Nectar</div>
-              </div>
-              <button onClick={() => visitSite(v.id, v.name, v.reward, v.url)} disabled={store.visitsDone.includes(v.id)}
-                className={`px-3 py-2 rounded-xl text-sm font-semibold ${store.visitsDone.includes(v.id) ? "bg-emerald-900/40 text-emerald-300" : "btn-gold"}`}>
-                {store.visitsDone.includes(v.id) ? "Done" : "Visit"}
-              </button>
+        <!-- Welcome -->
+        <div class="flex items-center gap-3">
+            <div class="w-14 h-14 rounded-2xl bg-emerald-400 text-emerald-950 flex items-center justify-center font-bold text-lg relative">
+                LJ
+                <span class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-400 border-2 border-[#0e0b06]"></span>
             </div>
-          ))}
-        </>
-      )}
-    </div>
-  );
-}
-function AdCard({ icon, title, reward, watched, cap, onWatch, loading, tint = "from-yellow-900/30" }: any) {
-  const left = Math.max(0, cap - watched);
-  const pct = (watched / cap) * 100;
-  return (
-    <div className={`rounded-2xl p-4 bg-gradient-to-br ${tint} to-black/60 border border-yellow-900/40`}>
-      <div className="flex items-center gap-3">
-        {typeof icon === "string" ? <div className="text-4xl">{icon}</div> : <div className="w-12 h-12 rounded-xl bg-black/40 flex items-center justify-center">{icon}</div>}
-        <div className="flex-1">
-          <div className="font-bold text-yellow-50 text-lg">{title}</div>
-          <div className="text-yellow-300 font-semibold">+{reward} Nectar per ad</div>
+            <div class="flex-1">
+                <div class="text-yellow-100/60 text-sm">Welcome back</div>
+                <div class="text-yellow-400 font-semibold">@Lahiru657</div>
+            </div>
+            <button class="w-11 h-11 rounded-xl glow-card flex items-center justify-center text-yellow-50">
+                <i class="fas fa-bell text-lg"></i>
+            </button>
         </div>
-      </div>
-      <div className="mt-3 flex justify-between text-xs text-yellow-100/70">
-        <span>{watched} / {cap} ads</span>
-        <span>{left} left</span>
-      </div>
-      <div className="h-1.5 rounded-full bg-black/40 mt-1.5 overflow-hidden">
-        <div className="h-full bg-gradient-to-r from-yellow-400 to-orange-500" style={{ width: `${pct}%` }}/>
-      </div>
-      <button onClick={onWatch} disabled={left <= 0 || loading} className="btn-gold w-full py-3 rounded-xl mt-3 flex items-center justify-center gap-2 disabled:opacity-50">
-        <Play size={18}/> {loading ? "Loading ad..." : left <= 0 ? "All watched today" : `Watch Ad — +${reward}N`}
-      </button>
-    </div>
-  );
-}
-function useCountdown() {
-  const [t, setT] = useState("");
-  useEffect(() => {
-    const upd = () => {
-      const now = new Date();
-      const end = new Date(now); end.setHours(24,0,0,0);
-      const d = end.getTime() - now.getTime();
-      const h = Math.floor(d/3600000);
-      const m = Math.floor((d%3600000)/60000);
-      const s = Math.floor((d%60000)/1000);
-      setT(`${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`);
-    };
-    upd(); const iv = setInterval(upd, 1000); return () => clearInterval(iv);
-  }, []);
-  return t;
-}
-function SubHeader({ title, subtitle, onBack }: { title: string; subtitle?: string; onBack?: () => void }) {
-  return (
-    <div className="flex items-start gap-3">
-      {onBack && <button onClick={onBack} className="w-11 h-11 rounded-xl glow-card flex items-center justify-center"><ArrowLeft size={18}/></button>}
-      {!onBack && <button className="w-11 h-11 rounded-xl glow-card flex items-center justify-center"><ArrowLeft size={18} className="opacity-40"/></button>}
-      <div>
-        <div className="text-2xl font-black text-yellow-50">{title}</div>
-        {subtitle && <div className="text-yellow-100/60 text-sm">{subtitle}</div>}
-      </div>
-    </div>
-  );
-}
 
-/* ============ TASKS ============ */
-const TASKS = {
-  main: [
-    { id: "m1", title: "NectarPay | Community 🐝", desc: "Join our community channel", handle: "@nectarpay", reward: 10, url: "https://t.me/nectarpay" },
-    { id: "m2", title: "NectarPay | Payment 🐝", desc: "🔴 Join our payment channel", handle: "@nectarpaypay", reward: 10, url: "https://t.me/nectarpaypay" },
-    { id: "m3", title: "Follow on X", desc: "Follow @NectarPayApp on X", handle: "@NectarPayApp", reward: 15, url: "https://x.com/NectarPayApp" },
-  ],
-  partner: [
-    { id: "p1", title: "HoneyDex Swap", desc: "Try our partner DEX", handle: "@honeydex", reward: 50, url: "https://t.me/honeydex" },
-    { id: "p2", title: "BeeVault Wallet", desc: "Download partner wallet", handle: "@beevault", reward: 80, url: "https://t.me/beevault" },
-  ],
-  community: [
-    { id: "c1", title: "Share NectarPay Story", desc: "Share our story on your channel", handle: "@yourchannel", reward: 30, url: "https://t.me/share/url?url=https://t.me/NectarPayBot" },
-    { id: "c2", title: "Invite 5 friends", desc: "Bring 5 friends to community", handle: "invite", reward: 100, url: "https://t.me/nectarpay" },
-  ],
-};
-function TasksView({ store, setStore, addNectar, toast }: any) {
-  const [cat, setCat] = useState<"main"|"partner"|"community">("main");
-  const doTask = (t: any) => {
-    if (store.tasksDone.includes(t.id)) return;
-    window.open(t.url, "_blank");
-    setTimeout(() => {
-      setStore((s: Store) => ({ ...s, tasksDone: [...s.tasksDone, t.id] }));
-      addNectar(t.reward, `Task: ${t.title}`);
-      toast.show(`✅ Task done! +${t.reward} Nectar`);
-    }, 3500);
-  };
-  return (
-    <div className="space-y-4">
-      <SubHeader title="Tasks" subtitle="Complete tasks to earn Nectar"/>
-      <div className="grid grid-cols-3 gap-2">
-        {(["main","partner","community"] as const).map(c => (
-          <button key={c} onClick={() => setCat(c)} className={`py-3 rounded-2xl font-semibold capitalize ${cat===c ? "btn-gold" : "glow-card text-yellow-100"}`}>{c}</button>
-        ))}
-      </div>
-      {TASKS[cat].map(t => {
-        const done = store.tasksDone.includes(t.id);
-        return (
-          <div key={t.id} className="glow-card rounded-2xl p-4">
-            <div className="flex gap-3">
-              <div className="w-14 h-14 rounded-xl bg-yellow-900/40 border border-yellow-700/40 flex items-center justify-center text-2xl">🐝</div>
-              <div className="flex-1">
-                <div className="flex justify-between">
-                  <div className="font-bold text-yellow-50">{t.title}</div>
-                  <div className="text-yellow-400 font-bold">+{t.reward}N</div>
+        <!-- Balance -->
+        <div class="glow-card rounded-3xl p-5 text-center">
+            <div class="tracking-[0.3em] text-yellow-100/50 text-xs">YOUR BALANCE</div>
+            <div class="mt-2 flex items-baseline justify-center gap-2">
+                <span id="balance" class="text-6xl font-black gold-text">0</span>
+                <span class="text-2xl">🍯</span>
+                <span class="text-2xl font-bold gold-text">NECTAR</span>
+            </div>
+            <div class="text-yellow-100/60 text-sm mt-1">≈ <span id="usdt">0.0000</span> USDT</div>
+            <div class="mt-4 border-t border-yellow-900/50 pt-3 grid grid-cols-2 divide-x divide-yellow-900/50">
+                <div>
+                    <div class="text-yellow-100/50 text-xs">USDT Value</div>
+                    <div class="text-emerald-400 font-bold"><span id="usdt2">0.0000</span> USDT</div>
                 </div>
-                <div className="text-yellow-100/70 text-sm">{t.desc}</div>
-                <div className="text-blue-400 text-sm">{t.handle}</div>
-              </div>
+                <div>
+                    <div class="text-yellow-100/50 text-xs">Telegram ID</div>
+                    <div class="text-yellow-50">6202492881</div>
+                </div>
             </div>
-            <button onClick={() => doTask(t)} disabled={done} className={`w-full mt-3 py-2.5 rounded-xl font-semibold flex items-center justify-center gap-2 ${done ? "bg-emerald-900/40 text-emerald-300" : "btn-gold"}`}>
-              {done ? <><Check size={16}/> Completed</> : <><ExternalLink size={16}/> Open & Earn +{t.reward}N</>}
-            </button>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-/* ============ REFER ============ */
-function ReferView({ store, refLink, toast }: any) {
-  const share = async () => {
-    if (navigator.share) { try { await navigator.share({ title: "NectarPay", url: refLink }); } catch {} }
-    else { navigator.clipboard?.writeText(refLink); toast.show("Copied share link"); }
-  };
-  return (
-    <div className="space-y-4">
-      <SubHeader title="Refer & Earn" subtitle="Earn up to 150 Nectar per referral"/>
-      <div className="grid grid-cols-3 gap-2">
-        <Stat n={store.refs} label="Total Refs" color="text-yellow-50"/>
-        <Stat n={store.refsCompleted} label="Completed" color="text-emerald-400"/>
-        <Stat n={store.refEarned} label="Nectar Earned" color="text-yellow-400"/>
-      </div>
-      <div className="glow-card rounded-2xl p-4">
-        <div className="text-yellow-100/50 tracking-widest text-xs mb-2">YOUR REFERRAL LINK</div>
-        <div className="bg-black/40 border border-yellow-900/40 rounded-xl px-3 py-3 text-yellow-100/80 text-xs truncate">{refLink}</div>
-        <div className="grid grid-cols-2 gap-2 mt-3">
-          <button onClick={() => { navigator.clipboard?.writeText(refLink); toast.show("Copied!"); }} className="btn-gold py-3 rounded-xl flex items-center justify-center gap-2"><Copy size={16}/> Copy Link</button>
-          <button onClick={share} className="glow-card py-3 rounded-xl flex items-center justify-center gap-2 text-yellow-50 font-semibold"><Share2 size={16}/> Share</button>
         </div>
-      </div>
-      <div className="tracking-widest text-yellow-100/50 text-xs">REWARD STRUCTURE</div>
-      <div className="glow-card rounded-2xl p-4 space-y-4">
-        {[
-          {n:1, title:"Friend joins", reward:"+25 Nectar", sub:"Instant reward when they sign up"},
-          {n:2, title:"Watches 10 ads", reward:"+50 Nectar", sub:"After first 10 ad watches"},
-          {n:3, title:"Day 2 milestone", reward:"+75 Nectar", sub:"10 more ads on their 2nd day"},
-        ].map(r => (
-          <div key={r.n} className="flex gap-3">
-            <div className="w-8 h-8 rounded-full border-2 border-yellow-500 text-yellow-400 flex items-center justify-center font-bold">{r.n}</div>
-            <div className="flex-1">
-              <div className="flex justify-between"><span className="font-bold text-yellow-50">{r.title}</span><span className="text-yellow-400 font-bold">{r.reward}</span></div>
-              <div className="text-yellow-100/60 text-sm">{r.sub}</div>
+
+        <!-- Quick Actions -->
+        <div>
+            <div class="tracking-[0.2em] text-yellow-100/50 text-xs mb-2">QUICK ACTIONS</div>
+            <div class="grid grid-cols-4 gap-2">
+                <button class="glow-card rounded-2xl py-3 flex flex-col items-center gap-1.5" onclick="claimDaily()">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-emerald-900/40 text-emerald-300 text-xl"><i class="fas fa-gift"></i></div>
+                    <div class="text-xs text-yellow-50 font-medium">Daily</div>
+                </button>
+                <button class="glow-card rounded-2xl py-3 flex flex-col items-center gap-1.5" onclick="showRedeemModal()">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-purple-900/40 text-purple-300 text-xl"><i class="fas fa-bolt"></i></div>
+                    <div class="text-xs text-yellow-50 font-medium">Reward</div>
+                </button>
+                <button class="glow-card rounded-2xl py-3 flex flex-col items-center gap-1.5" onclick="showToast('💳 Wallet section coming soon')">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-blue-900/40 text-blue-300 text-xl"><i class="fas fa-wallet"></i></div>
+                    <div class="text-xs text-yellow-50 font-medium">Withdraw</div>
+                </button>
+                <button class="glow-card rounded-2xl py-3 flex flex-col items-center gap-1.5" onclick="showToast('🏆 Leaderboard coming soon')">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-yellow-900/40 text-yellow-300 text-xl"><i class="fas fa-trophy"></i></div>
+                    <div class="text-xs text-yellow-50 font-medium">Leaders</div>
+                </button>
             </div>
-          </div>
-        ))}
-        <div className="border-t border-yellow-900/50 pt-3 flex justify-between items-center">
-          <div>
-            <div className="font-bold text-yellow-50">Total per referral</div>
-            <div className="text-xs text-yellow-100/60">⚠ Referral must complete milestones within 48 hours</div>
-          </div>
-          <div className="text-2xl font-black gold-text">150 Nectar</div>
-        </div>
-      </div>
-    </div>
-  );
-}
-function Stat({ n, label, color }: any) {
-  return (
-    <div className="glow-card rounded-2xl p-4 text-center">
-      <div className={`text-3xl font-black ${color}`}>{n}</div>
-      <div className="text-yellow-100/60 text-xs">{label}</div>
-    </div>
-  );
-}
-
-/* ============ PROFILE ============ */
-function ProfileView({ store, setStore, usdt, onSub, toast }: any) {
-  const initials = store.fullName.split(" ").map((n:string)=>n[0]).slice(0,2).join("");
-  return (
-    <div className="space-y-4">
-      <div className="flex flex-col items-center pt-2">
-        <div className="w-28 h-28 rounded-3xl bg-emerald-400 text-emerald-950 flex items-center justify-center font-black text-4xl">{initials}</div>
-        <div className="mt-3 text-2xl font-bold text-yellow-50">{store.fullName}</div>
-        <div className="text-yellow-400">@{store.username}</div>
-        <div className="text-yellow-100/40 text-sm font-mono">ID: {store.tgId}</div>
-      </div>
-      <div className="glow-card rounded-2xl p-5 text-center">
-        <div className="text-5xl font-black gold-text">{store.nectar.toFixed(0)} <span className="text-2xl">🍯</span> <span className="text-2xl">NECTAR</span></div>
-        <div className="text-yellow-100/60">≈ {usdt} USDT</div>
-      </div>
-      <button onClick={() => onSub("wallet")} className="w-full glow-card rounded-2xl p-4 flex items-center gap-3">
-        <div className="w-10 h-10 rounded-xl bg-blue-900/40 flex items-center justify-center"><Wallet className="text-blue-300" size={20}/></div>
-        <div className="flex-1 text-left">
-          <div className="text-yellow-100/60 text-xs">BEP20 Wallet</div>
-          <div className="font-semibold text-yellow-50">{store.wallet ? store.wallet.slice(0,6)+"..."+store.wallet.slice(-4) : "Not connected"}</div>
-        </div>
-        <ChevronRight className="text-yellow-100/40" size={18}/>
-      </button>
-      <Section title="FINANCE">
-        <Row icon={<Wallet size={18} className="text-blue-300"/>} label="Wallet" onClick={()=>onSub("wallet")}/>
-        <Row icon={<History size={18} className="text-emerald-300"/>} label="Transactions" onClick={()=>onSub("transactions")}/>
-      </Section>
-      <Section title="SOCIAL">
-        <Row icon={<Users size={18} className="text-purple-300"/>} label="Refer Friends" onClick={()=>toast.show("Switch to Refer tab")}/>
-        <Row icon={<Trophy size={18} className="text-yellow-300"/>} label="Leaderboard" onClick={()=>onSub("leaderboard")}/>
-        <Row icon={<Award size={18} className="text-cyan-300"/>} label="Achievements" onClick={()=>onSub("achievements")}/>
-      </Section>
-      <Section title="SETTINGS">
-        <Row icon={<Settings size={18} className="text-yellow-100/80"/>} label="Reset Account" onClick={() => {
-          if (confirm("Reset all local data?")) { localStorage.removeItem("nectarpay:v1"); location.reload(); }
-        }}/>
-      </Section>
-    </div>
-  );
-}
-function Section({ title, children }: any) {
-  return (
-    <div>
-      <div className="tracking-widest text-yellow-100/50 text-xs mb-2">{title}</div>
-      <div className="glow-card rounded-2xl divide-y divide-yellow-900/40 overflow-hidden">{children}</div>
-    </div>
-  );
-}
-function Row({ icon, label, onClick }: any) {
-  return (
-    <button onClick={onClick} className="w-full flex items-center gap-3 px-4 py-3.5 text-left">
-      <div className="w-9 h-9 rounded-xl bg-black/40 flex items-center justify-center">{icon}</div>
-      <div className="flex-1 text-yellow-50 font-medium">{label}</div>
-      <ChevronRight className="text-yellow-100/40" size={18}/>
-    </button>
-  );
-}
-
-/* ============ Wallet / Withdraw ============ */
-function WalletView({ store, setStore, onBack, toast }: any) {
-  const [wallet, setWallet] = useState(store.wallet);
-  const [amount, setAmount] = useState("");
-  const MIN = 10000;
-  const save = () => {
-    if (!/^0x[a-fA-F0-9]{40}$/.test(wallet)) return toast.show("Invalid BEP20 address");
-    setStore((s: Store) => ({ ...s, wallet }));
-    toast.show("Wallet saved");
-  };
-  const withdraw = () => {
-    const a = Number(amount);
-    if (!store.wallet) return toast.show("Connect wallet first");
-    if (!a || a < MIN) return toast.show(`Minimum ${MIN} Nectar`);
-    if (a > store.nectar) return toast.show("Insufficient balance");
-    setStore((s: Store) => ({
-      ...s,
-      nectar: s.nectar - a,
-      txs: [{ id: crypto.randomUUID(), type: `Withdraw ${(a*NECTAR_TO_USDT).toFixed(4)} USDT`, amount: -a, ts: Date.now() }, ...s.txs],
-    }));
-    setAmount(""); toast.show("Withdraw request submitted");
-  };
-  return (
-    <div className="space-y-4">
-      <SubHeader title="Wallet" subtitle="Connect BEP20 & withdraw" onBack={onBack}/>
-      <div className="glow-card rounded-2xl p-4">
-        <div className="text-yellow-100/60 text-sm mb-2">BEP20 Address</div>
-        <input value={wallet} onChange={e=>setWallet(e.target.value)} placeholder="0x..." className="w-full bg-black/40 border border-yellow-900/50 rounded-xl px-3 py-3 text-yellow-50 outline-none focus:border-yellow-500"/>
-        <button onClick={save} className="btn-gold w-full py-3 rounded-xl mt-3">Save Wallet</button>
-      </div>
-      <div className="glow-card rounded-2xl p-4">
-        <div className="flex justify-between text-sm mb-2">
-          <span className="text-yellow-100/60">Balance</span>
-          <span className="text-yellow-400 font-bold">{store.nectar.toFixed(0)} Nectar</span>
-        </div>
-        <input value={amount} onChange={e=>setAmount(e.target.value)} type="number" placeholder={`Min ${MIN} Nectar`} className="w-full bg-black/40 border border-yellow-900/50 rounded-xl px-3 py-3 text-yellow-50 outline-none focus:border-yellow-500"/>
-        <div className="text-xs text-yellow-100/60 mt-1">≈ {(Number(amount||0)*NECTAR_TO_USDT).toFixed(4)} USDT</div>
-        <button onClick={withdraw} className="btn-gold w-full py-3 rounded-xl mt-3">Withdraw</button>
-      </div>
-    </div>
-  );
-}
-
-/* ============ Transactions ============ */
-function TxView({ store, onBack }: any) {
-  return (
-    <div className="space-y-4">
-      <SubHeader title="Transactions" subtitle="Your earning history" onBack={onBack}/>
-      {store.txs.length === 0 && <div className="glow-card rounded-2xl p-8 text-center text-yellow-100/60">No transactions yet. Start earning!</div>}
-      {store.txs.map((t: Tx) => (
-        <div key={t.id} className="glow-card rounded-2xl p-3 flex justify-between items-center">
-          <div>
-            <div className="text-yellow-50 font-medium">{t.type}</div>
-            <div className="text-xs text-yellow-100/50">{new Date(t.ts).toLocaleString()}</div>
-          </div>
-          <div className={`font-bold ${t.amount >= 0 ? "text-emerald-400" : "text-red-400"}`}>{t.amount >= 0 ? "+" : ""}{t.amount}N</div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-/* ============ Leaderboard ============ */
-function LeaderboardView({ store, onBack }: any) {
-  const fake = useMemo(() => {
-    const names = ["QueenBee","HoneyKing","GoldSwarm","NectarFox","BuzzLord","PollenPro","WaxWizard","HiveHero","SweetSam","AmberAce"];
-    return names.map((n,i) => ({ name: n, score: 5000 - i*380 + Math.floor(Math.random()*120) }));
-  }, []);
-  const all = [...fake, { name: `@${store.username} (You)`, score: Math.floor(store.nectar) }]
-    .sort((a,b) => b.score - a.score);
-  return (
-    <div className="space-y-4">
-      <SubHeader title="Leaderboard" subtitle="Top earners this week" onBack={onBack}/>
-      {all.map((u,i) => (
-        <div key={u.name} className={`glow-card rounded-2xl p-3 flex items-center gap-3 ${u.name.includes("You") ? "border-yellow-500/60" : ""}`}>
-          <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black ${i<3 ? "bg-yellow-400 text-yellow-950" : "bg-yellow-900/40 text-yellow-200"}`}>{i+1}</div>
-          <div className="flex-1 text-yellow-50 font-medium">{u.name}</div>
-          <div className="text-yellow-400 font-bold">{u.score}N</div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-/* ============ Spin Wheel ============ */
-function SpinView({ store, setStore, addNectar, onBack, toast }: any) {
-  const [rot, setRot] = useState(0);
-  const [spinning, setSpinning] = useState(false);
-  const rewards = [5, 25, 10, 50, 15, 100, 20, 200];
-  const canSpin = Date.now() - store.lastSpin > 6*3600*1000;
-  const spin = async () => {
-    if (!canSpin) return toast.show("Next spin available in a few hours");
-    setSpinning(true);
-    const idx = Math.floor(Math.random() * rewards.length);
-    const target = 360*6 + (360 - idx * (360/rewards.length));
-    setRot(rot + target);
-    await new Promise(r => setTimeout(r, 3600));
-    setSpinning(false);
-    setStore((s: Store) => ({ ...s, lastSpin: Date.now() }));
-    addNectar(rewards[idx], `Spin wheel +${rewards[idx]}`);
-    toast.show(`🎡 You won ${rewards[idx]} Nectar!`);
-  };
-  return (
-    <div className="space-y-4">
-      <SubHeader title="Spin Wheel" subtitle="Free spin every 6 hours" onBack={onBack}/>
-      <div className="relative w-72 h-72 mx-auto">
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-t-[16px] border-l-transparent border-r-transparent border-t-yellow-400 z-10"/>
-        <div className="w-full h-full rounded-full border-4 border-yellow-400 relative overflow-hidden transition-transform duration-[3500ms]" style={{
-          transform: `rotate(${rot}deg)`,
-          background: `conic-gradient(${rewards.map((r,i) => {
-            const colors = ["#f59e0b","#dc2626","#f59e0b","#059669","#f59e0b","#7c3aed","#f59e0b","#0891b2"];
-            const step = 360/rewards.length;
-            return `${colors[i]} ${i*step}deg ${(i+1)*step}deg`;
-          }).join(",")})`,
-        }}>
-          {rewards.map((r,i) => {
-            const step = 360/rewards.length;
-            return (
-              <div key={i} className="absolute inset-0 flex items-start justify-center pt-6 text-white font-black" style={{ transform: `rotate(${i*step + step/2}deg)` }}>
-                {r}
-              </div>
-            );
-          })}
-        </div>
-        <div className="absolute inset-0 m-auto w-16 h-16 rounded-full bg-yellow-950 border-4 border-yellow-400 flex items-center justify-center text-2xl">🍯</div>
-      </div>
-      <button onClick={spin} disabled={spinning || !canSpin} className="btn-gold w-full py-4 rounded-2xl text-lg disabled:opacity-50">
-        {spinning ? "Spinning..." : canSpin ? "SPIN!" : "Come back later"}
-      </button>
-    </div>
-  );
-}
-
-/* ============ Mining ============ */
-function MiningView({ store, setStore, addNectar, onBack, toast }: any) {
-  const [now, setNow] = useState(Date.now());
-  useEffect(() => { const iv = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(iv); }, []);
-  const rate = store.miningLevel;
-  const active = store.miningStart > 0;
-  const elapsed = active ? (now - store.miningStart) / 3600000 : 0;
-  const pending = Math.min(elapsed * rate, rate * 8);
-  const cap = rate * 8;
-  const start = () => {
-    setStore((s: Store) => ({ ...s, miningStart: Date.now() }));
-    toast.show("⛏ Mining started");
-  };
-  const claim = () => {
-    const amt = Math.floor(pending);
-    if (amt <= 0) return toast.show("Nothing to claim yet");
-    setStore((s: Store) => ({ ...s, miningStart: Date.now() }));
-    addNectar(amt, `Mining claim +${amt}`);
-    toast.show(`+${amt} Nectar claimed!`);
-  };
-  const upgrade = () => {
-    const cost = store.miningLevel * 500;
-    if (store.nectar < cost) return toast.show(`Need ${cost} Nectar`);
-    setStore((s: Store) => ({ ...s, nectar: s.nectar - cost, miningLevel: s.miningLevel + 1,
-      txs: [{ id: crypto.randomUUID(), type: `Mining upgrade L${s.miningLevel+1}`, amount: -cost, ts: Date.now() }, ...s.txs] }));
-    toast.show("⚡ Upgraded!");
-  };
-  return (
-    <div className="space-y-4">
-      <SubHeader title="Nectar Mining" subtitle="Passive earning while you're away" onBack={onBack}/>
-      <div className="glow-card rounded-2xl p-5 text-center">
-        <div className="text-6xl mb-2">⛏</div>
-        <div className="text-yellow-100/60 text-sm">Level {store.miningLevel} • {rate} Nectar/hour</div>
-        <div className="mt-4 text-5xl font-black gold-text">{pending.toFixed(1)}</div>
-        <div className="text-yellow-100/60 text-sm">Pending (cap {cap})</div>
-        <div className="h-2 rounded-full bg-black/50 mt-3 overflow-hidden">
-          <div className="h-full bg-gradient-to-r from-orange-400 to-yellow-400" style={{ width: `${(pending/cap)*100}%` }}/>
-        </div>
-        <div className="grid grid-cols-2 gap-2 mt-4">
-          {!active ? (
-            <button onClick={start} className="btn-gold py-3 rounded-xl col-span-2">Start Mining</button>
-          ) : (
-            <button onClick={claim} className="btn-gold py-3 rounded-xl">Claim</button>
-          )}
-          <button onClick={upgrade} className={`py-3 rounded-xl font-semibold glow-card text-yellow-100 ${active ? "" : "col-span-2"}`}>
-            Upgrade ({store.miningLevel * 500}N)
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ============ Achievements ============ */
-const ACHIEVEMENTS = [
-  { id: "a1", title: "First Sip", desc: "Earn your first Nectar", check: (s: Store) => s.nectar > 0, reward: 5 },
-  { id: "a2", title: "Ad Rookie", desc: "Watch 10 ads", check: (s: Store) => s.adsgramWatched + s.monetagWatched + s.adsgramAiWatched >= 10, reward: 50 },
-  { id: "a3", title: "Task Hunter", desc: "Complete 5 tasks", check: (s: Store) => s.tasksDone.length >= 5, reward: 100 },
-  { id: "a4", title: "Social Bee", desc: "Refer your first friend", check: (s: Store) => s.refs >= 1, reward: 25 },
-  { id: "a5", title: "Nectar Millionaire", desc: "Reach 10,000 Nectar", check: (s: Store) => s.nectar >= 10000, reward: 500 },
-  { id: "a6", title: "Streak Master", desc: "7-day daily streak", check: (s: Store) => s.streak >= 7, reward: 200 },
-];
-function AchievementsView({ store, onBack }: any) {
-  return (
-    <div className="space-y-3">
-      <SubHeader title="Achievements" subtitle="Milestones & rewards" onBack={onBack}/>
-      {ACHIEVEMENTS.map(a => {
-        const done = a.check(store);
-        return (
-          <div key={a.id} className={`glow-card rounded-2xl p-4 flex items-center gap-3 ${done ? "border-emerald-500/50" : ""}`}>
-            <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl ${done ? "bg-emerald-900/50" : "bg-yellow-900/30"}`}>
-              {done ? "🏆" : "🔒"}
+            <div class="grid grid-cols-3 gap-2 mt-2">
+                <button class="glow-card rounded-2xl py-3 flex flex-col items-center gap-1.5" onclick="switchTab('spin')">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-pink-900/40 text-pink-300 text-xl"><i class="fas fa-spinner"></i></div>
+                    <div class="text-xs text-yellow-50 font-medium">Spin</div>
+                </button>
+                <button class="glow-card rounded-2xl py-3 flex flex-col items-center gap-1.5" onclick="switchTab('mining')">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-orange-900/40 text-orange-300 text-xl"><i class="fas fa-hammer"></i></div>
+                    <div class="text-xs text-yellow-50 font-medium">Mining</div>
+                </button>
+                <button class="glow-card rounded-2xl py-3 flex flex-col items-center gap-1.5" onclick="switchTab('achievements')">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-cyan-900/40 text-cyan-300 text-xl"><i class="fas fa-award"></i></div>
+                    <div class="text-xs text-yellow-50 font-medium">Achieve</div>
+                </button>
             </div>
-            <div className="flex-1">
-              <div className="font-bold text-yellow-50">{a.title}</div>
-              <div className="text-xs text-yellow-100/60">{a.desc}</div>
+        </div>
+
+        <!-- Earn More -->
+        <div>
+            <div class="tracking-[0.2em] text-yellow-100/50 text-xs mb-2">EARN MORE</div>
+            <div class="grid grid-cols-3 gap-2">
+                <div class="rounded-2xl p-3 bg-gradient-to-br from-blue-800/50 to-black/60 border border-yellow-900/40">
+                    <div class="w-9 h-9 rounded-full border border-yellow-100/20 flex items-center justify-center text-yellow-100"><i class="fas fa-play"></i></div>
+                    <div class="mt-2 font-bold text-yellow-50 text-sm">Watch Ads</div>
+                    <div class="text-xs text-yellow-200/70">Up to 10</div>
+                </div>
+                <div class="rounded-2xl p-3 bg-gradient-to-br from-emerald-800/50 to-black/60 border border-yellow-900/40">
+                    <div class="w-9 h-9 rounded-full border border-yellow-100/20 flex items-center justify-center text-yellow-100"><i class="fas fa-check-square"></i></div>
+                    <div class="mt-2 font-bold text-yellow-50 text-sm">Tasks</div>
+                    <div class="text-xs text-yellow-200/70">20-200</div>
+                </div>
+                <div class="rounded-2xl p-3 bg-gradient-to-br from-purple-800/50 to-black/60 border border-yellow-900/40">
+                    <div class="w-9 h-9 rounded-full border border-yellow-100/20 flex items-center justify-center text-yellow-100"><i class="fas fa-users"></i></div>
+                    <div class="mt-2 font-bold text-yellow-50 text-sm">Refer</div>
+                    <div class="text-xs text-yellow-200/70">Up to 150</div>
+                </div>
             </div>
-            <div className={`font-bold ${done ? "text-emerald-400" : "text-yellow-100/40"}`}>+{a.reward}N</div>
-          </div>
-        );
-      })}
+        </div>
+
+        <!-- Referral Link -->
+        <div class="glow-card rounded-2xl p-4">
+            <div class="flex justify-between items-center mb-2">
+                <div class="flex items-center gap-2 font-semibold text-yellow-50">
+                    <i class="fas fa-users text-purple-300"></i> Your Referral Link
+                </div>
+                <div class="text-yellow-400 font-bold text-sm">+150 Nectar</div>
+            </div>
+            <div class="flex items-center gap-2 bg-black/40 border border-yellow-900/40 rounded-xl px-3 py-2.5">
+                <span id="refLink" class="truncate text-yellow-100/70 text-xs flex-1">https://t.me/NectarPayBot/play?startapp=ref_6202492881</span>
+                <button onclick="copyLink()" class="text-yellow-300"><i class="fas fa-copy"></i></button>
+            </div>
+        </div>
+
+        <!-- ====== SPIN WHEEL SECTION (hidden by default) ====== -->
+        <div id="spin-section" class="hidden space-y-4">
+            <div class="flex items-center gap-3">
+                <button onclick="switchTab('home')" class="w-11 h-11 rounded-xl glow-card flex items-center justify-center"><i class="fas fa-arrow-left text-yellow-50"></i></button>
+                <div>
+                    <div class="text-2xl font-black text-yellow-50">Spin Wheel</div>
+                    <div class="text-yellow-100/60 text-sm">Free spin every 6 hours</div>
+                </div>
+            </div>
+            <div class="relative w-72 h-72 mx-auto">
+                <div class="spin-pointer"></div>
+                <div id="spinWheel" class="spin-wheel" style="transform: rotate(0deg); background: conic-gradient(#f59e0b 0deg 45deg, #dc2626 45deg 90deg, #f59e0b 90deg 135deg, #059669 135deg 180deg, #f59e0b 180deg 225deg, #7c3aed 225deg 270deg, #f59e0b 270deg 315deg, #0891b2 315deg 360deg);">
+                    <div class="spin-slice" style="transform: rotate(22.5deg);">5</div>
+                    <div class="spin-slice" style="transform: rotate(67.5deg);">25</div>
+                    <div class="spin-slice" style="transform: rotate(112.5deg);">10</div>
+                    <div class="spin-slice" style="transform: rotate(157.5deg);">50</div>
+                    <div class="spin-slice" style="transform: rotate(202.5deg);">15</div>
+                    <div class="spin-slice" style="transform: rotate(247.5deg);">100</div>
+                    <div class="spin-slice" style="transform: rotate(292.5deg);">20</div>
+                    <div class="spin-slice" style="transform: rotate(337.5deg);">200</div>
+                    <div class="spin-center">🍯</div>
+                </div>
+            </div>
+            <button id="spinBtn" onclick="spinWheel()" class="btn-gold w-full py-4 rounded-2xl text-lg">SPIN!</button>
+        </div>
+
+        <!-- ====== MINING SECTION (hidden by default) ====== -->
+        <div id="mining-section" class="hidden space-y-4">
+            <div class="flex items-center gap-3">
+                <button onclick="switchTab('home')" class="w-11 h-11 rounded-xl glow-card flex items-center justify-center"><i class="fas fa-arrow-left text-yellow-50"></i></button>
+                <div>
+                    <div class="text-2xl font-black text-yellow-50">Nectar Mining</div>
+                    <div class="text-yellow-100/60 text-sm">Passive earning while you're away</div>
+                </div>
+            </div>
+            <div class="glow-card rounded-2xl p-5 text-center">
+                <div class="text-6xl mb-2">⛏</div>
+                <div class="text-yellow-100/60 text-sm">Level <span id="miningLevel">1</span> • <span id="miningRate">1</span> Nectar/hour</div>
+                <div class="mt-4 text-5xl font-black gold-text"><span id="pendingMining">0.0</span></div>
+                <div class="text-yellow-100/60 text-sm">Pending (cap <span id="miningCap">8</span>)</div>
+                <div class="h-2 rounded-full bg-black/50 mt-3 overflow-hidden">
+                    <div id="miningProgress" class="h-full bg-gradient-to-r from-orange-400 to-yellow-400" style="width: 0%"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-2 mt-4">
+                    <button onclick="startMining()" id="startMiningBtn" class="btn-gold py-3 rounded-xl col-span-2">Start Mining</button>
+                    <button onclick="claimMining()" id="claimMiningBtn" class="btn-gold py-3 rounded-xl hidden">Claim</button>
+                    <button onclick="upgradeMining()" class="py-3 rounded-xl font-semibold glow-card text-yellow-100 col-span-2">Upgrade (500N)</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== ACHIEVEMENTS SECTION (hidden by default) ====== -->
+        <div id="achievements-section" class="hidden space-y-3">
+            <div class="flex items-center gap-3">
+                <button onclick="switchTab('home')" class="w-11 h-11 rounded-xl glow-card flex items-center justify-center"><i class="fas fa-arrow-left text-yellow-50"></i></button>
+                <div>
+                    <div class="text-2xl font-black text-yellow-50">Achievements</div>
+                    <div class="text-yellow-100/60 text-sm">Milestones & rewards</div>
+                </div>
+            </div>
+            <div id="achievementsList"></div>
+        </div>
+
+    </main>
+
+    <!-- ====== REDEEM MODAL ====== -->
+    <div id="redeemModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-3">
+                <div class="font-bold text-yellow-50">Enter Reward Code</div>
+                <button onclick="closeRedeemModal()"><i class="fas fa-times text-yellow-100/70"></i></button>
+            </div>
+            <input id="redeemInput" type="text" placeholder="e.g. WELCOME50" class="w-full bg-black/40 border border-yellow-900/50 rounded-xl px-4 py-3 text-yellow-50 outline-none focus:border-yellow-500 uppercase" />
+            <button onclick="redeemCode()" class="btn-gold w-full py-3 rounded-xl mt-3">Redeem</button>
+            <div class="text-xs text-yellow-100/50 mt-2">Try: WELCOME50, NECTAR100, SWEETBEE</div>
+        </div>
     </div>
-  );
-}
+
+    <!-- ====== BOTTOM NAV ====== -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" data-tab="home" onclick="switchTab('home')">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </button>
+        <button class="nav-item" data-tab="ads" onclick="switchTab('ads')">
+            <i class="fas fa-play"></i>
+            <span>Ads</span>
+        </button>
+        <button class="nav-item" data-tab="tasks" onclick="switchTab('tasks')">
+            <i class="fas fa-check-square"></i>
+            <span>Tasks</span>
+        </button>
+        <button class="nav-item" data-tab="refer" onclick="switchTab('refer')">
+            <i class="fas fa-users"></i>
+            <span>Refer</span>
+        </button>
+        <button class="nav-item" data-tab="profile" onclick="switchTab('profile')">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+        </button>
+    </nav>
+
+</div>
+
+<!-- ====== JAVASCRIPT ====== -->
+<script>
+    // ============ STATE ============
+    let state = {
+        nectar: 0,
+        username: "Lahiru657",
+        fullName: "Lahiru Jayasekara",
+        tgId: "6202492881",
+        wallet: "",
+        refs: 0,
+        refsCompleted: 0,
+        refEarned: 0,
+        todayEarned: 0,
+        todayDate: new Date().toDateString(),
+        adsgramWatched: 0,
+        monetagWatched: 0,
+        adsgramAiWatched: 0,
+        tasksDone: [],
+        visitsDone: [],
+        lastBonus: 0,
+        streak: 0,
+        redeemed: [],
+        txs: [],
+        miningStart: 0,
+        miningLevel: 1,
+        achievements: [],
+        lastSpin: 0,
+        currentTab: 'home'
+    };
+
+    const NECTAR_TO_USDT = 0.0001;
+    const REDEEM_CODES = { "WELCOME50": 50, "NECTAR100": 100, "SWEETBEE": 25 };
+    const ACHIEVEMENTS = [
+        { id: "a1", title: "First Sip", desc: "Earn your first Nectar", reward: 5 },
+        { id: "a2", title: "Ad Rookie", desc: "Watch 10 ads", reward: 50 },
+        { id: "a3", title: "Task Hunter", desc: "Complete 5 tasks", reward: 100 },
+        { id: "a4", title: "Social Bee", desc: "Refer your first friend", reward: 25 },
+        { id: "a5", title: "Nectar Millionaire", desc: "Reach 10,000 Nectar", reward: 500 },
+        { id: "a6", title: "Streak Master", desc: "7-day daily streak", reward: 200 },
+    ];
+
+    // ============ TOAST ============
+    let toastTimeout;
+
+    function showToast(msg) {
+        const el = document.getElementById('toast');
+        el.textContent = msg;
+        el.classList.add('show');
+        clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => el.classList.remove('show'), 2400);
+    }
+
+    // ============ STORAGE ============
+    function loadState() {
+        try {
+            const raw = localStorage.getItem('nectarpay:v1');
+            if (raw) {
+                const parsed = JSON.parse(raw);
+                Object.assign(state, parsed);
+                if (state.todayDate !== new Date().toDateString()) {
+                    state.todayDate = new Date().toDateString();
+                    state.todayEarned = 0;
+                }
+            }
+        } catch (e) {}
+    }
+
+    function saveState() {
+        try {
+            localStorage.setItem('nectarpay:v1', JSON.stringify(state));
+        } catch (e) {}
+    }
+
+    // ============ UPDATE UI ============
+    function updateUI() {
+        document.getElementById('balance').textContent = Math.floor(state.nectar);
+        const usdt = (state.nectar * NECTAR_TO_USDT).toFixed(4);
+        document.getElementById('usdt').textContent = usdt;
+        document.getElementById('usdt2').textContent = usdt;
+        updateAchievements();
+        saveState();
+    }
+
+    function addNectar(amount, type) {
+        state.nectar += amount;
+        state.todayEarned += Math.max(0, amount);
+        state.txs.unshift({ id: Date.now().toString(), type, amount, ts: Date.now() });
+        if (state.txs.length > 100) state.txs.pop();
+        updateUI();
+        showToast(`+${amount} Nectar!`);
+    }
+
+    // ============ DAILY BONUS ============
+    function claimDaily() {
+        const now = Date.now();
+        if (now - state.lastBonus < 24 * 3600 * 1000) {
+            showToast('⏱ Daily bonus already claimed. Come back tomorrow.');
+            return;
+        }
+        const streak = (now - state.lastBonus < 48 * 3600 * 1000) ? state.streak + 1 : 1;
+        const reward = 20 + Math.min(streak, 7) * 5;
+        state.lastBonus = now;
+        state.streak = streak;
+        addNectar(reward, `Daily bonus (day ${streak})`);
+        showToast(`🎁 +${reward} Nectar! Streak ${streak}🔥`);
+    }
+
+    // ============ REDEEM CODE ============
+    function showRedeemModal() {
+        document.getElementById('redeemModal').classList.add('show');
+        document.getElementById('redeemInput').value = '';
+        document.getElementById('redeemInput').focus();
+    }
+
+    function closeRedeemModal() {
+        document.getElementById('redeemModal').classList.remove('show');
+    }
+
+    function redeemCode() {
+        const input = document.getElementById('redeemInput');
+        const code = input.value.trim().toUpperCase();
+        if (!code) return;
+        if (state.redeemed.includes(code)) {
+            showToast('Code already used');
+            return;
+        }
+        if (REDEEM_CODES[code]) {
+            const amt = REDEEM_CODES[code];
+            state.redeemed.push(code);
+            addNectar(amt, `Reward code ${code}`);
+            closeRedeemModal();
+        } else {
+            showToast('❌ Invalid code');
+        }
+    }
+
+    // ============ COPY LINK ============
+    function copyLink() {
+        const text = document.getElementById('refLink').textContent;
+        navigator.clipboard?.writeText(text);
+        showToast('Copied!');
+    }
+
+    // ============ SPIN WHEEL ============
+    let isSpinning = false;
+    let spinRotation = 0;
+
+    function spinWheel() {
+        if (isSpinning) return;
+        const now = Date.now();
+        if (now - state.lastSpin < 6 * 3600 * 1000) {
+            showToast('Next spin available in a few hours');
+            return;
+        }
+        isSpinning = true;
+        document.getElementById('spinBtn').disabled = true;
+        document.getElementById('spinBtn').textContent = 'Spinning...';
+
+        const rewards = [5, 25, 10, 50, 15, 100, 20, 200];
+        const idx = Math.floor(Math.random() * rewards.length);
+        const target = 360 * 6 + (360 - idx * (360 / rewards.length));
+        spinRotation += target;
+
+        const wheel = document.getElementById('spinWheel');
+        wheel.style.transform = `rotate(${spinRotation}deg)`;
+
+        setTimeout(() => {
+            isSpinning = false;
+            state.lastSpin = Date.now();
+            addNectar(rewards[idx], `Spin wheel +${rewards[idx]}`);
+            document.getElementById('spinBtn').disabled = false;
+            document.getElementById('spinBtn').textContent = 'SPIN!';
+        }, 3800);
+    }
+
+    // ============ MINING ============
+    let miningInterval;
+
+    function updateMining() {
+        const now = Date.now();
+        const rate = state.miningLevel;
+        const active = state.miningStart > 0;
+        const elapsed = active ? (now - state.miningStart) / 3600000 : 0;
+        const pending = Math.min(elapsed * rate, rate * 8);
+        const cap = rate * 8;
+
+        document.getElementById('miningLevel').textContent = state.miningLevel;
+        document.getElementById('miningRate').textContent = rate;
+        document.getElementById('pendingMining').textContent = pending.toFixed(1);
+        document.getElementById('miningCap').textContent = cap;
+        document.getElementById('miningProgress').style.width = `${(pending / cap) * 100}%`;
+
+        if (active) {
+            document.getElementById('startMiningBtn').classList.add('hidden');
+            document.getElementById('claimMiningBtn').classList.remove('hidden');
+        } else {
+            document.getElementById('startMiningBtn').classList.remove('hidden');
+            document.getElementById('claimMiningBtn').classList.add('hidden');
+        }
+    }
+
+    function startMining() {
+        state.miningStart = Date.now();
+        showToast('⛏ Mining started');
+        updateMining();
+        saveState();
+    }
+
+    function claimMining() {
+        const rate = state.miningLevel;
+        const elapsed = (Date.now() - state.miningStart) / 3600000;
+        const pending = Math.min(elapsed * rate, rate * 8);
+        const amt = Math.floor(pending);
+        if (amt <= 0) {
+            showToast('Nothing to claim yet');
+            return;
+        }
+        state.miningStart = Date.now();
+        addNectar(amt, `Mining claim +${amt}`);
+        updateMining();
+        saveState();
+    }
+
+    function upgradeMining() {
+        const cost = state.miningLevel * 500;
+        if (state.nectar < cost) {
+            showToast(`Need ${cost} Nectar`);
+            return;
+        }
+        state.nectar -= cost;
+        state.miningLevel += 1;
+        state.txs.unshift({ id: Date.now().toString(), type: `Mining upgrade L${state.miningLevel}`, amount: -cost, ts: Date.now() });
+        updateUI();
+        updateMining();
+        saveState();
+        showToast('⚡ Upgraded!');
+    }
+
+    // ============ ACHIEVEMENTS ============
+    function updateAchievements() {
+        const container = document.getElementById('achievementsList');
+        container.innerHTML = '';
+        ACHIEVEMENTS.forEach(a => {
+            let done = false;
+            if (a.id === 'a1') done = state.nectar > 0;
+            else if (a.id === 'a2') done = state.adsgramWatched + state.monetagWatched + state.adsgramAiWatched >= 10;
+            else if (a.id === 'a3') done = state.tasksDone.length >= 5;
+            else if (a.id === 'a4') done = state.refs >= 1;
+            else if (a.id === 'a5') done = state.nectar >= 10000;
+            else if (a.id === 'a6') done = state.streak >= 7;
+
+            const div = document.createElement('div');
+            div.className = `glow-card rounded-2xl p-4 flex items-center gap-3 ${done ? 'border-emerald-500/50' : ''}`;
+            div.innerHTML = `
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl ${done ? 'bg-emerald-900/50' : 'bg-yellow-900/30'}">${done ? '🏆' : '🔒'}</div>
+                <div class="flex-1">
+                    <div class="font-bold text-yellow-50">${a.title}</div>
+                    <div class="text-xs text-yellow-100/60">${a.desc}</div>
+                </div>
+                <div class="font-bold ${done ? 'text-emerald-400' : 'text-yellow-100/40'}">+${a.reward}N</div>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    // ============ TAB SWITCHING ============
+    function switchTab(tab) {
+        state.currentTab = tab;
+
+        // Update nav
+        document.querySelectorAll('.nav-item').forEach(el => {
+            el.classList.toggle('active', el.dataset.tab === tab);
+        });
+
+        // Show/hide sections
+        const sections = ['home', 'ads', 'tasks', 'refer', 'profile', 'spin', 'mining', 'achievements'];
+        sections.forEach(s => {
+            const el = document.getElementById(`${s}-section`);
+            if (el) {
+                if (s === tab) {
+                    el.classList.remove('hidden');
+                } else {
+                    el.classList.add('hidden');
+                }
+            }
+        });
+
+        // Show home content by default
+        const mainContent = document.getElementById('main-content');
+        const homeContent = mainContent.querySelectorAll('.space-y-5 > div:not(.hidden)');
+        // Hide all special sections
+        document.querySelectorAll('#spin-section, #mining-section, #achievements-section').forEach(el => {
+            el.classList.add('hidden');
+        });
+
+        // For home tab, show regular content
+        if (tab === 'home') {
+            document.querySelectorAll('#main-content > div:not(#spin-section):not(#mining-section):not(#achievements-section)').forEach(el => {
+                el.style.display = '';
+            });
+        } else if (tab === 'spin') {
+            document.querySelectorAll('#main-content > div:not(#spin-section)').forEach(el => {
+                if (el.id !== 'spin-section') el.style.display = 'none';
+            });
+            document.getElementById('spin-section').classList.remove('hidden');
+        } else if (tab === 'mining') {
+            document.querySelectorAll('#main-content > div:not(#mining-section)').forEach(el => {
+                if (el.id !== 'mining-section') el.style.display = 'none';
+            });
+            document.getElementById('mining-section').classList.remove('hidden');
+            updateMining();
+        } else if (tab === 'achievements') {
+            document.querySelectorAll('#main-content > div:not(#achievements-section)').forEach(el => {
+                if (el.id !== 'achievements-section') el.style.display = 'none';
+            });
+            document.getElementById('achievements-section').classList.remove('hidden');
+            updateAchievements();
+        } else {
+            // For other tabs (ads, tasks, refer, profile)
+            document.querySelectorAll('#main-content > div:not(#spin-section):not(#mining-section):not(#achievements-section)').forEach(el => {
+                el.style.display = '';
+            });
+            // Hide special sections
+            document.getElementById('spin-section').classList.add('hidden');
+            document.getElementById('mining-section').classList.add('hidden');
+            document.getElementById('achievements-section').classList.add('hidden');
+            showToast(`${tab.charAt(0).toUpperCase() + tab.slice(1)} tab - Coming soon!`);
+        }
+    }
+
+    // ============ INIT ============
+    loadState();
+    updateUI();
+    updateMining();
+
+    // Mining interval
+    setInterval(updateMining, 1000);
+
+    // Click outside modal to close
+    document.getElementById('redeemModal').addEventListener('click', function(e) {
+        if (e.target === this) closeRedeemModal();
+    });
+
+    // Enter key for redeem
+    document.getElementById('redeemInput').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') redeemCode();
+    });
+
+    console.log('🐝 NectarPay loaded successfully!');
+</script>
+
+</body>
+</html>
